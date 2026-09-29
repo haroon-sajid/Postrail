@@ -18,12 +18,12 @@ import { authClient } from '@/api/auth';
 import { errorMessage } from '@/api/client';
 import { meKey, useCreateOrg, useMe, type Org } from '@/api/me';
 import { Logo, LogoIcon } from '@/components/logo';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogBody,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -103,7 +103,7 @@ export function AppShell() {
         {!isMobile ? (
           <aside
             className={cn(
-              'sticky top-0 hidden h-screen shrink-0 flex-col bg-sidebar text-sidebar-fg transition-[width] lg:flex',
+              'sticky top-0 hidden h-screen shrink-0 flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200 lg:flex',
               collapsed ? 'w-[var(--sidebar-width-collapsed)]' : 'w-[var(--sidebar-width)]',
             )}
             aria-label="Sidebar"
@@ -113,12 +113,13 @@ export function AppShell() {
         ) : null}
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-30 flex h-[var(--topbar-height)] items-center gap-3 border-b border-border bg-bg px-4">
+          <header className="sticky top-0 z-30 flex h-[var(--topbar-height)] items-center gap-3 border-b border-border bg-bg/85 px-4 backdrop-blur sm:px-6 lg:px-8">
             {isMobile ? (
               <Dialog open={drawerOpen} onOpenChange={setDrawerOpen}>
                 <Button
                   variant="ghost"
                   size="icon"
+                  className="-ml-2"
                   aria-label="Open navigation"
                   onClick={() => setDrawerOpen(true)}
                 >
@@ -130,43 +131,62 @@ export function AppShell() {
               </Dialog>
             ) : null}
             <Breadcrumb orgName={ctx.org.name} />
-            <Badge tone="success" className="hidden sm:inline-flex">
-              Live
-            </Badge>
-            <div className="ml-auto flex items-center gap-1">
-              <Button
-                variant="secondary"
-                size="sm"
-                className="hidden gap-2 text-fg-muted sm:inline-flex"
+            <div className="ml-auto flex items-center gap-2">
+              <LiveBadge />
+              <button
+                type="button"
+                className="hidden h-9 w-60 items-center gap-2 rounded-md border border-border bg-bg-subtle px-3 text-sm text-fg-muted shadow-xs transition-colors hover:border-border-strong hover:bg-bg md:flex"
                 onClick={() => setSearchOpen(true)}
                 aria-label="Search (Ctrl+K)"
               >
-                <Search />
-                <span className="hidden md:inline">Search</span>
-                <kbd className="hidden rounded border border-border px-1 text-[10px] md:inline">
+                <Search className="size-4" />
+                <span className="flex-1 text-left">Search…</span>
+                <kbd className="rounded-sm border border-border bg-bg px-1.5 py-0.5 text-[10px] font-medium text-fg-muted">
                   ⌘K
                 </kbd>
-              </Button>
+              </button>
               <Button
                 variant="ghost"
                 size="icon"
-                className="sm:hidden"
+                className="md:hidden"
                 aria-label="Search"
                 onClick={() => setSearchOpen(true)}
               >
                 <Search />
               </Button>
+              <WithTooltip label="Documentation">
+                <Button asChild variant="ghost" size="icon" className="hidden sm:inline-flex">
+                  <a href={DOCS_URL} target="_blank" rel="noreferrer" aria-label="Documentation">
+                    <DocsIcon />
+                  </a>
+                </Button>
+              </WithTooltip>
               <UserMenu />
             </div>
           </header>
 
-          <main className="mx-auto w-full max-w-[var(--content-max)] flex-1 px-4 py-5 sm:px-6 sm:py-6">
+          <main className="mx-auto w-full max-w-[var(--content-max)] flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
             <Outlet />
           </main>
         </div>
       </div>
       <CommandPalette open={searchOpen} onOpenChange={setSearchOpen} />
     </OrgContext.Provider>
+  );
+}
+
+function LiveBadge() {
+  return (
+    <span
+      className="hidden items-center gap-1.5 rounded-full border border-success/25 bg-success-bg px-2.5 py-1 text-xs font-medium text-success-fg sm:inline-flex"
+      title="Sending through real mailboxes"
+    >
+      <span className="relative flex size-1.5">
+        <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60" />
+        <span className="relative inline-flex size-1.5 rounded-full bg-success" />
+      </span>
+      Live
+    </span>
   );
 }
 
@@ -177,14 +197,16 @@ function Breadcrumb({ orgName }: { orgName: string }) {
   const crumbs = breadcrumbFor(sub);
   return (
     <nav aria-label="Breadcrumb" className="min-w-0 truncate text-sm">
-      <ol className="flex items-center gap-1.5">
-        <li className="truncate text-fg-muted">{orgName}</li>
-        {crumbs.map((c) => (
-          <li key={c} className="flex items-center gap-1.5">
-            <span className="text-fg-faint" aria-hidden>
+      <ol className="flex items-center gap-2">
+        <li className="hidden truncate text-fg-muted sm:block">{orgName}</li>
+        {crumbs.map((c, i) => (
+          <li key={c} className="flex items-center gap-2">
+            <span className={cn('text-fg-faint', i === 0 && 'hidden sm:inline')} aria-hidden>
               /
             </span>
-            <span className="text-fg">{c}</span>
+            <span className={cn(i === crumbs.length - 1 ? 'font-medium text-fg' : 'text-fg-muted')}>
+              {c}
+            </span>
           </li>
         ))}
       </ol>
@@ -198,20 +220,33 @@ function SidebarContent({ collapsed, onToggle }: { collapsed: boolean; onToggle?
     <>
       <div
         className={cn(
-          'flex h-[var(--topbar-height)] items-center px-3',
-          collapsed && 'justify-center',
+          'flex h-[var(--topbar-height)] shrink-0 items-center px-4',
+          collapsed && 'justify-center px-0',
         )}
       >
-        {collapsed ? <LogoIcon /> : <Logo />}
+        {collapsed ? (
+          <LogoIcon className="size-7" />
+        ) : (
+          <>
+            <Logo variant="light" className="h-6 w-auto dark:hidden" />
+            <Logo variant="dark" className="hidden h-6 w-auto dark:block" />
+          </>
+        )}
       </div>
-      <div className="px-2">
+      <div className={cn('px-3 pb-2', collapsed && 'px-2')}>
         <OrgSwitcher collapsed={collapsed} />
       </div>
-      <nav className="mt-3 flex-1 space-y-4 overflow-y-auto px-2" aria-label="Main">
-        <NavGroup items={MAIN_NAV} orgId={orgId} collapsed={collapsed} />
+      <nav
+        className={cn(
+          'scrollbar-thin flex-1 space-y-6 overflow-y-auto px-3 py-3',
+          collapsed && 'px-2',
+        )}
+        aria-label="Main"
+      >
+        <NavGroup items={MAIN_NAV} orgId={orgId} collapsed={collapsed} title="Workspace" />
         <NavGroup items={SETTINGS_NAV} orgId={orgId} collapsed={collapsed} title="Settings" />
       </nav>
-      <div className="space-y-1 border-t border-white/10 p-2">
+      <div className={cn('space-y-0.5 border-t border-sidebar-border p-3', collapsed && 'p-2')}>
         <WithTooltip label={collapsed ? 'Docs' : undefined}>
           <a
             href={DOCS_URL}
@@ -220,7 +255,7 @@ function SidebarContent({ collapsed, onToggle }: { collapsed: boolean; onToggle?
             className={cn(navItemClass, collapsed && 'justify-center px-0')}
           >
             <DocsIcon />
-            {!collapsed ? <span>Docs</span> : null}
+            {!collapsed ? <span>Documentation</span> : null}
           </a>
         </WithTooltip>
         {onToggle ? (
@@ -240,7 +275,7 @@ function SidebarContent({ collapsed, onToggle }: { collapsed: boolean; onToggle?
 }
 
 const navItemClass =
-  'flex h-8 items-center gap-2.5 rounded px-2 text-sm text-sidebar-fg hover:bg-sidebar-active hover:text-sidebar-fg-strong [&_svg]:size-4 [&_svg]:shrink-0';
+  'group flex h-9 items-center gap-3 rounded-md px-2.5 text-sm font-medium text-sidebar-fg transition-colors hover:bg-sidebar-active hover:text-sidebar-fg-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-fg-faint group-hover:[&_svg]:text-sidebar-fg-strong';
 
 function NavGroup({
   items,
@@ -256,7 +291,7 @@ function NavGroup({
   return (
     <div>
       {title && !collapsed ? (
-        <p className="mb-1 px-2 text-[11px] font-medium uppercase tracking-wide text-sidebar-fg/60">
+        <p className="mb-1.5 px-2.5 text-[11px] font-semibold uppercase tracking-wider text-fg-faint">
           {title}
         </p>
       ) : null}
@@ -271,12 +306,13 @@ function NavGroup({
                   cn(
                     navItemClass,
                     collapsed && 'justify-center px-0',
-                    isActive && 'bg-sidebar-active text-sidebar-fg-strong',
+                    isActive &&
+                      'bg-sidebar-active text-sidebar-fg-strong shadow-xs [&_svg]:text-primary',
                   )
                 }
               >
                 <item.icon />
-                {!collapsed ? <span>{item.label}</span> : null}
+                {!collapsed ? <span className="truncate">{item.label}</span> : null}
               </NavLink>
             </WithTooltip>
           </li>
@@ -297,29 +333,37 @@ function OrgSwitcher({ collapsed }: { collapsed: boolean }) {
           <button
             type="button"
             className={cn(
-              'flex h-9 w-full items-center gap-2 rounded border border-white/10 px-2 text-left text-sm text-sidebar-fg-strong hover:bg-sidebar-active',
+              'flex h-10 w-full items-center gap-2.5 rounded-md border border-border bg-bg px-2.5 text-left text-sm shadow-xs transition-colors hover:bg-bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40',
               collapsed && 'justify-center px-0',
             )}
             aria-label={`Switch org (current: ${org.name})`}
           >
-            <span className="flex size-5 shrink-0 items-center justify-center rounded-sm bg-emerald text-[10px] font-semibold text-navy">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-sm bg-navy text-[11px] font-semibold text-white dark:bg-emerald dark:text-navy">
               {initials(org.name)}
             </span>
             {!collapsed ? (
               <>
-                <span className="min-w-0 flex-1 truncate">{org.name}</span>
-                <ChevronsUpDown className="size-3.5 text-sidebar-fg" />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-medium text-fg">{org.name}</span>
+                  <span className="block truncate text-[11px] capitalize leading-3 text-fg-muted">
+                    {org.role}
+                  </span>
+                </span>
+                <ChevronsUpDown className="size-4 shrink-0 text-fg-faint" />
               </>
             ) : null}
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-56">
+        <DropdownMenuContent align="start" className="w-60">
           <DropdownMenuLabel>Organisations</DropdownMenuLabel>
           {orgs.map((o: Org) => (
             <DropdownMenuItem key={o.id} onSelect={() => void navigate(orgPath(o.id))}>
+              <span className="flex size-5 shrink-0 items-center justify-center rounded-sm bg-bg-muted text-[10px] font-semibold text-fg">
+                {initials(o.name)}
+              </span>
               <span className="flex-1 truncate">{o.name}</span>
-              <span className="text-xs text-fg-muted">{o.role}</span>
-              {o.id === org.id ? <Check /> : null}
+              <span className="text-xs capitalize text-fg-muted">{o.role}</span>
+              {o.id === org.id ? <Check className="!text-primary" /> : null}
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
@@ -346,9 +390,6 @@ function CreateOrgDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent size="sm">
-        <DialogHeader>
-          <DialogTitle>New organisation</DialogTitle>
-        </DialogHeader>
         <form
           onSubmit={async (e) => {
             e.preventDefault();
@@ -363,6 +404,12 @@ function CreateOrgDialog({
             }
           }}
         >
+          <DialogHeader>
+            <DialogTitle>New organisation</DialogTitle>
+            <DialogDescription>
+              A separate workspace with its own mailboxes, keys and members.
+            </DialogDescription>
+          </DialogHeader>
           <DialogBody>
             <Label htmlFor="org-name">Name</Label>
             <Input
@@ -371,6 +418,7 @@ function CreateOrgDialog({
               onChange={(e) => setName(e.target.value)}
               autoFocus
               maxLength={80}
+              placeholder="Acme Inc."
             />
           </DialogBody>
           <DialogFooter>
@@ -383,7 +431,7 @@ function CreateOrgDialog({
               disabled={!name.trim()}
               loading={create.isPending}
             >
-              Create
+              Create organisation
             </Button>
           </DialogFooter>
         </form>
@@ -402,7 +450,7 @@ function UserMenu() {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex size-8 items-center justify-center rounded-full bg-bg-muted text-xs font-semibold text-fg hover:bg-border"
+          className="flex size-8 items-center justify-center rounded-full bg-navy text-xs font-semibold text-white ring-2 ring-bg ring-offset-1 ring-offset-border transition hover:ring-offset-border-strong focus-visible:outline-none focus-visible:ring-ring dark:bg-emerald dark:text-navy"
           aria-label={`Account menu for ${user.email}`}
         >
           {user.image ? (
@@ -417,9 +465,9 @@ function UserMenu() {
           )}
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-60">
+      <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuLabel className="truncate">
-          <span className="block text-fg">{user.name || 'Signed in'}</span>
+          <span className="block text-sm text-fg">{user.name || 'Signed in'}</span>
           <span className="block font-normal text-fg-muted">{user.email}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

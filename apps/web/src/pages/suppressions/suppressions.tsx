@@ -65,14 +65,14 @@ export function SuppressionsPage() {
         actions={actions}
       />
       <Card>
-        <div className="flex items-center gap-2 border-b border-border p-3">
+        <div className="flex items-center gap-3 border-b border-border bg-bg-subtle/40 px-5 py-4">
           <div className="relative w-full max-w-sm">
-            <Search className="pointer-events-none absolute left-2.5 top-2 size-4 text-fg-muted" />
+            <Search className="pointer-events-none absolute left-3 top-2.5 size-4 text-fg-muted" />
             <Input
               type="search"
               aria-label="Search suppressions"
               placeholder="Search by email"
-              className="pl-8"
+              className="pl-9"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />

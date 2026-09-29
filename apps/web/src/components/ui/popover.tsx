@@ -7,7 +7,7 @@ export const PopoverTrigger = PopoverPrimitive.Trigger;
 export function PopoverContent({
   className,
   align = 'start',
-  sideOffset = 4,
+  sideOffset = 6,
   ...props
 }: PopoverPrimitive.PopoverContentProps) {
   return (
@@ -16,7 +16,7 @@ export function PopoverContent({
         align={align}
         sideOffset={sideOffset}
         className={cn(
-          'z-50 w-72 rounded border border-border bg-bg-elevated p-3 text-sm shadow-md outline-none',
+          'z-50 w-72 rounded-lg border border-border bg-bg-elevated p-4 text-sm shadow-md outline-none',
           className,
         )}
         {...props}

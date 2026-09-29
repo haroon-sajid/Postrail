@@ -1,7 +1,7 @@
 /*
- * Postrail design tokens. Every colour, radius and spacing value the UI uses comes from
- * here, as CSS variables, and is exposed to Tailwind through @theme. Light is the default;
- * `.dark` on <html> switches the palette. See DESIGN.md for the rules.
+ * Postrail design tokens. Every colour, radius, shadow and spacing value the UI uses comes
+ * from here, as CSS variables, and is exposed to Tailwind through @theme. Light is the
+ * default; `.dark` on <html> switches the palette. See DESIGN.md for the rules.
  */
 @import 'tailwindcss';
 @import '@fontsource-variable/inter';
@@ -11,103 +11,117 @@
 :root {
   /* Brand */
   --navy: #0f1b2d;
-  --emerald: #12b981;
-  --emerald-strong: #0e9f6e;
-  --off-white: #f5f5f2;
+  --emerald: #10b981;
+  --emerald-strong: #059669;
+  --off-white: #f6f7f8;
 
-  /* Surfaces and text (light) */
+  /* Surfaces */
   --bg: #ffffff;
-  --bg-subtle: #f7f7f5;
-  --bg-muted: #efefec;
+  --bg-subtle: #f7f8fa;
+  --bg-muted: #eef0f3;
   --bg-elevated: #ffffff;
-  --sidebar: var(--navy);
-  --sidebar-fg: #d6dbe4;
-  --sidebar-fg-strong: #ffffff;
-  --sidebar-active: rgba(255, 255, 255, 0.08);
-  --fg: #171b22;
-  --fg-muted: #5b6270;
-  --fg-faint: #8a909c;
-  --border: #e4e4e0;
-  --border-strong: #cfcfca;
-  --ring: #12b981;
+  --sidebar: #fafbfc;
+  --sidebar-border: #e8eaee;
+  --sidebar-fg: #4b5563;
+  --sidebar-fg-strong: #111827;
+  --sidebar-active: rgba(15, 27, 45, 0.06);
+
+  /* Text */
+  --fg: #111827;
+  --fg-muted: #6b7280;
+  --fg-faint: #9ca3af;
+
+  /* Lines */
+  --border: #e6e8ec;
+  --border-strong: #d1d5db;
+  --ring: #10b981;
 
   /* Semantic */
   --primary: var(--emerald);
   --primary-hover: var(--emerald-strong);
   --primary-fg: #ffffff;
-  --success: #12b981;
-  --success-bg: #e6f8f0;
-  --success-fg: #0b6e4f;
+  --success: #10b981;
+  --success-bg: #e7f8f1;
+  --success-fg: #047857;
   --warning: #d97706;
-  --warning-bg: #fdf3e2;
+  --warning-bg: #fef3e2;
   --warning-fg: #92400e;
   --danger: #dc2626;
   --danger-hover: #b91c1c;
   --danger-bg: #fdecec;
-  --danger-fg: #991b1b;
-  --info-bg: #eaf0fb;
-  --info-fg: #1e3a8a;
-  --neutral-bg: #eeeeeb;
-  --neutral-fg: #4b5160;
+  --danger-fg: #b91c1c;
+  --info-bg: #e9effc;
+  --info-fg: #1d4ed8;
+  --neutral-bg: #eef0f3;
+  --neutral-fg: #4b5563;
 
-  /* Shape */
-  --radius: 6px;
-  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
-  --shadow-md: 0 4px 12px rgba(16, 24, 40, 0.08);
+  /* Shape and depth */
+  --radius: 8px;
+  --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-md: 0 4px 12px rgba(16, 24, 40, 0.08), 0 1px 3px rgba(16, 24, 40, 0.05);
+  --shadow-lg: 0 16px 40px rgba(16, 24, 40, 0.16), 0 2px 6px rgba(16, 24, 40, 0.06);
 
   /* Layout */
-  --sidebar-width: 240px;
-  --sidebar-width-collapsed: 56px;
-  --topbar-height: 48px;
-  --content-max: 1280px;
+  --sidebar-width: 248px;
+  --sidebar-width-collapsed: 64px;
+  --topbar-height: 56px;
+  --content-max: 1440px;
 
   color-scheme: light;
 }
 
 .dark {
-  --bg: #0b1220;
-  --bg-subtle: #101827;
-  --bg-muted: #161f30;
-  --bg-elevated: #121b2b;
-  --sidebar: #0a1019;
-  --sidebar-fg: #aeb6c4;
-  --sidebar-fg-strong: #ffffff;
+  --bg: #0f141c;
+  --bg-subtle: #0b0f15;
+  --bg-muted: #1a212c;
+  --bg-elevated: #151b25;
+  --sidebar: #0b0f15;
+  --sidebar-border: #1f2733;
+  --sidebar-fg: #9aa3b2;
+  --sidebar-fg-strong: #f3f4f6;
   --sidebar-active: rgba(255, 255, 255, 0.07);
-  --fg: #e8ebf0;
-  --fg-muted: #9aa3b2;
-  --fg-faint: #6b7385;
-  --border: #22304a;
-  --border-strong: #33425e;
 
-  --primary-fg: #06251b;
-  --success-bg: #0f2e24;
+  --fg: #f3f4f6;
+  --fg-muted: #9aa3b2;
+  --fg-faint: #6b7280;
+
+  --border: #222b38;
+  --border-strong: #334155;
+
+  --primary-fg: #04241a;
+  --success-bg: #0d2a20;
   --success-fg: #6ee7b7;
-  --warning-bg: #3a2a0f;
+  --warning-bg: #33230c;
   --warning-fg: #fbbf24;
-  --danger-bg: #3b1515;
+  --danger-bg: #3a1515;
   --danger-fg: #fca5a5;
-  --info-bg: #172554;
-  --info-fg: #bfdbfe;
-  --neutral-bg: #1f2937;
+  --info-bg: #14213f;
+  --info-fg: #93c5fd;
+  --neutral-bg: #1f2733;
   --neutral-fg: #cbd5e1;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.6);
 
   color-scheme: dark;
 }
 
 @theme inline {
   --font-sans: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-mono: ui-monospace, 'JetBrains Mono', SFMono-Regular, Menlo, Consolas, monospace;
 
   --color-navy: var(--navy);
   --color-emerald: var(--emerald);
+  --color-off-white: var(--off-white);
   --color-bg: var(--bg);
   --color-bg-subtle: var(--bg-subtle);
   --color-bg-muted: var(--bg-muted);
   --color-bg-elevated: var(--bg-elevated);
   --color-sidebar: var(--sidebar);
+  --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-fg: var(--sidebar-fg);
   --color-sidebar-fg-strong: var(--sidebar-fg-strong);
   --color-sidebar-active: var(--sidebar-active);
@@ -136,13 +150,16 @@
   --color-neutral-fg: var(--neutral-fg);
 
   --radius-DEFAULT: var(--radius);
-  --radius-sm: 4px;
+  --radius-sm: 6px;
   --radius-md: var(--radius);
-  --radius-lg: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --shadow-xs: var(--shadow-xs);
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
 
-  --text-xs: 11px;
+  --text-xs: 12px;
   --text-xs--line-height: 16px;
   --text-sm: 13px;
   --text-sm--line-height: 20px;
@@ -154,6 +171,8 @@
   --text-xl--line-height: 28px;
   --text-2xl: 24px;
   --text-2xl--line-height: 32px;
+  --text-3xl: 30px;
+  --text-3xl--line-height: 36px;
 }
 
 @layer base {
@@ -162,6 +181,7 @@
     font-size: 14px;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    font-feature-settings: 'cv11', 'ss01';
   }
   body {
     background: var(--bg-subtle);
@@ -171,12 +191,17 @@
   * {
     border-color: var(--border);
   }
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.01em;
+  }
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
   }
   ::selection {
-    background: color-mix(in srgb, var(--emerald) 30%, transparent);
+    background: color-mix(in srgb, var(--emerald) 28%, transparent);
   }
   /* Numbers line up in tables and stat cards. */
   .tabular,
@@ -190,5 +215,144 @@
   pre {
     font-family: var(--font-mono);
     font-size: 12px;
+  }
+  /* Native controls pick up the palette in dark mode. */
+  input[type='datetime-local']::-webkit-calendar-picker-indicator {
+    opacity: 0.6;
+  }
+}
+
+/* Enter/exit motion for overlays. Radix sets data-state; the classes below read it. */
+@keyframes pr-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes pr-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes pr-pop-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+@keyframes pr-pop-out {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.97);
+  }
+}
+@keyframes pr-slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes pr-slide-out-right {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes pr-slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes pr-slide-out-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+@keyframes pr-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@layer utilities {
+  .motion-overlay[data-state='open'] {
+    animation: pr-fade-in 150ms ease-out;
+  }
+  .motion-overlay[data-state='closed'] {
+    animation: pr-fade-out 120ms ease-in;
+  }
+  .motion-modal[data-state='open'] {
+    animation: pr-pop-in 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .motion-modal[data-state='closed'] {
+    animation: pr-pop-out 120ms ease-in;
+  }
+  .motion-sheet[data-state='open'] {
+    animation: pr-slide-in-right 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .motion-sheet[data-state='closed'] {
+    animation: pr-slide-out-right 160ms ease-in;
+  }
+  .motion-drawer[data-state='open'] {
+    animation: pr-slide-in-left 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .motion-drawer[data-state='closed'] {
+    animation: pr-slide-out-left 160ms ease-in;
+  }
+  .motion-menu[data-state='open'] {
+    animation: pr-menu-in 120ms ease-out;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .motion-overlay,
+    .motion-modal,
+    .motion-sheet,
+    .motion-drawer,
+    .motion-menu {
+      animation: none !important;
+    }
+  }
+
+  /* Thin, non-intrusive scrollbars inside panels. */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
   }
 }

@@ -53,8 +53,8 @@ export function ApiKeysPage() {
         }
       />
 
-      <div className="grid gap-6 xl:grid-cols-5">
-        <Card className="xl:col-span-3">
+      <div className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_440px]">
+        <Card>
           {keys.isPending ? (
             <TableSkeleton rows={4} cols={5} />
           ) : keys.isError ? (
@@ -93,19 +93,19 @@ export function ApiKeysPage() {
                     onClick={() => !k.revoked_at && setSelected(k.prefix)}
                     className={k.revoked_at ? 'text-fg-muted' : undefined}
                   >
-                    <TableCell className="font-medium">
+                    <TableCell className="whitespace-nowrap font-medium">
                       <span className="flex items-center gap-2">
                         {k.name}
                         {k.revoked_at ? <Badge tone="danger">Revoked</Badge> : null}
                       </span>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">
                       <Copyable value={k.prefix} display={`${k.prefix}…`} />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">
                       <RelativeTime value={k.created_at} />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">
                       <RelativeTime value={k.last_used_at} />
                     </TableCell>
                     <TableCell className="max-w-48 truncate">
@@ -134,7 +134,7 @@ export function ApiKeysPage() {
           )}
         </Card>
 
-        <Card className="xl:col-span-2">
+        <Card>
           <CardHeader>
             <div>
               <CardTitle>Send with this key</CardTitle>
@@ -145,16 +145,16 @@ export function ApiKeysPage() {
               </CardDescription>
             </div>
           </CardHeader>
-          <div className="p-4">
+          <div className="p-5">
             <Tabs defaultValue="curl">
               <TabsList>
                 <TabsTrigger value="curl">curl</TabsTrigger>
                 <TabsTrigger value="node">Node</TabsTrigger>
               </TabsList>
-              <TabsContent value="curl" className="mt-2">
+              <TabsContent value="curl" className="mt-3">
                 <CodeBlock code={curlSnippet(snippet)} title="curl" />
               </TabsContent>
-              <TabsContent value="node" className="mt-2">
+              <TabsContent value="node" className="mt-3">
                 <CodeBlock code={nodeSnippet(snippet)} title="node" />
               </TabsContent>
             </Tabs>

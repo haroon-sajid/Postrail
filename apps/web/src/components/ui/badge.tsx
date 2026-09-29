@@ -3,7 +3,7 @@ import type { HTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
 export const badgeVariants = cva(
-  'inline-flex items-center gap-1 rounded-sm px-1.5 py-0.5 text-xs font-medium leading-4 whitespace-nowrap',
+  'inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium leading-4',
   {
     variants: {
       tone: {
@@ -12,7 +12,7 @@ export const badgeVariants = cva(
         warning: 'bg-warning-bg text-warning-fg',
         danger: 'bg-danger-bg text-danger-fg',
         info: 'bg-info-bg text-info-fg',
-        outline: 'border border-border text-fg-muted',
+        outline: 'border border-border bg-bg text-fg-muted',
       },
     },
     defaultVariants: { tone: 'neutral' },

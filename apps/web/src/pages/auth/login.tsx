@@ -36,29 +36,37 @@ export function LoginPage() {
   const errorCallbackURL = `${window.location.origin}/login`;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-off-white px-4 dark:bg-bg-subtle">
-      <Card className="w-full max-w-sm">
-        <CardContent className="p-6">
-          <div className="mb-6 flex justify-center">
-            <Logo variant="light" className="dark:hidden" />
-            <Logo variant="dark" className="hidden dark:block" />
-          </div>
-
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-off-white px-4 py-10 dark:bg-bg-subtle">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.12),transparent_55%)]"
+      />
+      <div className="mb-8 flex justify-center">
+        <Logo variant="light" className="h-7 w-auto dark:hidden" />
+        <Logo variant="dark" className="hidden h-7 w-auto dark:block" />
+      </div>
+      <Card className="relative w-full max-w-[400px] shadow-md">
+        <CardContent className="p-8">
           {sentTo ? (
             <div className="text-center" role="status">
-              <Mail className="mx-auto mb-3 size-6 text-primary" aria-hidden />
-              <h1 className="text-lg font-semibold">Check your email</h1>
-              <p className="mt-1 text-sm text-fg-muted">
+              <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-success-bg">
+                <Mail className="size-5 text-success-fg" aria-hidden />
+              </div>
+              <h1 className="text-xl font-semibold">Check your email</h1>
+              <p className="mt-2 text-sm leading-5 text-fg-muted">
                 We sent a sign-in link to <span className="font-medium text-fg">{sentTo}</span>. It
                 expires in 10 minutes.
               </p>
-              <Button variant="link" className="mt-4" onClick={() => setSentTo(null)}>
+              <Button variant="link" className="mt-5" onClick={() => setSentTo(null)}>
                 Use a different address
               </Button>
             </div>
           ) : (
             <>
-              <h1 className="text-center text-lg font-semibold">Sign in to Postrail</h1>
+              <h1 className="text-xl font-semibold">Sign in</h1>
+              <p className="mt-1 text-sm text-fg-muted">
+                Use your Google account or get a one-time link by email.
+              </p>
               {linkError ? (
                 <Alert tone="warning" className="mt-4">
                   {LINK_ERRORS[linkError] ?? 'Sign-in failed. Please try again.'}
@@ -134,6 +142,9 @@ export function LoginPage() {
           )}
         </CardContent>
       </Card>
+      <p className="relative mt-6 text-center text-xs text-fg-muted">
+        Email API for apps that send through their own Gmail.
+      </p>
     </div>
   );
 }

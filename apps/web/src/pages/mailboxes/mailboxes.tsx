@@ -97,7 +97,7 @@ export function MailboxesPage() {
       {mailboxes.isPending ? (
         <div className="grid gap-4 md:grid-cols-2" aria-busy>
           {Array.from({ length: 2 }).map((_, i) => (
-            <Card key={i} className="p-4">
+            <Card key={i} className="p-5">
               <Skeleton className="h-4 w-48" />
               <Skeleton className="mt-2 h-3 w-32" />
               <Skeleton className="mt-6 h-1.5 w-full" />

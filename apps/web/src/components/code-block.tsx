@@ -14,19 +14,21 @@ export function CodeBlock({
   return (
     <div
       className={cn(
-        'overflow-hidden rounded border border-border bg-navy text-[#e6e9ef] dark:bg-bg-muted dark:text-fg',
+        'overflow-hidden rounded-lg border border-navy/80 bg-navy text-[#dfe4ec] dark:border-border dark:bg-bg-subtle dark:text-fg',
         className,
       )}
     >
-      <div className="flex items-center justify-between border-b border-white/10 px-3 py-1.5 dark:border-border">
-        <span className="text-xs text-white/60 dark:text-fg-muted">{title ?? 'shell'}</span>
+      <div className="flex h-9 items-center justify-between border-b border-white/10 pl-4 pr-2 dark:border-border">
+        <span className="font-mono text-xs text-white/50 dark:text-fg-muted">
+          {title ?? 'shell'}
+        </span>
         <CopyButton
           value={code}
           label="Snippet"
-          className="text-white/70 hover:text-white dark:text-fg-muted"
+          className="text-white/60 hover:bg-white/10 hover:text-white dark:text-fg-muted dark:hover:bg-bg-muted dark:hover:text-fg"
         />
       </div>
-      <pre className="overflow-x-auto p-3 text-xs leading-5">
+      <pre className="scrollbar-thin overflow-x-auto p-4 text-xs leading-5">
         <code>{code}</code>
       </pre>
     </div>

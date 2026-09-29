@@ -72,8 +72,8 @@ export function MailboxCard({
 
   return (
     <Card data-testid="mailbox-card" className={disconnected ? 'border-warning/50' : undefined}>
-      <div className="flex items-start gap-3 p-4">
-        <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded bg-bg-muted">
+      <div className="flex items-start gap-3 p-5">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-md border border-border bg-bg-subtle">
           <ProviderIcon provider={mailbox.provider} />
         </div>
         <div className="min-w-0 flex-1">
@@ -113,9 +113,9 @@ export function MailboxCard({
         ) : null}
       </div>
 
-      <div className="border-t border-border px-4 py-3">
+      <div className="border-t border-border px-5 py-4">
         <div className="flex items-center justify-between gap-2 text-xs text-fg-muted">
-          <span>Today</span>
+          <span className="font-medium">Sent today</span>
           <span className="tabular flex items-center gap-1">
             {formatNumber(mailbox.sent_today)} /{' '}
             {editing ? (
@@ -159,7 +159,7 @@ export function MailboxCard({
       </div>
 
       {disconnected ? (
-        <div className="flex items-center justify-between gap-3 border-t border-warning/40 bg-warning-bg px-4 py-2.5 text-sm text-warning-fg">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-warning/40 bg-warning-bg px-5 py-3 text-sm text-warning-fg">
           <span>This mailbox lost its Google access. Reconnect to resume sending.</span>
           {canManage ? (
             <Button size="sm" variant="primary" onClick={onReconnect}>

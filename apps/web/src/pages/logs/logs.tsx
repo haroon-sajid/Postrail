@@ -99,7 +99,7 @@ export function LogsPage() {
         description="Every message, newest first. Click a row for the full story."
       />
       <Card>
-        <div className="border-b border-border p-3">
+        <div className="border-b border-border bg-bg-subtle/40 px-5 py-4">
           <FiltersBar filters={filters} mailboxes={mailboxes.data ?? []} onChange={setFilters} />
         </div>
 
@@ -167,7 +167,7 @@ export function LogsPage() {
           </Table>
         )}
 
-        <div className="flex items-center justify-between border-t border-border px-3 py-2 text-xs text-fg-muted">
+        <div className="flex items-center justify-between border-t border-border bg-bg-subtle/40 px-5 py-3 text-xs text-fg-muted">
           <span>{rows.length > 0 ? `${rows.length} on this page` : ''}</span>
           <div className="flex gap-1">
             <Button

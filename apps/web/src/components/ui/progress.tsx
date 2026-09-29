@@ -11,12 +11,12 @@ export function Progress({
   return (
     <ProgressPrimitive.Root
       value={clamped}
-      className={cn('relative h-1.5 w-full overflow-hidden rounded-full bg-bg-muted', className)}
+      className={cn('relative h-2 w-full overflow-hidden rounded-full bg-bg-muted', className)}
       {...props}
     >
       <ProgressPrimitive.Indicator
         className={cn(
-          'h-full transition-[width]',
+          'h-full rounded-full transition-[width] duration-300',
           tone === 'primary' && 'bg-primary',
           tone === 'warning' && 'bg-warning',
           tone === 'danger' && 'bg-danger',

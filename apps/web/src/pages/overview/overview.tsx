@@ -9,7 +9,7 @@ import { useOverview } from './hooks';
 import { MailboxUsage } from './mailbox-usage';
 import { OnboardingCard } from './onboarding';
 import { RecentFailures } from './recent-failures';
-import { SendsChart } from './sends-chart';
+import { SendsChart, SendsLegend } from './sends-chart';
 import { StatCard, StatCardSkeleton } from './stat-card';
 
 export function useOnboardingStatus(orgId: string) {
@@ -61,7 +61,7 @@ export function OverviewPage() {
           <OnboardingCard status={onboarding.data} />
         ) : null}
 
-        <section aria-label="Key numbers" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <section aria-label="Key numbers" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {overview.isPending ? (
             Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
           ) : overview.isError ? (
@@ -99,15 +99,16 @@ export function OverviewPage() {
         </section>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="items-center">
             <div>
               <CardTitle>Sends, last 30 days</CardTitle>
               <CardDescription>Sent and failed per day, in UTC.</CardDescription>
             </div>
+            <SendsLegend />
           </CardHeader>
           <CardContent>
             {overview.isPending ? (
-              <Skeleton className="h-56 w-full" />
+              <Skeleton className="h-64 w-full" />
             ) : overview.isError ? (
               <ErrorState error={overview.error} onRetry={() => void overview.refetch()} />
             ) : (

@@ -63,7 +63,7 @@ export function BillingSettingsPage() {
               {LIMITS.map((l) => (
                 <div
                   key={l.label}
-                  className="grid gap-1 px-4 py-3 sm:grid-cols-[1fr_auto] sm:gap-4"
+                  className="grid gap-1 px-5 py-3.5 sm:grid-cols-[1fr_auto] sm:gap-4"
                 >
                   <div className="min-w-0">
                     <dt className="text-sm font-medium text-fg">{l.label}</dt>

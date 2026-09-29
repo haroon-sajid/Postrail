@@ -172,7 +172,7 @@ function Editor({ initial, id }: { initial: FormValues; id: string | undefined }
               </CardDescription>
             </div>
           </CardHeader>
-          <form className="space-y-4 p-4" noValidate onSubmit={(e) => void save(e)}>
+          <form className="space-y-5 p-5" noValidate onSubmit={(e) => void save(e)}>
             <div>
               <Label htmlFor="tpl-slug">Slug</Label>
               <Input
@@ -241,7 +241,7 @@ function Editor({ initial, id }: { initial: FormValues; id: string | undefined }
                 </CardDescription>
               </div>
             </CardHeader>
-            <div className="p-4">
+            <div className="p-5">
               <Label htmlFor="tpl-sample" className="sr-only">
                 Sample variables JSON
               </Label>
@@ -272,12 +272,12 @@ function Editor({ initial, id }: { initial: FormValues; id: string | undefined }
                 </CardDescription>
               </div>
             </CardHeader>
-            <div className="p-4">
+            <div className="p-5">
               <iframe
                 title="Template preview"
                 sandbox=""
                 srcDoc={preview.html}
-                className="h-80 w-full rounded border border-border bg-white"
+                className="h-80 w-full rounded-md border border-border bg-white"
               />
             </div>
           </Card>

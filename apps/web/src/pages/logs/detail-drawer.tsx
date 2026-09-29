@@ -45,10 +45,10 @@ function DetailBody({ email }: { email: Email }) {
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <div className="border-b border-border px-5 py-4 pr-12">
-        <div className="flex items-center gap-2">
+      <div className="border-b border-border px-6 py-5 pr-14">
+        <div className="flex items-center gap-2.5">
           <StatusPill status={email.status} />
-          <DialogTitle className="truncate text-base font-semibold">{email.subject}</DialogTitle>
+          <DialogTitle className="truncate text-lg font-semibold">{email.subject}</DialogTitle>
         </div>
         <p className="mt-1 flex items-center gap-1 text-xs text-fg-muted">
           <code className="truncate">{email.id}</code>
@@ -56,7 +56,7 @@ function DetailBody({ email }: { email: Email }) {
         </p>
       </div>
 
-      <div className="flex-1 space-y-5 overflow-y-auto px-5 py-4">
+      <div className="scrollbar-thin flex-1 space-y-6 overflow-y-auto px-6 py-5">
         <dl className="grid grid-cols-[110px_1fr] gap-x-3 gap-y-2 text-sm">
           <Row label="To">
             <span className="flex items-center gap-1">
@@ -93,7 +93,7 @@ function DetailBody({ email }: { email: Email }) {
 
         {email.error ? (
           <div
-            className="rounded border border-danger/30 bg-danger-bg px-3 py-2 text-sm text-danger-fg"
+            className="rounded-md border border-danger/30 bg-danger-bg px-4 py-3 text-sm text-danger-fg"
             role="alert"
           >
             {email.error}
@@ -148,7 +148,7 @@ function DetailBody({ email }: { email: Email }) {
         </section>
       </div>
 
-      <div className="flex items-center justify-end gap-2 border-t border-border px-5 py-3">
+      <div className="flex items-center justify-end gap-2 border-t border-border bg-bg-subtle/60 px-6 py-4">
         <Button
           variant="secondary"
           onClick={() => setConfirming(true)}

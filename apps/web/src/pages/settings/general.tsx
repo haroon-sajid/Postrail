@@ -73,16 +73,16 @@ export function GeneralSettingsPage() {
                 <FieldError message={form.formState.errors.name?.message} />
                 {!canManage ? <FieldHint>Only owners and admins can rename.</FieldHint> : null}
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <p className="mb-1 text-sm font-medium">Organisation id</p>
-                  <Copyable value={org.id} />
-                </div>
-                <div>
-                  <p className="mb-1 text-sm font-medium">Created</p>
-                  <AbsoluteTime value={org.created_at} className="text-sm text-fg-muted" />
-                </div>
-              </div>
+              <dl className="grid gap-x-6 gap-y-3 text-sm sm:grid-cols-[auto_1fr] sm:items-center">
+                <dt className="font-medium text-fg">Organisation id</dt>
+                <dd className="min-w-0">
+                  <Copyable value={org.id} className="max-w-full [&_code]:whitespace-nowrap" />
+                </dd>
+                <dt className="font-medium text-fg">Created</dt>
+                <dd>
+                  <AbsoluteTime value={org.created_at} className="text-fg-muted" />
+                </dd>
+              </dl>
             </CardContent>
             {canManage ? (
               <CardFooter>

@@ -1,3 +1,4 @@
+import { Inbox } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { Overview } from '@/api/types';
 import { orgPath, useOrg } from '@/app/org-context';
@@ -21,6 +22,7 @@ export function MailboxUsage({ usage }: { usage: Usage[] }) {
   if (usage.length === 0) {
     return (
       <EmptyState
+        icon={Inbox}
         title="No mailboxes yet"
         description="Connect a Gmail account to start sending."
         action={
@@ -36,22 +38,21 @@ export function MailboxUsage({ usage }: { usage: Usage[] }) {
       {usage.map((m) => {
         const pct = percent(m.sent_today, m.daily_limit);
         return (
-          <li key={m.id} className="px-4 py-3">
+          <li key={m.id} className="px-5 py-4">
             <div className="flex items-center justify-between gap-3">
-              <span className="min-w-0 truncate text-sm font-medium">{m.email}</span>
-              <span className="flex shrink-0 items-center gap-2">
-                <StatusPill status={m.status} />
-                <span className="tabular text-xs text-fg-muted">
-                  {formatNumber(m.sent_today)} / {formatNumber(m.daily_limit)}
-                </span>
+              <span className="min-w-0 truncate text-sm font-medium text-fg">{m.email}</span>
+              <StatusPill status={m.status} />
+            </div>
+            <div className="mt-2.5 flex items-center gap-3">
+              <Progress
+                value={pct}
+                tone={tone(pct)}
+                aria-label={`${m.email}: ${pct}% of today's limit used`}
+              />
+              <span className="tabular shrink-0 text-xs text-fg-muted">
+                {formatNumber(m.sent_today)} / {formatNumber(m.daily_limit)}
               </span>
             </div>
-            <Progress
-              value={pct}
-              tone={tone(pct)}
-              className="mt-2"
-              aria-label={`${m.email}: ${pct}% of today's limit used`}
-            />
           </li>
         );
       })}

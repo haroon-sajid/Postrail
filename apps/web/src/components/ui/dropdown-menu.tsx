@@ -8,7 +8,7 @@ export const DropdownMenuGroup = Menu.Group;
 
 export function DropdownMenuContent({
   className,
-  sideOffset = 4,
+  sideOffset = 6,
   ...props
 }: Menu.DropdownMenuContentProps) {
   return (
@@ -16,7 +16,7 @@ export function DropdownMenuContent({
       <Menu.Content
         sideOffset={sideOffset}
         className={cn(
-          'z-50 min-w-44 overflow-hidden rounded border border-border bg-bg-elevated p-1 text-sm shadow-md',
+          'motion-menu z-50 min-w-48 overflow-hidden rounded-lg border border-border bg-bg-elevated p-1 text-sm shadow-md',
           className,
         )}
         {...props}
@@ -33,7 +33,7 @@ export function DropdownMenuItem({
   return (
     <Menu.Item
       className={cn(
-        'flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 outline-none data-[highlighted]:bg-bg-muted data-[disabled]:opacity-50 [&_svg]:size-4 [&_svg]:text-fg-muted',
+        'flex cursor-default select-none items-center gap-2.5 rounded-md px-2.5 py-2 outline-none data-[highlighted]:bg-bg-muted data-[disabled]:opacity-50 [&_svg]:size-4 [&_svg]:text-fg-muted',
         destructive && 'text-danger-fg data-[highlighted]:bg-danger-bg [&_svg]:text-danger-fg',
         className,
       )}
@@ -50,14 +50,14 @@ export function DropdownMenuCheckboxItem({
   return (
     <Menu.CheckboxItem
       className={cn(
-        'flex cursor-default select-none items-center gap-2 rounded-sm py-1.5 pl-7 pr-2 outline-none data-[highlighted]:bg-bg-muted',
+        'relative flex cursor-default select-none items-center gap-2 rounded-md py-2 pl-8 pr-2.5 outline-none data-[highlighted]:bg-bg-muted',
         className,
       )}
       {...props}
     >
-      <span className="absolute left-2 flex size-4 items-center justify-center">
+      <span className="absolute left-2.5 flex size-4 items-center justify-center">
         <Menu.ItemIndicator>
-          <Check className="size-3.5" />
+          <Check className="size-3.5 text-primary" />
         </Menu.ItemIndicator>
       </span>
       {children}
@@ -68,7 +68,7 @@ export function DropdownMenuCheckboxItem({
 export function DropdownMenuLabel({ className, ...props }: Menu.DropdownMenuLabelProps) {
   return (
     <Menu.Label
-      className={cn('px-2 py-1.5 text-xs font-medium text-fg-muted', className)}
+      className={cn('px-2.5 py-2 text-xs font-medium text-fg-muted', className)}
       {...props}
     />
   );

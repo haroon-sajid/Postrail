@@ -58,13 +58,13 @@ export function FiltersBar({ filters, mailboxes, onChange }: FiltersBarProps) {
         </Label>
         <div className="relative">
           <Search
-            className="pointer-events-none absolute left-2.5 top-2 size-4 text-fg-muted"
+            className="pointer-events-none absolute left-3 top-2.5 size-4 text-fg-muted"
             aria-hidden
           />
           <Input
             id="log-search"
             placeholder="Search recipient or subject"
-            className="pl-8"
+            className="pl-9"
             value={q}
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={(e) => {

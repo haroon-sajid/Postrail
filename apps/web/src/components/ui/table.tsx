@@ -3,14 +3,14 @@ import { cn } from '@/lib/utils';
 
 export function Table({ className, ...props }: HTMLAttributes<HTMLTableElement>) {
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="scrollbar-thin w-full overflow-x-auto">
       <table className={cn('w-full caption-bottom text-sm', className)} {...props} />
     </div>
   );
 }
 
 export function TableHeader(props: HTMLAttributes<HTMLTableSectionElement>) {
-  return <thead className="[&_tr]:border-b [&_tr]:border-border" {...props} />;
+  return <thead className="bg-bg-subtle/70 [&_tr]:border-b [&_tr]:border-border" {...props} />;
 }
 
 export function TableBody(props: HTMLAttributes<HTMLTableSectionElement>) {
@@ -21,7 +21,7 @@ export function TableRow({ className, ...props }: HTMLAttributes<HTMLTableRowEle
   return (
     <tr
       className={cn(
-        'border-b border-border transition-colors data-[clickable]:cursor-pointer data-[clickable]:hover:bg-bg-subtle data-[state=selected]:bg-bg-muted',
+        'border-b border-border transition-colors data-[clickable]:cursor-pointer data-[clickable]:hover:bg-bg-subtle data-[state=selected]:bg-primary/5',
         className,
       )}
       {...props}
@@ -33,7 +33,7 @@ export function TableHead({ className, ...props }: ThHTMLAttributes<HTMLTableCel
   return (
     <th
       className={cn(
-        'h-9 px-3 text-left align-middle text-xs font-medium uppercase tracking-wide text-fg-muted [&:has([role=checkbox])]:pr-0',
+        'h-10 whitespace-nowrap px-4 text-left align-middle text-xs font-medium text-fg-muted first:pl-5 last:pr-5 [&:has([role=checkbox])]:pr-0',
         className,
       )}
       {...props}
@@ -42,5 +42,10 @@ export function TableHead({ className, ...props }: ThHTMLAttributes<HTMLTableCel
 }
 
 export function TableCell({ className, ...props }: TdHTMLAttributes<HTMLTableCellElement>) {
-  return <td className={cn('h-10 px-3 align-middle text-sm', className)} {...props} />;
+  return (
+    <td
+      className={cn('h-12 px-4 align-middle text-sm first:pl-5 last:pr-5', className)}
+      {...props}
+    />
+  );
 }

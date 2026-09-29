@@ -1,10 +1,11 @@
-import { Check, Circle } from 'lucide-react';
+import { ArrowRight, Check, Circle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { API_ORIGIN } from '@/api/client';
 import { orgPath, useOrg } from '@/app/org-context';
 import { CodeBlock } from '@/components/code-block';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
@@ -45,36 +46,41 @@ export function OnboardingCard({ status }: { status: OnboardingStatus }) {
   const steps = [
     {
       done: status.hasMailbox,
+      current: !status.hasMailbox,
       title: 'Connect a mailbox',
-      body: 'Emails go out through your own Gmail account.',
+      body: 'Email goes out through your own Gmail account, under your name.',
       action: (
         <Button asChild variant={status.hasMailbox ? 'secondary' : 'primary'} size="sm">
           <Link to={orgPath(org.id, '/mailboxes')}>
             {status.hasMailbox ? 'Manage mailboxes' : 'Connect Gmail'}
+            {!status.hasMailbox ? <ArrowRight /> : null}
           </Link>
         </Button>
       ),
     },
     {
       done: status.hasApiKey,
+      current: status.hasMailbox && !status.hasApiKey,
       title: 'Create an API key',
-      body: 'Your app authenticates with a bearer key.',
+      body: 'Your application authenticates every request with a bearer key.',
       action: (
         <Button
           asChild
-          variant={status.hasApiKey || !status.hasMailbox ? 'secondary' : 'primary'}
+          variant={status.hasMailbox && !status.hasApiKey ? 'primary' : 'secondary'}
           size="sm"
         >
           <Link to={orgPath(org.id, '/api-keys')}>
             {status.hasApiKey ? 'View keys' : 'Create key'}
+            {status.hasMailbox && !status.hasApiKey ? <ArrowRight /> : null}
           </Link>
         </Button>
       ),
     },
     {
       done: status.hasSent,
+      current: status.hasMailbox && status.hasApiKey && !status.hasSent,
       title: 'Send your first email',
-      body: 'Replace the key placeholder and run one of these.',
+      body: 'Paste your key into the snippet below and run it.',
       action: null,
     },
   ];
@@ -82,54 +88,73 @@ export function OnboardingCard({ status }: { status: OnboardingStatus }) {
 
   return (
     <Card data-testid="onboarding">
-      <CardHeader>
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b border-border px-5 py-4">
         <div>
-          <CardTitle>Get set up</CardTitle>
-          <CardDescription>
-            {doneCount} of {steps.length} done
-          </CardDescription>
+          <h2 className="text-[15px] font-semibold leading-6 text-fg">Get started</h2>
+          <p className="mt-0.5 text-sm text-fg-muted">
+            Three steps to your first email. Usually under five minutes.
+          </p>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <ol className="space-y-3">
-          {steps.map((step, i) => (
-            <li key={step.title} className="flex items-start gap-3">
+        <div className="flex w-full items-center gap-3 sm:w-56">
+          <Progress
+            value={(doneCount / steps.length) * 100}
+            aria-label={`${doneCount} of ${steps.length} steps done`}
+          />
+          <span className="tabular shrink-0 text-xs font-medium text-fg-muted">
+            {doneCount}/{steps.length}
+          </span>
+        </div>
+      </div>
+
+      <ol className="grid divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0">
+        {steps.map((step, i) => (
+          <li
+            key={step.title}
+            className={cn('flex flex-col gap-3 p-5', step.current && 'bg-primary/[0.035]')}
+          >
+            <div className="flex items-center gap-3">
               <span
                 className={cn(
-                  'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border text-[11px] font-semibold',
+                  'flex size-7 shrink-0 items-center justify-center rounded-full border text-xs font-semibold',
                   step.done
                     ? 'border-primary bg-primary text-primary-fg'
-                    : 'border-border-strong text-fg-muted',
+                    : step.current
+                      ? 'border-primary text-primary'
+                      : 'border-border-strong text-fg-muted',
                 )}
                 aria-label={step.done ? 'Done' : `Step ${i + 1}`}
               >
-                {step.done ? <Check className="size-3" strokeWidth={3} /> : i + 1}
+                {step.done ? <Check className="size-3.5" strokeWidth={3} /> : i + 1}
               </span>
-              <div className="min-w-0 flex-1">
-                <p className={cn('text-sm font-medium', step.done && 'text-fg-muted line-through')}>
-                  {step.title}
-                </p>
-                <p className="text-sm text-fg-muted">{step.body}</p>
-              </div>
-              {step.action}
-            </li>
-          ))}
-        </ol>
-        {!status.hasSent ? (
+              <p className={cn('text-sm font-semibold', step.done ? 'text-fg-muted' : 'text-fg')}>
+                {step.title}
+              </p>
+            </div>
+            <p className="text-sm leading-5 text-fg-muted">{step.body}</p>
+            {step.action ? <div className="mt-auto pt-1">{step.action}</div> : null}
+          </li>
+        ))}
+      </ol>
+
+      {!status.hasSent ? (
+        <div className="border-t border-border bg-bg-subtle/60 p-5">
           <Tabs defaultValue="curl">
-            <TabsList>
-              <TabsTrigger value="curl">curl</TabsTrigger>
-              <TabsTrigger value="node">Node</TabsTrigger>
-            </TabsList>
-            <TabsContent value="curl" className="mt-2">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <p className="text-sm font-medium text-fg">Send a test message</p>
+              <TabsList>
+                <TabsTrigger value="curl">curl</TabsTrigger>
+                <TabsTrigger value="node">Node</TabsTrigger>
+              </TabsList>
+            </div>
+            <TabsContent value="curl">
               <CodeBlock code={curlSnippet()} title="curl" />
             </TabsContent>
-            <TabsContent value="node" className="mt-2">
+            <TabsContent value="node">
               <CodeBlock code={nodeSnippet()} title="node" />
             </TabsContent>
           </Tabs>
-        ) : null}
-      </CardContent>
+        </div>
+      ) : null}
     </Card>
   );
 }

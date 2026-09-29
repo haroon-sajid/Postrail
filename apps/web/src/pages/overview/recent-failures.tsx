@@ -20,8 +20,8 @@ export function RecentFailures({ failures }: { failures: Email[] }) {
     return (
       <EmptyState
         icon={CheckCircle2}
-        title="No failures recently"
-        description="Nothing has failed in the last few hundred sends."
+        title="No recent failures"
+        description="Everything in the last few hundred sends went through."
       />
     );
   }
@@ -38,8 +38,11 @@ export function RecentFailures({ failures }: { failures: Email[] }) {
       <TableBody>
         {failures.map((f) => (
           <TableRow key={f.id}>
-            <TableCell className="max-w-48 truncate">
-              <Link to={orgPath(org.id, `/logs?m=${f.id}`)} className="text-fg hover:underline">
+            <TableCell className="max-w-48 truncate font-medium">
+              <Link
+                to={orgPath(org.id, `/logs?m=${f.id}`)}
+                className="text-fg underline-offset-4 hover:underline"
+              >
                 {f.to}
               </Link>
             </TableCell>
