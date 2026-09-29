@@ -10,6 +10,7 @@ import { AppError } from '../lib/errors';
 import { type ApiKeyListRow, type ApiKeyRecord, type ApiKeyStore } from '../modules/api-keys/repo';
 import { type AuditInput } from '../modules/audit/service';
 import {
+  type EmailListFilters,
   type EmailStore,
   type ListCursor,
   type MessageBodyRow,
@@ -587,13 +588,20 @@ export function inMemoryEmailStore(): InMemoryEmailStore {
 
     get: (orgId, id) => Promise.resolve(find(orgId, id)),
 
-    list: (orgId, limit, cursor?: ListCursor) => {
+    list: (orgId, limit, cursor?: ListCursor, filters: EmailListFilters = {}) => {
       const after = (r: MessageRow) =>
         !cursor ||
         r.createdAt < cursor.createdAt ||
         (r.createdAt.getTime() === cursor.createdAt.getTime() && r.id < cursor.id);
+      const q = filters.q?.toLowerCase();
+      const matches = (r: MessageRow) =>
+        (!filters.status || r.status === filters.status) &&
+        (!filters.mailboxId || r.mailboxId === filters.mailboxId) &&
+        (!filters.from || r.createdAt >= filters.from) &&
+        (!filters.to || r.createdAt < filters.to) &&
+        (!q || r.toEmail.toLowerCase().includes(q) || r.subject.toLowerCase().includes(q));
       const rows = store.rows
-        .filter((r) => r.orgId === orgId && after(r))
+        .filter((r) => r.orgId === orgId && after(r) && matches(r))
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime() || (b.id < a.id ? -1 : 1))
         .slice(0, limit);
       return Promise.resolve(rows);

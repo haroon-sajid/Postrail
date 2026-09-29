@@ -325,6 +325,37 @@ describe('POST /v1/emails/batch', () => {
   });
 });
 
+describe('GET /v1/emails filters', () => {
+  it('narrows by status, mailbox, search text and date range', async () => {
+    const t = setup();
+    const a = t.mailboxStore.add(ORG_A, { email: 'a@example.com' });
+    await t.post('/v1/emails', { ...basic, to: 'alice@example.org', subject: 'Invoice 12' });
+    await t.post('/v1/emails', { ...basic, to: 'bob@example.org', subject: 'Welcome' });
+    await t.queue.drain();
+    t.sendRaw.mockRejectedValueOnce(new GoogleApiError(400, 'gmail.send'));
+    await t.post('/v1/emails', { ...basic, to: 'carol@example.org', subject: 'Invoice 13' });
+    await t.queue.drain();
+
+    const list = async (query: string) =>
+      emailListResponseSchema.parse(
+        await (await t.app.request(`/v1/emails?${query}`, { headers: t.headers })).json(),
+      ).data;
+
+    expect((await list('status=failed')).map((e) => e.to)).toEqual(['carol@example.org']);
+    expect((await list('q=invoice')).map((e) => e.subject).sort()).toEqual([
+      'Invoice 12',
+      'Invoice 13',
+    ]);
+    expect((await list('q=BOB')).map((e) => e.to)).toEqual(['bob@example.org']);
+    expect((await list(`mailbox_id=${a.id}`)).length).toBe(3);
+    expect((await list('from=2099-01-01T00:00:00Z')).length).toBe(0);
+    expect((await list('to=2000-01-01T00:00:00Z')).length).toBe(0);
+    expect((await t.app.request('/v1/emails?status=nope', { headers: t.headers })).status).toBe(
+      400,
+    );
+  });
+});
+
 describe('GET /v1/emails', () => {
   it('returns one email by id, scoped to the org', async () => {
     const t = setup();

@@ -1,5 +1,10 @@
 import { type Db, messageBodies, messages, suppressions, templates, withOrg } from '@postrail/db';
-import { and, desc, eq, lt, or, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, ilike, lt, or, sql } from 'drizzle-orm';
+
+/** Users search literal text; `%` and `_` in it must not become wildcards. */
+function escapeLike(value: string): string {
+  return value.replace(/[\\%_]/g, (ch) => `\\${ch}`);
+}
 
 export type MessageRow = typeof messages.$inferSelect;
 export type MessageBodyRow = typeof messageBodies.$inferSelect;
@@ -26,6 +31,15 @@ export interface ListCursor {
   id: string;
 }
 
+export interface EmailListFilters {
+  status?: MessageRow['status'];
+  mailboxId?: string;
+  from?: Date;
+  to?: Date;
+  /** Substring, case-insensitive, against to_email and subject. */
+  q?: string;
+}
+
 export interface EmailStore {
   findByIdempotencyKey: (orgId: string, key: string) => Promise<MessageRow | undefined>;
   /** `created: false` means another request with the same idempotency key got there first. */
@@ -48,8 +62,13 @@ export interface EmailStore {
   /** Back to queued with the last error kept for visibility. */
   scheduleRetry: (orgId: string, id: string, error: string, now: Date) => Promise<void>;
   get: (orgId: string, id: string) => Promise<MessageRow | undefined>;
-  /** Newest first. Returns up to `limit` rows strictly after `cursor`. */
-  list: (orgId: string, limit: number, cursor?: ListCursor) => Promise<MessageRow[]>;
+  /** Newest first. Returns up to `limit` rows strictly after `cursor`, matching `filters`. */
+  list: (
+    orgId: string,
+    limit: number,
+    cursor?: ListCursor,
+    filters?: EmailListFilters,
+  ) => Promise<MessageRow[]>;
   isSuppressed: (orgId: string, email: string) => Promise<boolean>;
   findTemplate: (orgId: string, slug: string) => Promise<TemplateRow | undefined>;
 }
@@ -150,7 +169,7 @@ export function createEmailStore(db: Db): EmailStore {
         return row;
       }),
 
-    list: (orgId, limit, cursor) =>
+    list: (orgId, limit, cursor, filters = {}) =>
       withOrg(db, orgId, (tx) =>
         tx
           .select()
@@ -163,6 +182,16 @@ export function createEmailStore(db: Db): EmailStore {
                 ? or(
                     lt(messages.createdAt, cursor.createdAt),
                     and(eq(messages.createdAt, cursor.createdAt), lt(messages.id, cursor.id)),
+                  )
+                : undefined,
+              filters.status ? eq(messages.status, filters.status) : undefined,
+              filters.mailboxId ? eq(messages.mailboxId, filters.mailboxId) : undefined,
+              filters.from ? gte(messages.createdAt, filters.from) : undefined,
+              filters.to ? lt(messages.createdAt, filters.to) : undefined,
+              filters.q
+                ? or(
+                    ilike(messages.toEmail, `%${escapeLike(filters.q)}%`),
+                    ilike(messages.subject, `%${escapeLike(filters.q)}%`),
                   )
                 : undefined,
             ),

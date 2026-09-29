@@ -96,6 +96,14 @@ export type Email = z.infer<typeof emailSchema>;
 export const emailListQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
   cursor: z.string().min(1).optional(),
+  status: z.enum(MESSAGE_STATUSES).optional(),
+  mailbox_id: uuidSchema.optional(),
+  /** Inclusive lower bound on created_at. */
+  from: z.iso.datetime({ offset: true }).optional(),
+  /** Exclusive upper bound on created_at. */
+  to: z.iso.datetime({ offset: true }).optional(),
+  /** Case-insensitive substring match on the recipient or the subject. */
+  q: z.string().trim().min(1).max(200).optional(),
 });
 export type EmailListQuery = z.infer<typeof emailListQuerySchema>;
 

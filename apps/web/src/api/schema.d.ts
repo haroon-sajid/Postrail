@@ -3369,6 +3369,11 @@ export interface paths {
                 query?: {
                     limit?: number;
                     cursor?: string;
+                    status?: "queued" | "sending" | "sent" | "failed";
+                    mailbox_id?: string;
+                    from?: string;
+                    to?: string;
+                    q?: string;
                 };
                 header?: never;
                 path?: never;
@@ -8348,6 +8353,11 @@ export interface paths {
                 query?: {
                     limit?: number;
                     cursor?: string;
+                    status?: "queued" | "sending" | "sent" | "failed";
+                    mailbox_id?: string;
+                    from?: string;
+                    to?: string;
+                    q?: string;
                 };
                 header?: never;
                 path: {

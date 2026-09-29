@@ -156,7 +156,13 @@ export function createEmailService(deps: EmailServiceDeps): EmailService {
 
     async list(auth, query) {
       const cursor = query.cursor ? decodeCursor(query.cursor) : undefined;
-      const rows = await messages.list(auth.orgId, query.limit + 1, cursor);
+      const rows = await messages.list(auth.orgId, query.limit + 1, cursor, {
+        ...(query.status ? { status: query.status } : {}),
+        ...(query.mailbox_id ? { mailboxId: query.mailbox_id } : {}),
+        ...(query.from ? { from: new Date(query.from) } : {}),
+        ...(query.to ? { to: new Date(query.to) } : {}),
+        ...(query.q ? { q: query.q } : {}),
+      });
       const page = rows.slice(0, query.limit);
       const last = page.at(-1);
       const nextCursor = rows.length > query.limit && last ? encodeCursor(last) : null;

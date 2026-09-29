@@ -4,6 +4,7 @@ import { AppShell } from './shell';
 import { FullPageSkeleton } from './shell-skeleton';
 import { InvitePage } from '@/pages/auth/invite';
 import { LoginPage } from '@/pages/auth/login';
+import { LogsPage } from '@/pages/logs/logs';
 import { NotFoundPage } from '@/pages/not-found';
 import { OverviewPage } from '@/pages/overview/overview';
 
@@ -39,6 +40,7 @@ export const router = createBrowserRouter([
         element: <AppShell />,
         children: [
           { index: true, element: <OverviewPage /> },
+          { path: 'logs', element: <LogsPage /> },
           { path: '*', element: <NotFoundPage /> },
         ],
       },
