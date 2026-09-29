@@ -80,7 +80,8 @@ describe('email worker retry policy', () => {
 
     expect(t.emailStore.rows[0]).toMatchObject({ status: 'failed', attempts: MAX_SEND_ATTEMPTS });
     expect(t.emailStore.rows[0]?.error).toMatch(/gave up after 5 attempts/);
-    expect(t.emailStore.bodies.has(id)).toBe(false);
+    // Bodies are kept after a terminal state so the dashboard can preview and resend.
+    expect(t.emailStore.bodies.has(id)).toBe(true);
     expect(t.queue.size).toBe(0);
     expect(t.sendRaw).toHaveBeenCalledTimes(MAX_SEND_ATTEMPTS);
     expect(t.mailbox.sentToday).toBe(0);

@@ -1,3 +1,4 @@
+import { type ImportSuppressionsRequest } from '@postrail/shared';
 import { type AuthContext } from '../../lib/context';
 import { AppError } from '../../lib/errors';
 import { type SuppressionRow, type SuppressionStore } from './repo';
@@ -10,6 +11,10 @@ export interface SuppressionService {
   list: (orgId: string) => Promise<Suppression[]>;
   get: (orgId: string, email: string) => Promise<Suppression>;
   remove: (auth: AuthContext, email: string) => Promise<void>;
+  importMany: (
+    auth: AuthContext,
+    input: ImportSuppressionsRequest,
+  ) => Promise<{ added: number; skipped: number }>;
 }
 
 export function createSuppressionService(store: SuppressionStore): SuppressionService {
@@ -31,6 +36,12 @@ export function createSuppressionService(store: SuppressionStore): SuppressionSe
     async remove(auth, email) {
       if (!(await store.remove(auth.orgId, normalize(email))))
         throw AppError.notFound('suppression');
+    },
+
+    async importMany(auth, input) {
+      const unique = [...new Set(input.emails.map(normalize))];
+      const added = await store.upsertMany(auth.orgId, unique, input.reason);
+      return { added, skipped: unique.length - added };
     },
   };
 }

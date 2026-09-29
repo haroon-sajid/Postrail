@@ -9,6 +9,8 @@ export interface SuppressionStore {
   list: (orgId: string, limit: number) => Promise<SuppressionRow[]>;
   get: (orgId: string, email: string) => Promise<SuppressionRow | undefined>;
   remove: (orgId: string, email: string) => Promise<boolean>;
+  /** Inserts the new ones, skips the ones already listed. Returns how many were added. */
+  upsertMany: (orgId: string, emails: string[], reason: string) => Promise<number>;
 }
 
 export function createSuppressionStore(db: Db): SuppressionStore {
@@ -48,6 +50,17 @@ export function createSuppressionStore(db: Db): SuppressionStore {
       withOrg(db, orgId, async (tx) => {
         const [row] = await tx.select().from(suppressions).where(scoped(orgId, email)).limit(1);
         return row;
+      }),
+
+    upsertMany: (orgId, emails, reason) =>
+      withOrg(db, orgId, async (tx) => {
+        if (emails.length === 0) return 0;
+        const rows = await tx
+          .insert(suppressions)
+          .values(emails.map((email) => ({ orgId, email, reason })))
+          .onConflictDoNothing({ target: [suppressions.orgId, suppressions.email] })
+          .returning({ email: suppressions.email });
+        return rows.length;
       }),
 
     remove: (orgId, email) =>

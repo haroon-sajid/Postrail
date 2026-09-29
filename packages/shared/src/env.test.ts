@@ -11,6 +11,7 @@ const REQUIRED = {
   GOOGLE_CLIENT_ID: 'client-id',
   GOOGLE_CLIENT_SECRET: 'client-secret',
   INTERNAL_SECRET: 'local-internal-secret-0123',
+  BETTER_AUTH_SECRET: 'better-auth-secret-0123456789abcdef',
 };
 
 describe('loadEnv', () => {
@@ -23,7 +24,15 @@ describe('loadEnv', () => {
       LOG_LEVEL: 'info',
       GOOGLE_REDIRECT_URI: 'http://localhost:3000/api/google/callback',
       QUEUE_DRIVER: 'local',
+      API_ORIGIN: 'http://localhost:8080',
+      DASHBOARD_ORIGIN: 'http://localhost:5173',
     });
+  });
+
+  it('requires a long BETTER_AUTH_SECRET', () => {
+    expect(() => loadEnv({ ...REQUIRED, BETTER_AUTH_SECRET: 'short' })).toThrow(
+      /BETTER_AUTH_SECRET/,
+    );
   });
 
   it('requires INTERNAL_SECRET for the local queue driver', () => {

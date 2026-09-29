@@ -41,9 +41,9 @@ export interface EmailStore {
     now: Date,
   ) => Promise<MessageRow | undefined>;
   getBody: (orgId: string, id: string) => Promise<MessageBodyRow | undefined>;
-  /** Terminal: records the provider id and drops the body. */
+  /** Terminal: records the provider id. The body is kept for preview and resend (ADR 0007). */
   markSent: (orgId: string, id: string, providerMessageId: string, sentAt: Date) => Promise<void>;
-  /** Terminal: records the reason and drops the body. */
+  /** Terminal: records the reason. */
   markFailed: (orgId: string, id: string, error: string) => Promise<void>;
   /** Back to queued with the last error kept for visibility. */
   scheduleRetry: (orgId: string, id: string, error: string, now: Date) => Promise<void>;
@@ -129,13 +129,11 @@ export function createEmailStore(db: Db): EmailStore {
           .update(messages)
           .set({ status: 'sent', providerMessageId, sentAt, error: null })
           .where(scoped(orgId, id));
-        await tx.delete(messageBodies).where(eq(messageBodies.messageId, id));
       }),
 
     markFailed: (orgId, id, error) =>
       withOrg(db, orgId, async (tx) => {
         await tx.update(messages).set({ status: 'failed', error }).where(scoped(orgId, id));
-        await tx.delete(messageBodies).where(eq(messageBodies.messageId, id));
       }),
 
     scheduleRetry: (orgId, id, error, now) =>

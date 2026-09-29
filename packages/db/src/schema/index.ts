@@ -1,6 +1,7 @@
 export * from './api-keys';
 export * from './audit-log';
 export * from './enums';
+export * from './invites';
 export * from './mailboxes';
 export * from './members';
 export * from './message-bodies';

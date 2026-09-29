@@ -9,17 +9,24 @@ import {
   resolveQueueConfig,
 } from '@postrail/shared';
 import { createApp } from './app';
+import { createAuthServer, sessionResolverFor } from './lib/auth-server';
 import { type InternalAuth, oidcAuth, sharedSecretAuth } from './lib/internal-auth';
 import { createLogger, type Logger } from './lib/logger';
 import { InMemoryTokenBucket } from './lib/rate-limit';
+import { createSystemMailer } from './lib/system-mailer';
 import { resolveVersion } from './lib/version';
 import { createApiKeyStore } from './modules/api-keys/repo';
 import { createApiKeyService } from './modules/api-keys/service';
+import { createAuditStore } from './modules/audit/repo';
 import { createEmailStore } from './modules/emails/repo';
 import { createEmailService } from './modules/emails/service';
 import { createEmailWorker } from './modules/emails/worker';
 import { createMailboxStore } from './modules/mailboxes/repo';
 import { createMailboxService } from './modules/mailboxes/service';
+import { createOrgStore } from './modules/orgs/repo';
+import { createOrgService } from './modules/orgs/service';
+import { createOverviewStore } from './modules/overview/repo';
+import { createOverviewService } from './modules/overview/service';
 import { createSuppressionStore } from './modules/suppressions/repo';
 import { createSuppressionService } from './modules/suppressions/service';
 import { createTemplateStore } from './modules/templates/repo';
@@ -70,10 +77,12 @@ function main(): void {
   const cipher = createTokenCipher(env.TOKEN_ENCRYPTION_KEY);
 
   const db = createDb(env.DATABASE_URL);
+  const audit = createAuditStore(db);
   const mailboxStore = createMailboxStore(db);
   const emailStore = createEmailStore(db);
   const suppressionStore = createSuppressionStore(db);
   const webhookStore = createWebhookStore(db);
+  const orgStore = createOrgStore(db);
 
   const { queue, internalAuth, local } = buildQueue(queueConfig, logger);
 
@@ -86,8 +95,10 @@ function main(): void {
     }),
     cipher,
     stateSecret: env.TOKEN_ENCRYPTION_KEY,
+    audit,
   });
-  const webhooks = createWebhookService({ store: webhookStore, cipher, queue });
+  const emails = createEmailService({ messages: emailStore, mailboxes: mailboxStore, queue });
+  const webhooks = createWebhookService({ store: webhookStore, cipher, queue, audit });
   const webhookWorker = createWebhookWorker({ store: webhookStore, cipher, queue, logger });
   const worker = createEmailWorker({
     messages: emailStore,
@@ -103,19 +114,50 @@ function main(): void {
     job.kind === 'send-email' ? worker.processSendJob(job) : webhookWorker.processDelivery(job),
   );
 
+  const mailer = createSystemMailer({
+    mailboxes: mailboxStore,
+    emails,
+    systemEmail: env.SYSTEM_MAILBOX_EMAIL,
+  });
+  const orgs = createOrgService({
+    store: orgStore,
+    audit,
+    mailer,
+    dashboardOrigin: env.DASHBOARD_ORIGIN,
+  });
+
+  const auth = createAuthServer({
+    db,
+    env,
+    sendMagicLink: (email, url) =>
+      mailer.send({
+        to: email,
+        subject: 'Sign in to Postrail',
+        text: `Open this link to sign in: ${url}\n\nIt expires in 10 minutes. If you did not request it, ignore this email.`,
+        html: `<p><a href="${url}">Sign in to Postrail</a></p><p>The link expires in 10 minutes. If you did not request it, ignore this email.</p>`,
+      }),
+    onUserCreated: (user) => orgs.ensureDefaultOrg(user),
+  });
+
   const app = createApp({
     version,
     logger,
-    apiKeys: createApiKeyService({ store: createApiKeyStore(db) }),
+    apiKeys: createApiKeyService({ store: createApiKeyStore(db), audit }),
     mailboxes,
-    emails: createEmailService({ messages: emailStore, mailboxes: mailboxStore, queue }),
-    templates: createTemplateService(createTemplateStore(db)),
+    emails,
+    templates: createTemplateService({ store: createTemplateStore(db), emails }),
     suppressions: createSuppressionService(suppressionStore),
     webhooks,
+    orgs,
+    orgStore,
+    overview: createOverviewService(createOverviewStore(db)),
     worker,
     webhookWorker,
     rateLimiter: new InMemoryTokenBucket(),
     internalAuth,
+    sessionResolver: sessionResolverFor(auth),
+    authHandler: (request) => auth.handler(request),
+    dashboardOrigin: env.DASHBOARD_ORIGIN,
   });
 
   serve({ fetch: app.fetch, port: env.PORT }, (info) => {

@@ -77,13 +77,13 @@ export class InMemoryTokenBucket implements RateLimiter {
   }
 }
 
-/** Mount after `requireApiKey`. Budgets are per API key, not per org. */
+/** Mount after auth. Budgets are per API key, or per user for dashboard sessions. */
 export function rateLimit(limiter: RateLimiter): MiddlewareHandler<AppEnv> {
   return async (c, next) => {
-    const auth = c.var.auth;
-    if (!auth) return next();
+    const key = c.var.auth?.apiKeyId ?? c.var.user?.id;
+    if (!key) return next();
 
-    const decision = await limiter.take(auth.apiKeyId);
+    const decision = await limiter.take(key);
     c.header('RateLimit-Limit', String(decision.limit));
     c.header('RateLimit-Remaining', String(decision.remaining));
     if (!decision.allowed) {

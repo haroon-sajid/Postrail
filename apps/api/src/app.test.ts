@@ -16,25 +16,33 @@ describe('OpenAPI', () => {
       components: { securitySchemes: Record<string, unknown> };
     };
     expect(doc.openapi).toBe('3.1.0');
-    // Internal endpoints are deliberately absent.
-    expect(Object.keys(doc.paths).sort()).toEqual([
-      '/v1/emails',
-      '/v1/emails/batch',
-      '/v1/emails/{id}',
-      '/v1/mailboxes',
-      '/v1/mailboxes/{id}',
-      '/v1/suppressions',
-      '/v1/suppressions/{email}',
-      '/v1/templates',
-      '/v1/templates/{id}',
-      '/v1/webhooks',
-      '/v1/webhooks/{id}',
-      '/v1/webhooks/{id}/deliveries',
-    ]);
+    const paths = Object.keys(doc.paths);
+    // Every resource is mounted for API keys and for dashboard sessions; internal never.
+    expect(paths).toEqual(
+      expect.arrayContaining([
+        '/v1/emails',
+        '/v1/emails/{id}',
+        '/v1/mailboxes/{id}',
+        '/v1/webhooks/{id}/deliveries',
+        '/app/me',
+        '/app/orgs',
+        '/app/orgs/{orgId}/emails',
+        '/app/orgs/{orgId}/api-keys',
+        '/app/orgs/{orgId}/members/{userId}',
+        '/app/orgs/{orgId}/overview',
+      ]),
+    );
+    expect(paths.some((p) => p.startsWith('/internal'))).toBe(false);
+    expect(paths.some((p) => p.startsWith('/api/'))).toBe(false);
     expect(doc.paths['/v1/emails']?.post?.security).toEqual([{ bearerAuth: [] }]);
+    expect(doc.paths['/app/orgs/{orgId}/emails']?.post?.security).toEqual([{ cookieAuth: [] }]);
     expect(doc.components.securitySchemes.bearerAuth).toMatchObject({
       type: 'http',
       scheme: 'bearer',
+    });
+    expect(doc.components.securitySchemes.cookieAuth).toMatchObject({
+      type: 'apiKey',
+      in: 'cookie',
     });
   });
 

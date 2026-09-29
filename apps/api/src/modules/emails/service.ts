@@ -4,7 +4,7 @@ import { AppError } from '../../lib/errors';
 import { type MailboxRow } from '../../providers/types';
 import { type Queue } from '../../queue/types';
 import { type MailboxStore } from '../mailboxes/repo';
-import { type EmailStore, type ListCursor, type MessageRow } from './repo';
+import { type EmailStore, type ListCursor, type MessageRow, type NewMessage } from './repo';
 import {
   type BatchEmailItem,
   type BatchItemResult,
@@ -37,6 +37,13 @@ export interface EmailService {
     auth: AuthContext,
     query: EmailListQuery,
   ) => Promise<{ data: Email[]; nextCursor: string | null }>;
+  /** Queues a fresh copy of an earlier message (same recipient and content). */
+  resend: (auth: AuthContext, id: string) => Promise<SendEmailResponse>;
+  /** Rendered content for the dashboard preview. Null when the body is no longer stored. */
+  getBody: (
+    auth: AuthContext,
+    id: string,
+  ) => Promise<{ html: string | null; text: string | null } | null>;
 }
 
 interface ResolvedContent {
@@ -84,6 +91,20 @@ export function createEmailService(deps: EmailServiceDeps): EmailService {
     );
   }
 
+  /** Inserts and enqueues; the caller has already validated content and picked a mailbox. */
+  async function queueMessage(orgId: string, input: NewMessage): Promise<SendOutcome> {
+    const { row, created } = await messages.insert(orgId, input);
+    if (!created) return { id: row.id, status: row.status, replayed: true };
+    try {
+      await queue.enqueue({ kind: 'send-email', orgId, messageId: row.id }, { taskId: row.id });
+    } catch (error) {
+      // Without a task the row would sit in `queued` forever; make the failure visible.
+      await messages.markFailed(orgId, row.id, 'could not enqueue for delivery');
+      throw error;
+    }
+    return { id: row.id, status: 'queued', replayed: false };
+  }
+
   const service: EmailService = {
     async send(auth, input, idempotencyKey) {
       const { orgId } = auth;
@@ -96,7 +117,7 @@ export function createEmailService(deps: EmailServiceDeps): EmailService {
       if (await messages.isSuppressed(orgId, input.to)) throw AppError.suppressed(input.to);
       const mailbox = await pickMailbox(orgId, input.from);
 
-      const { row, created } = await messages.insert(orgId, {
+      return queueMessage(orgId, {
         mailboxId: mailbox.id,
         idempotencyKey: idempotencyKey ?? null,
         toEmail: input.to,
@@ -109,16 +130,6 @@ export function createEmailService(deps: EmailServiceDeps): EmailService {
           headers: input.headers ?? null,
         },
       });
-      if (!created) return { id: row.id, status: row.status, replayed: true };
-
-      try {
-        await queue.enqueue({ kind: 'send-email', orgId, messageId: row.id }, { taskId: row.id });
-      } catch (error) {
-        // Without a task the row would sit in `queued` forever; make the failure visible.
-        await messages.markFailed(orgId, row.id, 'could not enqueue for delivery');
-        throw error;
-      }
-      return { id: row.id, status: 'queued', replayed: false };
     },
 
     async sendBatch(auth, items) {
@@ -150,6 +161,36 @@ export function createEmailService(deps: EmailServiceDeps): EmailService {
       const last = page.at(-1);
       const nextCursor = rows.length > query.limit && last ? encodeCursor(last) : null;
       return { data: page.map(toEmail), nextCursor };
+    },
+
+    async resend(auth, id) {
+      const { orgId } = auth;
+      const original = await messages.get(orgId, id);
+      if (!original) throw AppError.notFound('email');
+      const body = await messages.getBody(orgId, id);
+      if (!body) throw AppError.validation('the original content is no longer stored');
+      if (await messages.isSuppressed(orgId, original.toEmail))
+        throw AppError.suppressed(original.toEmail);
+      // Prefer the same mailbox; fall back to any that can send if it is gone or paused.
+      const mailbox =
+        (await mailboxes.pickForSend(orgId, original.fromEmail)) ??
+        (await pickMailbox(orgId, undefined));
+      const outcome = await queueMessage(orgId, {
+        mailboxId: mailbox.id,
+        idempotencyKey: null,
+        toEmail: original.toEmail,
+        fromEmail: mailbox.email,
+        subject: original.subject,
+        body: { html: body.html, text: body.text, replyTo: body.replyTo, headers: body.headers },
+      });
+      return { id: outcome.id, status: outcome.status };
+    },
+
+    async getBody(auth, id) {
+      const row = await messages.get(auth.orgId, id);
+      if (!row) throw AppError.notFound('email');
+      const body = await messages.getBody(auth.orgId, id);
+      return body ? { html: body.html, text: body.text } : null;
     },
   };
   return service;

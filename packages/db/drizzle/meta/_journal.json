@@ -50,6 +50,20 @@
       "when": 1790681464758,
       "tag": "0006_previous_major_mapleleaf",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1790682296487,
+      "tag": "0007_lively_agent_brand",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790682598635,
+      "tag": "0008_force_rls_invites",
+      "breakpoints": true
     }
   ]
 }

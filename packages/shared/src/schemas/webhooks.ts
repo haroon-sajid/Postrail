@@ -52,6 +52,8 @@ export const webhookDeliveryListResponseSchema = z.object({
   data: z.array(webhookDeliverySchema),
 });
 
+export const testWebhookResponseSchema = z.object({ delivery_id: uuidSchema });
+
 /** What a receiver gets. `data` is the wire shape of the object the event is about. */
 export const webhookPayloadSchema = z.object({
   id: uuidSchema,

@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import * as schema from './schema';
 
 /** Tables that are not tenant-owned and therefore carry no org_id or policy. */
-const NON_TENANT_TABLES = new Set(['orgs', 'users']);
+const NON_TENANT_TABLES = new Set(['orgs', 'users', 'sessions', 'accounts', 'verifications']);
 
 const exported: unknown[] = Object.values(schema);
 const tables = exported.filter((value): value is PgTable => is(value, PgTable));
@@ -36,16 +36,20 @@ function leadingIndexColumns(table: PgTable): string[] {
 describe('schema tenancy guard', () => {
   it('exports the expected tables', () => {
     expect(tables.map((t) => getTableConfig(t).name).sort()).toEqual([
+      'accounts',
       'api_keys',
       'audit_log',
+      'invites',
       'mailboxes',
       'members',
       'message_bodies',
       'messages',
       'orgs',
+      'sessions',
       'suppressions',
       'templates',
       'users',
+      'verifications',
       'webhook_deliveries',
       'webhook_endpoints',
     ]);

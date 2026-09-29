@@ -1,8 +1,18 @@
-import { extractVariables } from '@postrail/shared';
+import {
+  extractVariables,
+  type SendEmailResponse,
+  type SendTestTemplateRequest,
+} from '@postrail/shared';
 import { type AuthContext } from '../../lib/context';
 import { AppError } from '../../lib/errors';
+import { type EmailService } from '../emails/service';
 import { type TemplateRow, type TemplateStore } from './repo';
 import { type CreateTemplateRequest, type Template, type UpdateTemplateRequest } from './schemas';
+
+export interface TemplateServiceDeps {
+  store: TemplateStore;
+  emails: EmailService;
+}
 
 export interface TemplateService {
   create: (auth: AuthContext, input: CreateTemplateRequest) => Promise<Template>;
@@ -10,9 +20,15 @@ export interface TemplateService {
   get: (orgId: string, id: string) => Promise<Template>;
   update: (auth: AuthContext, id: string, patch: UpdateTemplateRequest) => Promise<Template>;
   remove: (auth: AuthContext, id: string) => Promise<void>;
+  /** Queues a real email rendered from this template, through the normal send path. */
+  sendTest: (
+    auth: AuthContext,
+    id: string,
+    input: SendTestTemplateRequest,
+  ) => Promise<SendEmailResponse>;
 }
 
-export function createTemplateService(store: TemplateStore): TemplateService {
+export function createTemplateService({ store, emails }: TemplateServiceDeps): TemplateService {
   return {
     async create(auth, input) {
       const row = await store.create(auth.orgId, {
@@ -49,6 +65,17 @@ export function createTemplateService(store: TemplateStore): TemplateService {
 
     async remove(auth, id) {
       if (!(await store.remove(auth.orgId, id))) throw AppError.notFound('template');
+    },
+
+    async sendTest(auth, id, input) {
+      const row = await store.get(auth.orgId, id);
+      if (!row) throw AppError.notFound('template');
+      const outcome = await emails.send(auth, {
+        to: input.to,
+        template: row.slug,
+        ...(input.variables ? { variables: input.variables } : {}),
+      });
+      return { id: outcome.id, status: outcome.status };
     },
   };
 }

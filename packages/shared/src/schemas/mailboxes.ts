@@ -32,6 +32,19 @@ export type Mailbox = z.infer<typeof mailboxSchema>;
 export const mailboxListResponseSchema = z.object({ data: z.array(mailboxSchema) });
 export type MailboxListResponse = z.infer<typeof mailboxListResponseSchema>;
 
+/** Dashboard edits: cap the daily limit and pause or resume. Disconnected is not settable. */
+export const updateMailboxRequestSchema = z
+  .object({
+    daily_limit: z.number().int().min(1).max(10_000).optional(),
+    status: z.enum(['active', 'paused']).optional(),
+  })
+  .refine((p) => p.daily_limit !== undefined || p.status !== undefined, {
+    message: 'nothing to update',
+  });
+export type UpdateMailboxRequest = z.infer<typeof updateMailboxRequestSchema>;
+
+export const connectUrlResponseSchema = z.object({ url: z.url() });
+
 /** Header names a caller may set on an outbound message. Everything structural is ours. */
 export const customHeaderNameSchema = z
   .string()

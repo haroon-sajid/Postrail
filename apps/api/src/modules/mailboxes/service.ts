@@ -1,15 +1,17 @@
 import {
   type MailboxProvider,
   type TokenCipher,
+  type UpdateMailboxRequest,
   oauthStateSchema,
   signState,
   verifyState,
 } from '@postrail/shared';
-import { type AuthContext } from '../../lib/context';
+import { type AuthContext, requireRole } from '../../lib/context';
 import { AppError } from '../../lib/errors';
 import { type GoogleClient } from '../../providers/google-client';
 import { GoogleProvider } from '../../providers/google';
 import { type EmailProvider, type TokenStore } from '../../providers/types';
+import { type AuditStore } from '../audit/repo';
 import { type GoogleCallbackQuery, type Mailbox } from './schemas';
 import { type MailboxStore, type MailboxSummary } from './repo';
 
@@ -19,6 +21,7 @@ export interface MailboxServiceDeps {
   cipher: TokenCipher;
   /** HMAC secret for the OAuth state. Any long random string; the token key works. */
   stateSecret: string;
+  audit?: AuditStore;
   now?: () => Date;
 }
 
@@ -28,11 +31,12 @@ export interface ConnectResult {
 }
 
 export interface MailboxService {
-  /** Where to send the browser to start connecting a Google mailbox to `orgId`. */
-  googleConnectUrl: (orgId: string) => string;
+  /** Where to send the browser to connect a Google mailbox. Caller must be an org admin. */
+  googleConnectUrl: (auth: AuthContext) => string;
   /** Finishes the OAuth dance: verifies state, swaps the code, stores encrypted tokens. */
   completeGoogleConnect: (query: GoogleCallbackQuery) => Promise<ConnectResult>;
   list: (orgId: string) => Promise<Mailbox[]>;
+  update: (auth: AuthContext, id: string, patch: UpdateMailboxRequest) => Promise<Mailbox>;
   remove: (auth: AuthContext, id: string) => Promise<void>;
   providerFor: (provider: MailboxProvider) => EmailProvider;
   /** Daily cron: zero every mailbox's sent_today. Returns the number touched. */
@@ -40,7 +44,7 @@ export interface MailboxService {
 }
 
 export function createMailboxService(deps: MailboxServiceDeps): MailboxService {
-  const { store, google, cipher, stateSecret } = deps;
+  const { store, google, cipher, stateSecret, audit } = deps;
   const now = deps.now ?? (() => new Date());
 
   // Providers persist refreshed tokens through the store, always inside the mailbox's org.
@@ -51,10 +55,10 @@ export function createMailboxService(deps: MailboxServiceDeps): MailboxService {
   const googleProvider = new GoogleProvider({ client: google, cipher, tokens, now });
 
   return {
-    googleConnectUrl(orgId) {
-      // TODO(auth): the caller must be a member of orgId. Until sessions exist, anyone
-      // holding an org id can start this flow. See ADR 0003.
-      return google.authUrl({ state: signState({ orgId }, stateSecret, { now }) });
+    googleConnectUrl(auth) {
+      // Only an admin of the org may attach a mailbox to it; the signed state carries the org.
+      requireRole(auth, 'admin');
+      return google.authUrl({ state: signState({ orgId: auth.orgId }, stateSecret, { now }) });
     },
 
     async completeGoogleConnect(query) {
@@ -92,9 +96,25 @@ export function createMailboxService(deps: MailboxServiceDeps): MailboxService {
       return (await store.list(orgId)).map(toMailbox);
     },
 
+    async update(auth, id, patch) {
+      const row = await store.update(auth.orgId, id, {
+        ...(patch.daily_limit !== undefined ? { dailyLimit: patch.daily_limit } : {}),
+        ...(patch.status !== undefined ? { status: patch.status } : {}),
+      });
+      if (!row) throw AppError.notFound('mailbox');
+      await audit?.record(auth.orgId, {
+        actor: auth.actor,
+        action: 'mailbox.updated',
+        target: id,
+        meta: { ...patch },
+      });
+      return toMailbox(row);
+    },
+
     async remove(auth, id) {
+      requireRole(auth, 'admin');
       const removed = await store.remove(auth.orgId, id, {
-        actor: `api-key:${auth.apiKeyId}`,
+        actor: auth.actor,
         action: 'mailbox.removed',
       });
       if (!removed) throw AppError.notFound('mailbox');

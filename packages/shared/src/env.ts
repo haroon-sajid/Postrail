@@ -31,6 +31,15 @@ export const envSchema = z.object({
   TASKS_SERVICE_ACCOUNT_EMAIL: z.email().optional(),
   /** Bearer secret for /internal/* when QUEUE_DRIVER=local. */
   INTERNAL_SECRET: z.string().min(16, 'must be at least 16 characters').optional(),
+
+  /** Signs session cookies and magic links. `openssl rand -hex 32`. */
+  BETTER_AUTH_SECRET: z.string().min(32, 'must be at least 32 characters'),
+  /** Public base URL of this API; OAuth callbacks and magic links point here. */
+  API_ORIGIN: z.url().default('http://localhost:8080'),
+  /** Origin of the dashboard. The only origin allowed for CORS and session routes. */
+  DASHBOARD_ORIGIN: z.url().default('http://localhost:5173'),
+  /** Connected mailbox that sends magic links and invites. Unset disables both. */
+  SYSTEM_MAILBOX_EMAIL: z.email().optional(),
 });
 
 const CLOUD_TASKS_VARS = [

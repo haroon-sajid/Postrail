@@ -2,9 +2,12 @@ import {
   createTokenCipher,
   generateApiKey,
   type MailboxStatus,
+  type MemberRole,
   type WebhookEvent,
 } from '@postrail/shared';
-import { type ApiKeyRecord, type ApiKeyStore } from '../modules/api-keys/repo';
+import { type AuditStore } from '../modules/audit/repo';
+import { AppError } from '../lib/errors';
+import { type ApiKeyListRow, type ApiKeyRecord, type ApiKeyStore } from '../modules/api-keys/repo';
 import { type AuditInput } from '../modules/audit/service';
 import {
   type EmailStore,
@@ -19,6 +22,9 @@ import {
   type MailboxStore,
   type MailboxSummary,
 } from '../modules/mailboxes/repo';
+import { type InviteRow, type OrgRow, type OrgStore } from '../modules/orgs/repo';
+import { type SystemMailer } from '../modules/orgs/service';
+import { type OverviewStore } from '../modules/overview/repo';
 import { type SuppressionRow, type SuppressionStore } from '../modules/suppressions/repo';
 import { type TemplateStore } from '../modules/templates/repo';
 import { type DeliveryRow, type EndpointRow, type WebhookStore } from '../modules/webhooks/repo';
@@ -28,13 +34,13 @@ import {
   type GoogleTokens,
 } from '../providers/google-client';
 import { type MailboxRow } from '../providers/types';
-import { AppError } from '../lib/errors';
 
 // Test doubles shared across api tests. Not a *.test.ts file, so vitest does not run it.
 
 export const TEST_KEY_HEX = 'ab'.repeat(32);
 export const testCipher = createTokenCipher(TEST_KEY_HEX);
 export const TEST_INTERNAL_SECRET = 'test-internal-secret-0123456789';
+export const TEST_DASHBOARD_ORIGIN = 'http://localhost:5173';
 
 export const testGoogleConfig = {
   clientId: 'test-client-id',
@@ -65,6 +71,23 @@ export function fakeGoogleClient(overrides: Partial<GoogleClient> = {}): GoogleC
     sendRaw: () => Promise.resolve({ id: 'gmail-1' }),
     ...overrides,
   };
+}
+
+// ---------- audit ----------
+
+export interface InMemoryAuditStore extends AuditStore {
+  entries: Array<AuditInput & { orgId: string }>;
+}
+
+export function inMemoryAuditStore(): InMemoryAuditStore {
+  const store: InMemoryAuditStore = {
+    entries: [],
+    record: (orgId, entry) => {
+      store.entries.push({ ...entry, orgId });
+      return Promise.resolve();
+    },
+  };
+  return store;
 }
 
 // ---------- mailboxes ----------
@@ -105,7 +128,6 @@ export function inMemoryMailboxStore(): InMemoryMailboxStore {
     },
 
     list: (orgId) => Promise.resolve(store.rows.filter((r) => r.orgId === orgId).map(summarize)),
-
     get: (orgId, id) => Promise.resolve(find(orgId, id)),
 
     upsertConnected: (orgId, input: ConnectedMailboxInput, audit) => {
@@ -158,6 +180,14 @@ export function inMemoryMailboxStore(): InMemoryMailboxStore {
       for (const row of touched) row.sentToday = 0;
       return Promise.resolve(touched.length);
     },
+
+    update: (orgId, id, patch) => {
+      const row = find(orgId, id);
+      if (row) Object.assign(row, patch, { updatedAt: new Date() });
+      return Promise.resolve(row ? summarize(row) : undefined);
+    },
+
+    findByEmailAnyOrg: (email) => Promise.resolve(store.rows.find((r) => r.email === email)),
   };
   return store;
 }
@@ -170,9 +200,9 @@ function summarize(row: MailboxRow): MailboxSummary {
 // ---------- api keys ----------
 
 export interface InMemoryApiKeyStore extends ApiKeyStore {
-  records: Array<ApiKeyRecord & { keyHash: string }>;
+  records: Array<ApiKeyRecord & ApiKeyListRow & { keyHash: string }>;
   touches: Array<{ id: string; at: Date }>;
-  create: (orgId: string, options?: { revoked?: boolean }) => { id: string; raw: string };
+  create0: (orgId: string, options?: { revoked?: boolean }) => { id: string; raw: string };
 }
 
 export function inMemoryApiKeyStore(): InMemoryApiKeyStore {
@@ -180,14 +210,19 @@ export function inMemoryApiKeyStore(): InMemoryApiKeyStore {
     records: [],
     touches: [],
 
-    create: (orgId, options = {}) => {
+    /** Test shortcut: a key with no creator, like the seed makes. */
+    create0: (orgId, options = {}) => {
       const key = generateApiKey();
       const record = {
         id: nextId(),
         orgId,
+        name: 'test',
+        prefix: key.prefix,
         keyHash: key.hash,
+        createdAt: new Date(),
         revokedAt: options.revoked ? new Date() : null,
         lastUsedAt: null,
+        createdBy: null,
       };
       store.records.push(record);
       return { id: record.id, raw: key.raw };
@@ -201,8 +236,168 @@ export function inMemoryApiKeyStore(): InMemoryApiKeyStore {
       store.touches.push({ id, at });
       return Promise.resolve();
     },
+
+    create: (orgId, input) => {
+      const record = {
+        id: nextId(),
+        orgId,
+        name: input.name,
+        prefix: input.prefix,
+        keyHash: input.keyHash,
+        createdAt: new Date(),
+        revokedAt: null,
+        lastUsedAt: null,
+        createdBy: input.createdBy ? { id: input.createdBy, email: 'creator@example.com' } : null,
+      };
+      store.records.push(record);
+      return Promise.resolve(record);
+    },
+
+    list: (orgId) => Promise.resolve(store.records.filter((r) => r.orgId === orgId)),
+
+    revoke: (orgId, id, at) => {
+      const record = store.records.find((r) => r.orgId === orgId && r.id === id);
+      if (!record) return Promise.resolve(false);
+      record.revokedAt ??= at;
+      return Promise.resolve(true);
+    },
   };
   return store;
+}
+
+// ---------- orgs ----------
+
+export interface InMemoryOrgStore extends OrgStore {
+  orgs: OrgRow[];
+  members: Array<{ orgId: string; userId: string; role: MemberRole; joinedAt: Date }>;
+  users: Map<string, { email: string; name: string }>;
+  invites: InviteRow[];
+  addUser: (id: string, email: string, name?: string) => void;
+  addMember: (orgId: string, userId: string, role: MemberRole) => void;
+}
+
+export function inMemoryOrgStore(): InMemoryOrgStore {
+  const store: InMemoryOrgStore = {
+    orgs: [],
+    members: [],
+    users: new Map(),
+    invites: [],
+
+    addUser: (id, email, name = '') => {
+      store.users.set(id, { email, name });
+    },
+    addMember: (orgId, userId, role) => {
+      store.members.push({ orgId, userId, role, joinedAt: new Date() });
+    },
+
+    createOrgWithOwner: (userId, name) => {
+      const org: OrgRow = { id: nextId(), name, createdAt: new Date(), updatedAt: new Date() };
+      store.orgs.push(org);
+      store.addMember(org.id, userId, 'owner');
+      return Promise.resolve(org);
+    },
+    getOrg: (orgId) => Promise.resolve(store.orgs.find((o) => o.id === orgId)),
+    updateOrg: (orgId, patch) => {
+      const org = store.orgs.find((o) => o.id === orgId);
+      if (org) Object.assign(org, patch, { updatedAt: new Date() });
+      return Promise.resolve(org);
+    },
+    deleteOrg: (orgId) => {
+      const before = store.orgs.length;
+      store.orgs = store.orgs.filter((o) => o.id !== orgId);
+      store.members = store.members.filter((m) => m.orgId !== orgId);
+      return Promise.resolve(store.orgs.length < before);
+    },
+    listForUser: (userId) =>
+      Promise.resolve(
+        store.members
+          .filter((m) => m.userId === userId)
+          .flatMap((m) => {
+            const org = store.orgs.find((o) => o.id === m.orgId);
+            return org ? [{ org, role: m.role }] : [];
+          }),
+      ),
+    getMembership: (userId, orgId) => {
+      const m = store.members.find((x) => x.userId === userId && x.orgId === orgId);
+      return Promise.resolve(m ? { role: m.role } : undefined);
+    },
+    listMembers: (orgId) =>
+      Promise.resolve(
+        store.members
+          .filter((m) => m.orgId === orgId)
+          .map((m) => {
+            const u = store.users.get(m.userId) ?? { email: `${m.userId}@example.com`, name: '' };
+            return {
+              userId: m.userId,
+              email: u.email,
+              name: u.name,
+              role: m.role,
+              joinedAt: m.joinedAt,
+            };
+          }),
+      ),
+    countOwners: (orgId) =>
+      Promise.resolve(store.members.filter((m) => m.orgId === orgId && m.role === 'owner').length),
+    updateMemberRole: (orgId, userId, role) => {
+      const m = store.members.find((x) => x.orgId === orgId && x.userId === userId);
+      if (m) m.role = role;
+      return Promise.resolve(m !== undefined);
+    },
+    removeMember: (orgId, userId) => {
+      const before = store.members.length;
+      store.members = store.members.filter((m) => !(m.orgId === orgId && m.userId === userId));
+      return Promise.resolve(store.members.length < before);
+    },
+    createInvite: (orgId, input) => {
+      const row: InviteRow = {
+        id: nextId(),
+        orgId,
+        ...input,
+        acceptedAt: null,
+        createdAt: new Date(),
+      };
+      store.invites.push(row);
+      return Promise.resolve(row);
+    },
+    listPendingInvites: (orgId, now) =>
+      Promise.resolve(
+        store.invites.filter((i) => i.orgId === orgId && !i.acceptedAt && i.expiresAt > now),
+      ),
+    deleteInvite: (orgId, id) => {
+      const before = store.invites.length;
+      store.invites = store.invites.filter((i) => !(i.orgId === orgId && i.id === id));
+      return Promise.resolve(store.invites.length < before);
+    },
+    findInviteByTokenHash: (tokenHash) => {
+      const invite = store.invites.find((i) => i.tokenHash === tokenHash);
+      const org = invite ? store.orgs.find((o) => o.id === invite.orgId) : undefined;
+      return Promise.resolve(invite && org ? { ...invite, orgName: org.name } : undefined);
+    },
+    acceptInvite: (orgId, inviteId, userId, role, now) => {
+      const invite = store.invites.find((i) => i.id === inviteId);
+      if (invite) invite.acceptedAt = now;
+      const existing = store.members.find((m) => m.orgId === orgId && m.userId === userId);
+      if (existing) existing.role = role;
+      else store.addMember(orgId, userId, role);
+      return Promise.resolve();
+    },
+  };
+  return store;
+}
+
+export interface FakeMailer extends SystemMailer {
+  sent: Array<{ to: string; subject: string; html: string; text: string }>;
+}
+
+export function fakeMailer(): FakeMailer {
+  const mailer: FakeMailer = {
+    sent: [],
+    send: (input) => {
+      mailer.sent.push(input);
+      return Promise.resolve();
+    },
+  };
+  return mailer;
 }
 
 // ---------- templates + suppressions (shared rows so the send path sees CRUD results) ----------
@@ -262,6 +457,15 @@ export function inMemorySuppressionStore(rows: SuppressionRow[] = []): InMemoryS
       const row: SuppressionRow = { orgId, email, reason, createdAt: new Date() };
       store.rows.push(row);
       return Promise.resolve(row);
+    },
+    upsertMany: (orgId, emails, reason) => {
+      let added = 0;
+      for (const email of emails) {
+        if (find(orgId, email)) continue;
+        store.rows.push({ orgId, email, reason, createdAt: new Date() });
+        added += 1;
+      }
+      return Promise.resolve(added);
     },
     list: (orgId, limit) =>
       Promise.resolve(store.rows.filter((r) => r.orgId === orgId).slice(0, limit)),
@@ -366,14 +570,12 @@ export function inMemoryEmailStore(): InMemoryEmailStore {
     markSent: (orgId, id, providerMessageId, sentAt) => {
       const row = find(orgId, id);
       if (row) Object.assign(row, { status: 'sent', providerMessageId, sentAt, error: null });
-      store.bodies.delete(id);
       return Promise.resolve();
     },
 
     markFailed: (orgId, id, error) => {
       const row = find(orgId, id);
       if (row) Object.assign(row, { status: 'failed', error });
-      store.bodies.delete(id);
       return Promise.resolve();
     },
 
@@ -406,6 +608,53 @@ export function inMemoryEmailStore(): InMemoryEmailStore {
       Promise.resolve(store.templates.find((t) => t.orgId === orgId && t.slug === slug)),
   };
   return store;
+}
+
+/** Overview aggregates computed from the in-memory email and mailbox rows. */
+export function inMemoryOverviewStore(
+  emails: InMemoryEmailStore,
+  mailboxes: InMemoryMailboxStore,
+): OverviewStore {
+  return {
+    countByStatus: (orgId, status, from, to) =>
+      Promise.resolve(
+        emails.rows.filter(
+          (r) =>
+            r.orgId === orgId && r.status === status && r.createdAt >= from && r.createdAt < to,
+        ).length,
+      ),
+    dailyCounts: (orgId, from) => {
+      const byDate = new Map<string, { date: string; sent: number; failed: number }>();
+      for (const r of emails.rows) {
+        if (r.orgId !== orgId || r.createdAt < from) continue;
+        const date = r.createdAt.toISOString().slice(0, 10);
+        const entry = byDate.get(date) ?? { date, sent: 0, failed: 0 };
+        if (r.status === 'sent') entry.sent += 1;
+        if (r.status === 'failed') entry.failed += 1;
+        byDate.set(date, entry);
+      }
+      return Promise.resolve([...byDate.values()]);
+    },
+    mailboxUsage: (orgId) =>
+      Promise.resolve(
+        mailboxes.rows
+          .filter((m) => m.orgId === orgId)
+          .map((m) => ({
+            id: m.id,
+            email: m.email,
+            status: m.status,
+            sentToday: m.sentToday,
+            dailyLimit: m.dailyLimit,
+          })),
+      ),
+    recentFailures: (orgId, limit) =>
+      Promise.resolve(
+        emails.rows
+          .filter((r) => r.orgId === orgId && r.status === 'failed')
+          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+          .slice(0, limit),
+      ),
+  };
 }
 
 // ---------- webhooks ----------
@@ -452,6 +701,11 @@ export function inMemoryWebhookStore(): InMemoryWebhookStore {
     },
     listEndpointsForEvent: (orgId, event: WebhookEvent) =>
       Promise.resolve(store.endpoints.filter((e) => e.orgId === orgId && e.events.includes(event))),
+    updateSecret: (orgId, id, secretEnc) => {
+      const row = findEndpoint(orgId, id);
+      if (row) row.secret = secretEnc;
+      return Promise.resolve(row !== undefined);
+    },
 
     createDelivery: (orgId, input) => {
       const row: DeliveryRow = {
@@ -467,6 +721,12 @@ export function inMemoryWebhookStore(): InMemoryWebhookStore {
       };
       store.deliveries.push(row);
       return Promise.resolve(row);
+    },
+    getDelivery: (orgId, id) => Promise.resolve(findDelivery(orgId, id)),
+    requeueDelivery: (orgId, id) => {
+      const row = findDelivery(orgId, id);
+      if (row) Object.assign(row, { status: 'pending', nextRetryAt: null, updatedAt: new Date() });
+      return Promise.resolve();
     },
     claimDelivery: (orgId, id, leaseMs, now) => {
       const row = findDelivery(orgId, id);

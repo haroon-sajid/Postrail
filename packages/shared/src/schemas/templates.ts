@@ -31,3 +31,9 @@ export const templateSchema = z.object({
 export type Template = z.infer<typeof templateSchema>;
 
 export const templateListResponseSchema = z.object({ data: z.array(templateSchema) });
+
+export const sendTestTemplateRequestSchema = z.object({
+  to: z.email(),
+  variables: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).optional(),
+});
+export type SendTestTemplateRequest = z.infer<typeof sendTestTemplateRequestSchema>;

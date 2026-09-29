@@ -60,6 +60,10 @@ export interface WebhookStore {
     responseCode: number | null,
   ) => Promise<void>;
   listDeliveries: (orgId: string, endpointId: string, limit: number) => Promise<DeliveryRow[]>;
+  getDelivery: (orgId: string, id: string) => Promise<DeliveryRow | undefined>;
+  /** Manual retry: back to pending regardless of the current state. */
+  requeueDelivery: (orgId: string, id: string) => Promise<void>;
+  updateSecret: (orgId: string, id: string, secretEnc: string) => Promise<boolean>;
 }
 
 export function createWebhookStore(db: Db): WebhookStore {
@@ -185,6 +189,34 @@ export function createWebhookStore(db: Db): WebhookStore {
           .update(webhookDeliveries)
           .set({ status: 'failed', error, responseCode, nextRetryAt: null })
           .where(deliveryScoped(orgId, id));
+      }),
+
+    getDelivery: (orgId, id) =>
+      withOrg(db, orgId, async (tx) => {
+        const [row] = await tx
+          .select()
+          .from(webhookDeliveries)
+          .where(deliveryScoped(orgId, id))
+          .limit(1);
+        return row;
+      }),
+
+    requeueDelivery: (orgId, id) =>
+      withOrg(db, orgId, async (tx) => {
+        await tx
+          .update(webhookDeliveries)
+          .set({ status: 'pending', nextRetryAt: null, updatedAt: new Date() })
+          .where(deliveryScoped(orgId, id));
+      }),
+
+    updateSecret: (orgId, id, secretEnc) =>
+      withOrg(db, orgId, async (tx) => {
+        const rows = await tx
+          .update(webhookEndpoints)
+          .set({ secret: secretEnc, updatedAt: new Date() })
+          .where(endpointScoped(orgId, id))
+          .returning({ id: webhookEndpoints.id });
+        return rows.length > 0;
       }),
 
     listDeliveries: (orgId, endpointId, limit) =>

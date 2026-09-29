@@ -18,13 +18,16 @@ async function errorOf(res: Response) {
   return errorResponseSchema.parse(body).error;
 }
 
-describe('GET /api/google/connect', () => {
-  it('redirects to Google with the right scopes and a verifiable state', async () => {
-    const { app } = createTestApp();
-    const res = await app.request(`/api/google/connect?org=${ORG_A}`);
-    expect(res.status).toBe(302);
+describe('GET /app/orgs/:orgId/mailboxes/google/connect-url', () => {
+  it('gives an admin a Google URL with the right scopes and a verifiable state', async () => {
+    const t = createTestApp();
+    const admin = t.member(ORG_A, 'admin');
+    const res = await t.app.request(`/app/orgs/${ORG_A}/mailboxes/google/connect-url`, {
+      headers: t.sessionHeaders(admin),
+    });
+    expect(res.status).toBe(200);
 
-    const url = new URL(res.headers.get('location') ?? '');
+    const url = new URL(((await res.json()) as { url: string }).url);
     expect(url.origin + url.pathname).toBe('https://accounts.google.com/o/oauth2/v2/auth');
     expect(url.searchParams.get('client_id')).toBe('test-client-id');
     expect(url.searchParams.get('redirect_uri')).toBe('http://localhost:8080/api/google/callback');
@@ -38,12 +41,15 @@ describe('GET /api/google/connect', () => {
     expect(state).toEqual({ ok: true, payload: { orgId: ORG_A } });
   });
 
-  it('rejects a missing or non-uuid org', async () => {
-    const { app } = createTestApp();
-    expect((await app.request('/api/google/connect')).status).toBe(400);
-    const res = await app.request('/api/google/connect?org=nope');
-    expect(res.status).toBe(400);
-    expect((await errorOf(res)).code).toBe('VALIDATION_ERROR');
+  it('refuses members, non-members and anonymous callers', async () => {
+    const t = createTestApp();
+    const member = t.member(ORG_A, 'member');
+    const outsider = t.member(ORG_B, 'owner');
+    const path = `/app/orgs/${ORG_A}/mailboxes/google/connect-url`;
+    expect((await t.app.request(path, { headers: t.sessionHeaders(member) })).status).toBe(403);
+    expect((await t.app.request(path, { headers: t.sessionHeaders(outsider) })).status).toBe(404);
+    expect((await t.app.request(path)).status).toBe(401);
+    expect((await t.app.request('/api/google/connect?org=' + ORG_A)).status).toBe(404);
   });
 });
 

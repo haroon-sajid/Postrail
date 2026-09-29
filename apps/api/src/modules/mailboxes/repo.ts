@@ -60,6 +60,14 @@ export interface MailboxStore {
   incrementSentToday: (orgId: string, id: string) => Promise<void>;
   /** Cross-tenant by design (the daily cron). Returns how many mailboxes were reset. */
   resetDailyCounters: () => Promise<number>;
+  update: (orgId: string, id: string, patch: MailboxPatch) => Promise<MailboxSummary | undefined>;
+  /** For the system mailbox, whose org is configuration rather than request context. */
+  findByEmailAnyOrg: (email: string) => Promise<MailboxRow | undefined>;
+}
+
+export interface MailboxPatch {
+  dailyLimit?: number;
+  status?: 'active' | 'paused';
 }
 
 export function createMailboxStore(db: Db): MailboxStore {
@@ -155,6 +163,23 @@ export function createMailboxStore(db: Db): MailboxStore {
           .update(mailboxes)
           .set({ sentToday: sql`${mailboxes.sentToday} + 1` })
           .where(and(eq(mailboxes.orgId, orgId), eq(mailboxes.id, id)));
+      }),
+
+    update: (orgId, id, patch) =>
+      withOrg(db, orgId, async (tx) => {
+        const [row] = await tx
+          .update(mailboxes)
+          .set({ ...patch, updatedAt: new Date() })
+          .where(and(eq(mailboxes.orgId, orgId), eq(mailboxes.id, id)))
+          .returning(publicColumns);
+        return row;
+      }),
+
+    // withSystem: SYSTEM_MAILBOX_EMAIL names a mailbox, not an org.
+    findByEmailAnyOrg: (email) =>
+      withSystem(db, async (tx) => {
+        const [row] = await tx.select().from(mailboxes).where(eq(mailboxes.email, email)).limit(1);
+        return row;
       }),
 
     // withSystem: Cloud Scheduler calls this once a day for every tenant at once.

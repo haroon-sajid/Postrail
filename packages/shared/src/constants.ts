@@ -8,6 +8,26 @@ export const WORKSPACE_ROOT_MARKER = 'pnpm-workspace.yaml';
 export const MEMBER_ROLES = ['owner', 'admin', 'member'] as const;
 export type MemberRole = (typeof MEMBER_ROLES)[number];
 
+/** Higher wins. Used for "at least admin" checks. */
+export const MEMBER_ROLE_RANK: Record<MemberRole, number> = { member: 0, admin: 1, owner: 2 };
+
+export const INVITE_TTL_DAYS = 7;
+
+/** Consumer mail domains that should not become a workspace name. */
+export const PERSONAL_EMAIL_DOMAINS = new Set([
+  'gmail.com',
+  'googlemail.com',
+  'outlook.com',
+  'hotmail.com',
+  'live.com',
+  'yahoo.com',
+  'icloud.com',
+  'me.com',
+  'proton.me',
+  'protonmail.com',
+  'aol.com',
+]);
+
 export const MAILBOX_PROVIDERS = ['google', 'microsoft'] as const;
 export type MailboxProvider = (typeof MAILBOX_PROVIDERS)[number];
 

@@ -74,7 +74,7 @@ describe('POST /v1/emails', () => {
     expect(t.emailStore.bodies.get(body.id)).toMatchObject({ text: 'hi there', html: null });
   });
 
-  it('delivers through the worker, records the result and drops the body', async () => {
+  it('delivers through the worker, records the result and keeps the body for preview', async () => {
     const t = setup();
     const mailbox = t.mailboxStore.add(ORG_A, { email: 'sender@example.com' });
     const { id } = await json(await t.post('/v1/emails', basic), (b) =>
@@ -92,7 +92,7 @@ describe('POST /v1/emails', () => {
       error: null,
     });
     expect(t.emailStore.rows[0]?.sentAt).toBeInstanceOf(Date);
-    expect(t.emailStore.bodies.has(id)).toBe(false);
+    expect(t.emailStore.bodies.has(id)).toBe(true);
     expect(mailbox.sentToday).toBe(1);
     const mime = mimeOfLastSend(t.sendRaw);
     expect(mime).toContain('From: sender@example.com');
