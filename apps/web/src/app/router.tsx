@@ -9,6 +9,7 @@ import { LogsPage } from '@/pages/logs/logs';
 import { MailboxesPage } from '@/pages/mailboxes/mailboxes';
 import { NotFoundPage } from '@/pages/not-found';
 import { OverviewPage } from '@/pages/overview/overview';
+import { SuppressionsPage } from '@/pages/suppressions/suppressions';
 import { TemplateEditorPage } from '@/pages/templates/editor';
 import { TemplatesPage } from '@/pages/templates/templates';
 import { WebhookDetailPage } from '@/pages/webhooks/webhook-detail';
@@ -54,6 +55,7 @@ export const router = createBrowserRouter([
           { path: 'templates/:id', element: <TemplateEditorPage /> },
           { path: 'webhooks', element: <WebhooksPage /> },
           { path: 'webhooks/:id', element: <WebhookDetailPage /> },
+          { path: 'suppressions', element: <SuppressionsPage /> },
           { path: '*', element: <NotFoundPage /> },
         ],
       },
