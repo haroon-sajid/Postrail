@@ -1,4 +1,4 @@
-import { MESSAGE_STATUSES } from '@postrail/shared';
+import { MESSAGE_STATUSES } from '@postrail/shared/browser';
 import { Search, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { Mailbox } from '@/api/types';

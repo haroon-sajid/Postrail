@@ -8,7 +8,8 @@
     "build": "tsup",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "openapi:export": "tsx scripts/export-openapi.ts"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.1",

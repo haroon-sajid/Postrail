@@ -5,7 +5,7 @@ import {
   extractVariables,
   renderTemplateString,
   escapeHtml,
-} from '@postrail/shared';
+} from '@postrail/shared/browser';
 import CodeMirror from '@uiw/react-codemirror';
 import { ArrowLeft, Send } from 'lucide-react';
 import { useMemo, useState } from 'react';

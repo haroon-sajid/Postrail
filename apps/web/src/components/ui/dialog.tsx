@@ -1,22 +1,26 @@
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
+import { forwardRef } from 'react';
 import { cn } from '@/lib/utils';
 
 export const Dialog = DialogPrimitive.Root;
 export const DialogTrigger = DialogPrimitive.Trigger;
 export const DialogClose = DialogPrimitive.Close;
 
-function Overlay({ className, ...props }: DialogPrimitive.DialogOverlayProps) {
-  return (
+// Portal clones its children with a ref for the exit animation, so this must forward it.
+const Overlay = forwardRef<HTMLDivElement, DialogPrimitive.DialogOverlayProps>(
+  ({ className, ...props }, ref) => (
     <DialogPrimitive.Overlay
+      ref={ref}
       className={cn(
         'fixed inset-0 z-40 bg-black/40 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
         className,
       )}
       {...props}
     />
-  );
-}
+  ),
+);
+Overlay.displayName = 'DialogOverlay';
 
 export interface DialogContentProps extends DialogPrimitive.DialogContentProps {
   size?: 'sm' | 'md' | 'lg';

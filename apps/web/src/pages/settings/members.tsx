@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createInviteRequestSchema, MEMBER_ROLES } from '@postrail/shared';
+import { createInviteRequestSchema, MEMBER_ROLES } from '@postrail/shared/browser';
 import { Mail, Trash2, UserPlus, X } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';

@@ -1,4 +1,4 @@
-import { MESSAGE_STATUSES, type MessageStatus } from '@postrail/shared';
+import { MESSAGE_STATUSES, type MessageStatus } from '@postrail/shared/browser';
 
 export const RANGE_PRESETS = ['24h', '7d', '30d', 'custom'] as const;
 export type RangePreset = (typeof RANGE_PRESETS)[number];

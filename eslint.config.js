@@ -42,6 +42,18 @@ export default defineConfig(
     languageOptions: { globals: { ...globals.browser } },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      // The root of @postrail/shared re-exports node:crypto and node:fs, which break in Vite.
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@postrail/shared',
+              message: "Import from '@postrail/shared/browser' in the dashboard.",
+            },
+          ],
+        },
+      ],
       // Handlers passed to JSX are fire-and-forget by design.
       '@typescript-eslint/no-misused-promises': [
         'error',

@@ -11,6 +11,7 @@ write a new one that supersedes it.
 | [0004](./0004-api-design-and-versioning.md)         | Public API design and versioning  | Accepted |
 | [0005](./0005-queueing-and-delivery.md)             | Queueing and reliable delivery    | Accepted |
 | [0006](./0006-webhooks-templates-suppressions.md)   | Webhooks, templates, suppressions | Accepted |
+| [0007](./0007-user-auth-and-dashboard.md)           | User authentication and dashboard | Accepted |
 
 ## Template
 

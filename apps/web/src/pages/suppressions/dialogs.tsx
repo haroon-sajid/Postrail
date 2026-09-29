@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createSuppressionRequestSchema, SUPPRESSION_REASONS } from '@postrail/shared';
+import { createSuppressionRequestSchema, SUPPRESSION_REASONS } from '@postrail/shared/browser';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';

@@ -1,5 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createWebhookRequestSchema, WEBHOOK_EVENTS, type WebhookEvent } from '@postrail/shared';
+import {
+  createWebhookRequestSchema,
+  WEBHOOK_EVENTS,
+  type WebhookEvent,
+} from '@postrail/shared/browser';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';

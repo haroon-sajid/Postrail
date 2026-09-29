@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { updateOrgRequestSchema } from '@postrail/shared';
+import { updateOrgRequestSchema } from '@postrail/shared/browser';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';

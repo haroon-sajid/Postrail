@@ -4,7 +4,7 @@ import {
   MAX_BATCH_SIZE,
   MAX_BODY_CHARS,
   MAX_WEBHOOK_ATTEMPTS,
-} from '@postrail/shared';
+} from '@postrail/shared/browser';
 import { PageHeader } from '@/components/page-header';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createApiKeyRequestSchema } from '@postrail/shared';
+import { createApiKeyRequestSchema } from '@postrail/shared/browser';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';

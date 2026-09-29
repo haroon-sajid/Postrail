@@ -18,7 +18,12 @@ apps/api            Hono HTTP API (Node 22). Bundled with tsup for Cloud Run.
   src/lib/*         cross-cutting: errors, error handler, logger, org context
   src/test/*        fakes and the createTestApp() helper used by api tests
 examples/           standalone scripts for integrators (webhook receiver)
-apps/web            Frontend, later (Cloudflare Pages).
+apps/web            React + Vite dashboard (Cloudflare Pages). Typed client generated from openapi.json.
+  src/api/*         generated schema.d.ts, openapi-fetch client, auth client, query client
+  src/app/*         router, shell (sidebar, top bar, org switcher, command palette)
+  src/pages/*       one folder per page: hooks.ts (queries/mutations) + components + tests
+  src/components/*  shadcn-style ui primitives and shared pieces (states, dialogs, time)
+  e2e/              Playwright smoke test against src/test/e2e-server.ts in apps/api
 packages/db         Drizzle schema, migrations (drizzle/), Neon client.
 packages/shared     zod schemas, types, constants, typed env loader.
 docs/adr            Architecture decision records.
@@ -63,6 +68,12 @@ docs/adr            Architecture decision records.
    Routes under `/internal/*` are for Cloud Tasks and Cloud Scheduler only.
 9. **Definition of done.** Before finishing any task, these must all pass:
    `pnpm typecheck`, `pnpm lint`, `pnpm test`.
+10. **Dashboard.** `/app/*` routes need a session cookie and an `Origin` equal to
+    `DASHBOARD_ORIGIN`; resource routes are declared once and mounted under both `/v1`
+    and `/app/orgs/{orgId}` (ADR 0007). When a shared schema or route changes, regenerate
+    the client: `pnpm --filter @postrail/api openapi:export` then
+    `pnpm --filter @postrail/web api:types`. The web app imports
+    `@postrail/shared/browser`, never the package root (it pulls in `node:crypto`).
 
 ## Commands
 
@@ -75,6 +86,9 @@ pnpm test           vitest in every workspace
 pnpm db:generate    generate a migration from the Drizzle schema
 pnpm db:migrate     apply pending migrations to DATABASE_URL
 pnpm db:seed        create the demo org and print a raw API key once
+pnpm --filter @postrail/web dev        dashboard at http://localhost:5173 (API on :8080)
+pnpm --filter @postrail/web test:e2e   Playwright smoke test (boots its own API on :8091, web on :5174)
+pnpm --filter @postrail/api openapi:export && pnpm --filter @postrail/web api:types   regenerate the typed client
 WEBHOOK_SECRET=whsec_... node examples/webhook-receiver.mjs   local receiver on :4000
 ```
 

@@ -50,6 +50,9 @@ export interface TestAppOverrides {
   now?: MailboxServiceDeps['now'];
   /** HTTP status the fake webhook receiver answers with. */
   webhookStatus?: number;
+  /** Replaces the header-based test session (the e2e server reads a cookie instead). */
+  sessionResolver?: (headers: Headers) => Promise<SessionUser | null>;
+  dashboardOrigin?: string;
 }
 
 /** Test sessions: the user is passed as a header instead of a Better Auth cookie. */
@@ -140,11 +143,13 @@ export function createTestApp(overrides: TestAppOverrides = {}) {
     rateLimiter:
       overrides.rateLimiter ?? new InMemoryTokenBucket({ capacity: 10_000, refillPerSecond: 1000 }),
     internalAuth: sharedSecretAuth(TEST_INTERNAL_SECRET),
-    sessionResolver: (headers) => {
-      const raw = headers.get(TEST_SESSION_HEADER);
-      return Promise.resolve(raw ? (JSON.parse(raw) as SessionUser) : null);
-    },
-    dashboardOrigin: TEST_DASHBOARD_ORIGIN,
+    sessionResolver:
+      overrides.sessionResolver ??
+      ((headers) => {
+        const raw = headers.get(TEST_SESSION_HEADER);
+        return Promise.resolve(raw ? (JSON.parse(raw) as SessionUser) : null);
+      }),
+    dashboardOrigin: overrides.dashboardOrigin ?? TEST_DASHBOARD_ORIGIN,
   });
 
   /** Mints a key for `orgId` and returns the headers a client would send. */
