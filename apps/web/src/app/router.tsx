@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate, Outlet, useLocation } from 'react-router
 import { useMe } from '@/api/me';
 import { AppShell } from './shell';
 import { FullPageSkeleton } from './shell-skeleton';
+import { ApiKeysPage } from '@/pages/api-keys/api-keys';
 import { InvitePage } from '@/pages/auth/invite';
 import { LoginPage } from '@/pages/auth/login';
 import { LogsPage } from '@/pages/logs/logs';
@@ -43,6 +44,7 @@ export const router = createBrowserRouter([
           { index: true, element: <OverviewPage /> },
           { path: 'logs', element: <LogsPage /> },
           { path: 'mailboxes', element: <MailboxesPage /> },
+          { path: 'api-keys', element: <ApiKeysPage /> },
           { path: '*', element: <NotFoundPage /> },
         ],
       },
