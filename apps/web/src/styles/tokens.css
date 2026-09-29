@@ -1,0 +1,194 @@
+/*
+ * Postrail design tokens. Every colour, radius and spacing value the UI uses comes from
+ * here, as CSS variables, and is exposed to Tailwind through @theme. Light is the default;
+ * `.dark` on <html> switches the palette. See DESIGN.md for the rules.
+ */
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Brand */
+  --navy: #0f1b2d;
+  --emerald: #12b981;
+  --emerald-strong: #0e9f6e;
+  --off-white: #f5f5f2;
+
+  /* Surfaces and text (light) */
+  --bg: #ffffff;
+  --bg-subtle: #f7f7f5;
+  --bg-muted: #efefec;
+  --bg-elevated: #ffffff;
+  --sidebar: var(--navy);
+  --sidebar-fg: #d6dbe4;
+  --sidebar-fg-strong: #ffffff;
+  --sidebar-active: rgba(255, 255, 255, 0.08);
+  --fg: #171b22;
+  --fg-muted: #5b6270;
+  --fg-faint: #8a909c;
+  --border: #e4e4e0;
+  --border-strong: #cfcfca;
+  --ring: #12b981;
+
+  /* Semantic */
+  --primary: var(--emerald);
+  --primary-hover: var(--emerald-strong);
+  --primary-fg: #ffffff;
+  --success: #12b981;
+  --success-bg: #e6f8f0;
+  --success-fg: #0b6e4f;
+  --warning: #d97706;
+  --warning-bg: #fdf3e2;
+  --warning-fg: #92400e;
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --danger-bg: #fdecec;
+  --danger-fg: #991b1b;
+  --info-bg: #eaf0fb;
+  --info-fg: #1e3a8a;
+  --neutral-bg: #eeeeeb;
+  --neutral-fg: #4b5160;
+
+  /* Shape */
+  --radius: 6px;
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow-md: 0 4px 12px rgba(16, 24, 40, 0.08);
+
+  /* Layout */
+  --sidebar-width: 240px;
+  --sidebar-width-collapsed: 56px;
+  --topbar-height: 48px;
+  --content-max: 1280px;
+
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #0b1220;
+  --bg-subtle: #101827;
+  --bg-muted: #161f30;
+  --bg-elevated: #121b2b;
+  --sidebar: #0a1019;
+  --sidebar-fg: #aeb6c4;
+  --sidebar-fg-strong: #ffffff;
+  --sidebar-active: rgba(255, 255, 255, 0.07);
+  --fg: #e8ebf0;
+  --fg-muted: #9aa3b2;
+  --fg-faint: #6b7385;
+  --border: #22304a;
+  --border-strong: #33425e;
+
+  --primary-fg: #06251b;
+  --success-bg: #0f2e24;
+  --success-fg: #6ee7b7;
+  --warning-bg: #3a2a0f;
+  --warning-fg: #fbbf24;
+  --danger-bg: #3b1515;
+  --danger-fg: #fca5a5;
+  --info-bg: #172554;
+  --info-fg: #bfdbfe;
+  --neutral-bg: #1f2937;
+  --neutral-fg: #cbd5e1;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --color-navy: var(--navy);
+  --color-emerald: var(--emerald);
+  --color-bg: var(--bg);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-bg-muted: var(--bg-muted);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-fg: var(--sidebar-fg);
+  --color-sidebar-fg-strong: var(--sidebar-fg-strong);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-faint: var(--fg-faint);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-fg: var(--primary-fg);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-success-fg: var(--success-fg);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-fg: var(--warning-fg);
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger-fg: var(--danger-fg);
+  --color-info-bg: var(--info-bg);
+  --color-info-fg: var(--info-fg);
+  --color-neutral-bg: var(--neutral-bg);
+  --color-neutral-fg: var(--neutral-fg);
+
+  --radius-DEFAULT: var(--radius);
+  --radius-sm: 4px;
+  --radius-md: var(--radius);
+  --radius-lg: 8px;
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+
+  --text-xs: 11px;
+  --text-xs--line-height: 16px;
+  --text-sm: 13px;
+  --text-sm--line-height: 20px;
+  --text-base: 14px;
+  --text-base--line-height: 20px;
+  --text-lg: 16px;
+  --text-lg--line-height: 24px;
+  --text-xl: 20px;
+  --text-xl--line-height: 28px;
+  --text-2xl: 24px;
+  --text-2xl--line-height: 32px;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--bg-subtle);
+    color: var(--fg);
+    margin: 0;
+  }
+  * {
+    border-color: var(--border);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--emerald) 30%, transparent);
+  }
+  /* Numbers line up in tables and stat cards. */
+  .tabular,
+  table,
+  code,
+  kbd {
+    font-variant-numeric: tabular-nums;
+  }
+  code,
+  kbd,
+  pre {
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+}

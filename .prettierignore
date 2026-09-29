@@ -4,3 +4,7 @@ dist
 coverage
 pnpm-lock.yaml
 packages/db/drizzle
+apps/web/src/api/schema.d.ts
+apps/web/src/api/openapi.json
+apps/web/playwright-report
+apps/web/test-results
