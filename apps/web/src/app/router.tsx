@@ -9,6 +9,8 @@ import { LogsPage } from '@/pages/logs/logs';
 import { MailboxesPage } from '@/pages/mailboxes/mailboxes';
 import { NotFoundPage } from '@/pages/not-found';
 import { OverviewPage } from '@/pages/overview/overview';
+import { TemplateEditorPage } from '@/pages/templates/editor';
+import { TemplatesPage } from '@/pages/templates/templates';
 
 /** Sends signed-out visitors to /login, remembering where they were going. */
 function RequireAuth() {
@@ -45,6 +47,9 @@ export const router = createBrowserRouter([
           { path: 'logs', element: <LogsPage /> },
           { path: 'mailboxes', element: <MailboxesPage /> },
           { path: 'api-keys', element: <ApiKeysPage /> },
+          { path: 'templates', element: <TemplatesPage /> },
+          { path: 'templates/new', element: <TemplateEditorPage /> },
+          { path: 'templates/:id', element: <TemplateEditorPage /> },
           { path: '*', element: <NotFoundPage /> },
         ],
       },
