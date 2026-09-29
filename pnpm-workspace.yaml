@@ -1,0 +1,7 @@
+packages:
+  - apps/*
+  - packages/*
+
+# pnpm >= 10 refuses to run dependency lifecycle scripts unless allowlisted.
+allowBuilds:
+  esbuild: true

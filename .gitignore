@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.turbo/
+coverage/
+*.log
+.DS_Store
+
+# Secrets. Only the documented examples are committed.
+.env
+.env.*
+!.env.example
+!.env.production.example
