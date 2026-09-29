@@ -5,6 +5,7 @@ import { FullPageSkeleton } from './shell-skeleton';
 import { InvitePage } from '@/pages/auth/invite';
 import { LoginPage } from '@/pages/auth/login';
 import { LogsPage } from '@/pages/logs/logs';
+import { MailboxesPage } from '@/pages/mailboxes/mailboxes';
 import { NotFoundPage } from '@/pages/not-found';
 import { OverviewPage } from '@/pages/overview/overview';
 
@@ -41,6 +42,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <OverviewPage /> },
           { path: 'logs', element: <LogsPage /> },
+          { path: 'mailboxes', element: <MailboxesPage /> },
           { path: '*', element: <NotFoundPage /> },
         ],
       },

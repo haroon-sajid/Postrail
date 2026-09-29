@@ -12,6 +12,8 @@ export function useMailboxes(orgId: string) {
         .GET('/app/orgs/{orgId}/mailboxes', { params: { path: { orgId } } })
         .then(unwrap)
         .then((r) => r.data),
+    // The OAuth flow finishes in another tab; pick up the new mailbox when the user returns.
+    refetchOnWindowFocus: true,
   });
 }
 

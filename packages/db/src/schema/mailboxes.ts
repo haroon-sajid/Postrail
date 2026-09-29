@@ -17,6 +17,8 @@ export const mailboxes = pgTable(
     accessExpiresAt: timestamp('access_expires_at', { withTimezone: true }),
     dailyLimit: integer('daily_limit').notNull().default(DEFAULT_MAILBOX_DAILY_LIMIT),
     sentToday: integer('sent_today').notNull().default(0),
+    /** Stamped by the worker on each successful send. */
+    lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
     status: mailboxStatus('status').notNull().default('active'),
     ...timestamps,
   },

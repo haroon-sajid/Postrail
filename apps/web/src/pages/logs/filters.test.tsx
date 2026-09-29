@@ -13,6 +13,7 @@ const mailboxes = [
     status: 'active' as const,
     daily_limit: 400,
     sent_today: 0,
+    last_used_at: null,
     created_at: '2026-09-29T00:00:00.000Z',
   },
 ];

@@ -119,6 +119,7 @@ export function inMemoryMailboxStore(): InMemoryMailboxStore {
         accessExpiresAt: new Date(Date.now() + 3600_000),
         dailyLimit: 400,
         sentToday: 0,
+        lastUsedAt: null,
         status: 'active',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -172,7 +173,10 @@ export function inMemoryMailboxStore(): InMemoryMailboxStore {
 
     incrementSentToday: (orgId, id) => {
       const row = find(orgId, id);
-      if (row) row.sentToday += 1;
+      if (row) {
+        row.sentToday += 1;
+        row.lastUsedAt = new Date();
+      }
       return Promise.resolve();
     },
 
@@ -194,8 +198,8 @@ export function inMemoryMailboxStore(): InMemoryMailboxStore {
 }
 
 function summarize(row: MailboxRow): MailboxSummary {
-  const { id, email, provider, status, dailyLimit, sentToday, createdAt } = row;
-  return { id, email, provider, status, dailyLimit, sentToday, createdAt };
+  const { id, email, provider, status, dailyLimit, sentToday, lastUsedAt, createdAt } = row;
+  return { id, email, provider, status, dailyLimit, sentToday, lastUsedAt, createdAt };
 }
 
 // ---------- api keys ----------

@@ -25,6 +25,7 @@ export const mailboxSchema = z.object({
   status: z.enum(MAILBOX_STATUSES),
   daily_limit: z.number().int(),
   sent_today: z.number().int(),
+  last_used_at: z.iso.datetime().nullable(),
   created_at: z.iso.datetime(),
 });
 export type Mailbox = z.infer<typeof mailboxSchema>;

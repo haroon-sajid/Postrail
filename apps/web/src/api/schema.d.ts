@@ -2736,6 +2736,8 @@ export interface paths {
                                 daily_limit: number;
                                 sent_today: number;
                                 /** Format: date-time */
+                                last_used_at: string | null;
+                                /** Format: date-time */
                                 created_at: string;
                             }[];
                         };
@@ -3224,6 +3226,8 @@ export interface paths {
                             status: "active" | "disconnected" | "paused";
                             daily_limit: number;
                             sent_today: number;
+                            /** Format: date-time */
+                            last_used_at: string | null;
                             /** Format: date-time */
                             created_at: string;
                         };
@@ -7716,6 +7720,8 @@ export interface paths {
                                 daily_limit: number;
                                 sent_today: number;
                                 /** Format: date-time */
+                                last_used_at: string | null;
+                                /** Format: date-time */
                                 created_at: string;
                             }[];
                         };
@@ -8208,6 +8214,8 @@ export interface paths {
                             status: "active" | "disconnected" | "paused";
                             daily_limit: number;
                             sent_today: number;
+                            /** Format: date-time */
+                            last_used_at: string | null;
                             /** Format: date-time */
                             created_at: string;
                         };

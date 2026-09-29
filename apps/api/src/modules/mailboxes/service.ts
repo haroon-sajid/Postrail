@@ -138,6 +138,7 @@ function toMailbox(summary: MailboxSummary): Mailbox {
     status: summary.status,
     daily_limit: summary.dailyLimit,
     sent_today: summary.sentToday,
+    last_used_at: summary.lastUsedAt ? summary.lastUsedAt.toISOString() : null,
     created_at: summary.createdAt.toISOString(),
   };
 }

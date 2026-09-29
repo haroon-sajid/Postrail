@@ -6644,6 +6644,13 @@
                           "sent_today": {
                             "type": "integer"
                           },
+                          "last_used_at": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "format": "date-time"
+                          },
                           "created_at": {
                             "type": "string",
                             "format": "date-time"
@@ -6656,6 +6663,7 @@
                           "status",
                           "daily_limit",
                           "sent_today",
+                          "last_used_at",
                           "created_at"
                         ]
                       }
@@ -7445,6 +7453,13 @@
                     "sent_today": {
                       "type": "integer"
                     },
+                    "last_used_at": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "date-time"
+                    },
                     "created_at": {
                       "type": "string",
                       "format": "date-time"
@@ -7457,6 +7472,7 @@
                     "status",
                     "daily_limit",
                     "sent_today",
+                    "last_used_at",
                     "created_at"
                   ]
                 }
@@ -18936,6 +18952,13 @@
                           "sent_today": {
                             "type": "integer"
                           },
+                          "last_used_at": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "format": "date-time"
+                          },
                           "created_at": {
                             "type": "string",
                             "format": "date-time"
@@ -18948,6 +18971,7 @@
                           "status",
                           "daily_limit",
                           "sent_today",
+                          "last_used_at",
                           "created_at"
                         ]
                       }
@@ -19757,6 +19781,13 @@
                     "sent_today": {
                       "type": "integer"
                     },
+                    "last_used_at": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "date-time"
+                    },
                     "created_at": {
                       "type": "string",
                       "format": "date-time"
@@ -19769,6 +19800,7 @@
                     "status",
                     "daily_limit",
                     "sent_today",
+                    "last_used_at",
                     "created_at"
                   ]
                 }

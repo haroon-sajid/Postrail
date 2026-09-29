@@ -13,6 +13,7 @@ const publicColumns = {
   status: mailboxes.status,
   dailyLimit: mailboxes.dailyLimit,
   sentToday: mailboxes.sentToday,
+  lastUsedAt: mailboxes.lastUsedAt,
   createdAt: mailboxes.createdAt,
 };
 
@@ -23,6 +24,7 @@ export interface MailboxSummary {
   status: MailboxStatus;
   dailyLimit: number;
   sentToday: number;
+  lastUsedAt: Date | null;
   createdAt: Date;
 }
 
@@ -161,7 +163,7 @@ export function createMailboxStore(db: Db): MailboxStore {
       withOrg(db, orgId, async (tx) => {
         await tx
           .update(mailboxes)
-          .set({ sentToday: sql`${mailboxes.sentToday} + 1` })
+          .set({ sentToday: sql`${mailboxes.sentToday} + 1`, lastUsedAt: new Date() })
           .where(and(eq(mailboxes.orgId, orgId), eq(mailboxes.id, id)));
       }),
 
