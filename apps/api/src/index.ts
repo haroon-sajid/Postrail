@@ -6,12 +6,14 @@ import {
   getEnv,
   type Env,
   type QueueConfig,
+  resolveBrowserOrigins,
   resolveQueueConfig,
 } from '@postrail/shared';
 import { createApp } from './app';
 import { createAuthServer, sessionResolverFor } from './lib/auth-server';
 import { type InternalAuth, oidcAuth, sharedSecretAuth } from './lib/internal-auth';
 import { createLogger, type Logger } from './lib/logger';
+import { createOriginMatcher } from './lib/origins';
 import { InMemoryTokenBucket } from './lib/rate-limit';
 import { createSystemMailer } from './lib/system-mailer';
 import { resolveVersion } from './lib/version';
@@ -75,6 +77,7 @@ function main(): void {
   const version = resolveVersion(env);
   const queueConfig = resolveQueueConfig(env);
   const cipher = createTokenCipher(env.TOKEN_ENCRYPTION_KEY);
+  const browserOrigins = resolveBrowserOrigins(env);
 
   const db = createDb(env.DATABASE_URL);
   const audit = createAuditStore(db);
@@ -129,6 +132,7 @@ function main(): void {
   const auth = createAuthServer({
     db,
     env,
+    trustedOrigins: [...browserOrigins.origins, ...browserOrigins.patterns],
     sendMagicLink: (email, url) =>
       mailer.send({
         to: email,
@@ -157,7 +161,7 @@ function main(): void {
     internalAuth,
     sessionResolver: sessionResolverFor(auth),
     authHandler: (request) => auth.handler(request),
-    dashboardOrigin: env.DASHBOARD_ORIGIN,
+    isAllowedOrigin: createOriginMatcher(browserOrigins),
   });
 
   serve({ fetch: app.fetch, port: env.PORT }, (info) => {

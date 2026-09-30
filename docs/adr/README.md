@@ -12,6 +12,7 @@ write a new one that supersedes it.
 | [0005](./0005-queueing-and-delivery.md)             | Queueing and reliable delivery    | Accepted |
 | [0006](./0006-webhooks-templates-suppressions.md)   | Webhooks, templates, suppressions | Accepted |
 | [0007](./0007-user-auth-and-dashboard.md)           | User authentication and dashboard | Accepted |
+| [0008](./0008-deployment-origins.md)                | Deployment origins and API URL    | Accepted |
 
 ## Template
 

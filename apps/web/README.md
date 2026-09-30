@@ -12,5 +12,6 @@ pnpm api:types    regenerate src/api/schema.d.ts from src/api/openapi.json
 pnpm build        static bundle in dist/ for Cloudflare Pages
 ```
 
-Set `VITE_API_ORIGIN` to point the bundle at another API. Design tokens and rules are in
-[DESIGN.md](./DESIGN.md); the architecture is in `docs/adr/0007-user-auth-and-dashboard.md`.
+The API URL comes from `src/lib/config.ts`: `VITE_API_URL` when set (baked in at build
+time), `http://localhost:8080` on localhost, otherwise a startup error. See`docs/deploy.md`. Design tokens and rules are in [DESIGN.md](./DESIGN.md); the
+architecture is in `docs/adr/0007-user-auth-and-dashboard.md`.

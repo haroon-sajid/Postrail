@@ -12,6 +12,7 @@ import {
   Webhook,
   type LucideIcon,
 } from 'lucide-react';
+import { API_URL } from '@/lib/config';
 
 export interface NavItem {
   label: string;
@@ -37,7 +38,7 @@ export const SETTINGS_NAV: NavItem[] = [
   { label: 'Billing', to: '/settings/billing', icon: CreditCard },
 ];
 
-export const DOCS_URL = 'http://localhost:8080/docs';
+export const DOCS_URL = `${API_URL}/docs`;
 export const DocsIcon = BookOpen;
 
 /** Breadcrumb label for the current path, e.g. "/settings/members" -> ["Settings", "Members"]. */

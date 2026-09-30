@@ -2,6 +2,7 @@ import { createApp } from '../app';
 import { type SessionUser } from '../lib/context';
 import { sharedSecretAuth } from '../lib/internal-auth';
 import { silentLogger } from '../lib/logger';
+import { createOriginMatcher } from '../lib/origins';
 import { InMemoryTokenBucket, type RateLimiter } from '../lib/rate-limit';
 import { createApiKeyService } from '../modules/api-keys/service';
 import { createEmailService } from '../modules/emails/service';
@@ -53,6 +54,8 @@ export interface TestAppOverrides {
   /** Replaces the header-based test session (the e2e server reads a cookie instead). */
   sessionResolver?: (headers: Headers) => Promise<SessionUser | null>;
   dashboardOrigin?: string;
+  /** Extra wildcard origins, e.g. preview deployments, on top of the dashboard origin. */
+  originPatterns?: string[];
 }
 
 /** Test sessions: the user is passed as a header instead of a Better Auth cookie. */
@@ -149,7 +152,10 @@ export function createTestApp(overrides: TestAppOverrides = {}) {
         const raw = headers.get(TEST_SESSION_HEADER);
         return Promise.resolve(raw ? (JSON.parse(raw) as SessionUser) : null);
       }),
-    dashboardOrigin: overrides.dashboardOrigin ?? TEST_DASHBOARD_ORIGIN,
+    isAllowedOrigin: createOriginMatcher({
+      origins: [overrides.dashboardOrigin ?? TEST_DASHBOARD_ORIGIN],
+      patterns: overrides.originPatterns,
+    }),
   });
 
   /** Mints a key for `orgId` and returns the headers a client would send. */

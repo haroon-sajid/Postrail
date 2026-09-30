@@ -36,8 +36,16 @@ export const envSchema = z.object({
   BETTER_AUTH_SECRET: z.string().min(32, 'must be at least 32 characters'),
   /** Public base URL of this API; OAuth callbacks and magic links point here. */
   API_ORIGIN: z.url().default('http://localhost:8080'),
-  /** Origin of the dashboard. The only origin allowed for CORS and session routes. */
+  /** Canonical origin of the dashboard: invite links point here and it is always trusted. */
   DASHBOARD_ORIGIN: z.url().default('http://localhost:5173'),
+  /** Further browser origins trusted for CORS, CSRF and sign-in. Comma separated. */
+  CORS_ORIGIN: z.string().optional(),
+  /**
+   * Origin patterns for hosts minted per deployment, comma separated. One `*` stands for
+   * one host label: https://*-postrail.example.workers.dev matches
+   * https://pr-7-postrail.example.workers.dev and nothing outside that domain.
+   */
+  CORS_ORIGIN_PATTERN: z.string().optional(),
   /** Connected mailbox that sends magic links and invites. Unset disables both. */
   SYSTEM_MAILBOX_EMAIL: z.email().optional(),
 });
@@ -50,8 +58,48 @@ const CLOUD_TASKS_VARS = [
   'TASKS_SERVICE_ACCOUNT_EMAIL',
 ] as const;
 
-/** The base schema plus the cross-field rule: each queue driver has its own required vars. */
+/** Splits a comma-separated variable, dropping blanks. */
+export function splitList(value: string | undefined): string[] {
+  return (value ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+}
+
+const ORIGIN_PATTERN = /^https?:\/\/[a-z0-9.*-]*\*[a-z0-9.*-]*(:\d+)?$/i;
+
+function isOrigin(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return (url.protocol === 'http:' || url.protocol === 'https:') && url.origin === value;
+  } catch {
+    return false;
+  }
+}
+
+/** The base schema plus the cross-field rules: queue driver vars, and origin lists. */
 export const envSchemaWithRules = envSchema.superRefine((env, ctx) => {
+  for (const origin of splitList(env.CORS_ORIGIN)) {
+    if (!isOrigin(origin.replace(/\/+$/, ''))) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['CORS_ORIGIN'],
+        message: 'each entry must be a bare http(s) origin such as https://app.example.com',
+      });
+      break;
+    }
+  }
+  for (const pattern of splitList(env.CORS_ORIGIN_PATTERN)) {
+    if (!ORIGIN_PATTERN.test(pattern)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['CORS_ORIGIN_PATTERN'],
+        message:
+          'each entry must be an http(s) origin containing * such as https://*-app.example.com',
+      });
+      break;
+    }
+  }
   const required =
     env.QUEUE_DRIVER === 'cloudtasks' ? CLOUD_TASKS_VARS : (['INTERNAL_SECRET'] as const);
   for (const name of required) {
@@ -91,6 +139,22 @@ export function resolveQueueConfig(env: Env): QueueConfig {
     workerUrl: env.WORKER_URL ?? '',
     serviceAccountEmail: env.TASKS_SERVICE_ACCOUNT_EMAIL ?? '',
   };
+}
+
+export interface BrowserOrigins {
+  /** Exact origins, DASHBOARD_ORIGIN first, no trailing slashes, no duplicates. */
+  origins: string[];
+  /** Wildcard origin patterns from CORS_ORIGIN_PATTERN. */
+  patterns: string[];
+}
+
+/** The browser origins the API trusts. Safe after loadEnv validated the raw strings. */
+export function resolveBrowserOrigins(
+  env: Pick<Env, 'DASHBOARD_ORIGIN' | 'CORS_ORIGIN' | 'CORS_ORIGIN_PATTERN'>,
+): BrowserOrigins {
+  const trim = (s: string) => s.replace(/\/+$/, '');
+  const origins = [trim(env.DASHBOARD_ORIGIN), ...splitList(env.CORS_ORIGIN).map(trim)];
+  return { origins: [...new Set(origins)], patterns: splitList(env.CORS_ORIGIN_PATTERN) };
 }
 
 export type EnvSource = Record<string, string | undefined>;

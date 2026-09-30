@@ -9,14 +9,15 @@ export interface AuthServerDeps {
   db: Db;
   env: Pick<
     Env,
-    | 'NODE_ENV'
-    | 'API_ORIGIN'
-    | 'DASHBOARD_ORIGIN'
-    | 'BETTER_AUTH_SECRET'
-    | 'GOOGLE_CLIENT_ID'
-    | 'GOOGLE_CLIENT_SECRET'
+    'NODE_ENV' | 'API_ORIGIN' | 'BETTER_AUTH_SECRET' | 'GOOGLE_CLIENT_ID' | 'GOOGLE_CLIENT_SECRET'
   >;
   /** Delivers the magic link through Postrail's own system mailbox. */
+  /**
+   * Origins Better Auth accepts for sign-in requests and callback URLs. Exact origins
+   * plus wildcard host patterns such as https://*-postrail.example.workers.dev; the same
+   * list the API uses for CORS, so keep it built from resolveBrowserOrigins().
+   */
+  trustedOrigins: string[];
   sendMagicLink: (email: string, url: string) => Promise<void>;
   /** First sign-in: create the default org and owner membership. */
   onUserCreated: (user: SessionUser) => Promise<void>;
@@ -27,7 +28,7 @@ const SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 
 /**
  * Better Auth with Google and magic-link sign in. Sessions are httpOnly, sameSite=lax
- * cookies (secure in production). The dashboard origin is the only trusted origin, so
+ * cookies (secure in production). Only the configured browser origins are trusted, so
  * Better Auth's own CSRF/origin checks reject anything else.
  */
 export function createAuthServer(deps: AuthServerDeps) {
@@ -36,7 +37,7 @@ export function createAuthServer(deps: AuthServerDeps) {
     baseURL: env.API_ORIGIN,
     basePath: '/api/auth',
     secret: env.BETTER_AUTH_SECRET,
-    trustedOrigins: [env.DASHBOARD_ORIGIN],
+    trustedOrigins: deps.trustedOrigins,
     database: drizzleAdapter(deps.db, {
       provider: 'pg',
       usePlural: true,

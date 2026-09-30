@@ -5,6 +5,7 @@ import { csrfProtection } from './lib/csrf';
 import { createErrorHandler, notFoundHandler } from './lib/error-handler';
 import { type InternalAuth, requireInternalAuth } from './lib/internal-auth';
 import { type Logger } from './lib/logger';
+import { type OriginMatcher } from './lib/origins';
 import { APP_BASE, V1_BASE } from './lib/openapi';
 import { rateLimit, type RateLimiter } from './lib/rate-limit';
 import { requestLogging } from './lib/request-logging';
@@ -52,13 +53,18 @@ export interface AppDeps {
   sessionResolver: SessionResolver;
   /** Better Auth's request handler for /api/auth/*. Absent in tests. */
   authHandler?: (request: Request) => Promise<Response>;
-  dashboardOrigin: string;
+  /** Browser origins allowed to call /app and /api/auth with cookies. See lib/origins.ts. */
+  isAllowedOrigin: OriginMatcher;
 }
 
 /** Builds the HTTP app from explicit dependencies so tests never touch real env or DB. */
 export function createApp(deps: AppDeps) {
   const app = createRouter();
-  const browser = cors({ origin: deps.dashboardOrigin, credentials: true });
+  // Echo the origin back only when it is trusted; anything else gets no CORS headers.
+  const browser = cors({
+    origin: (origin) => (deps.isAllowedOrigin(origin) ? origin : null),
+    credentials: true,
+  });
 
   app.use(requestLogging(deps.logger));
   app.onError(createErrorHandler(deps.logger));
@@ -74,11 +80,11 @@ export function createApp(deps: AppDeps) {
   // Everything under /v1 is the authenticated, rate-limited public API.
   app.use('/v1/*', requireApiKey(deps.apiKeys), rateLimit(deps.rateLimiter));
 
-  // Everything under /app is the dashboard: cookie session, one origin, CSRF-checked.
+  // Everything under /app is the dashboard: cookie session, trusted origins only, CSRF-checked.
   app.use(
     '/app/*',
     browser,
-    csrfProtection(deps.dashboardOrigin),
+    csrfProtection(deps.isAllowedOrigin),
     requireSession(deps.sessionResolver),
     rateLimit(deps.rateLimiter),
   );

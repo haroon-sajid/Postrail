@@ -1,8 +1,11 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  /** Origin of the Postrail API, e.g. http://localhost:8080. */
-  readonly VITE_API_ORIGIN?: string;
+  /**
+   * Absolute URL of the Postrail API, e.g. https://postrail-api.onrender.com. Baked in at
+   * build time. Optional on localhost, required everywhere else; see src/lib/config.ts.
+   */
+  readonly VITE_API_URL?: string;
 }
 
 interface ImportMeta {

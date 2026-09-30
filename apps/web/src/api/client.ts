@@ -1,10 +1,12 @@
 import createClient from 'openapi-fetch';
+import { API_URL } from '@/lib/config';
 import type { paths } from './schema';
 
-export const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? 'http://localhost:8080';
-
-/** Typed client generated from the API's own OpenAPI document. Cookies ride along. */
-export const api = createClient<paths>({ baseUrl: API_ORIGIN, credentials: 'include' });
+/**
+ * Typed client generated from the API's own OpenAPI document. The API is on another
+ * origin, so the session cookie only travels with credentials: 'include'.
+ */
+export const api = createClient<paths>({ baseUrl: API_URL, credentials: 'include' });
 
 export interface ErrorEnvelope {
   error: { code: string; message: string };

@@ -2,7 +2,14 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { EnvError, findWorkspaceRoot, loadDotenv, loadEnv, resolveQueueConfig } from './env';
+import {
+  EnvError,
+  findWorkspaceRoot,
+  loadDotenv,
+  loadEnv,
+  resolveBrowserOrigins,
+  resolveQueueConfig,
+} from './env';
 
 const DB_URL = 'postgresql://user:pw@host/neondb?sslmode=require';
 const REQUIRED = {
@@ -105,6 +112,39 @@ describe('loadEnv', () => {
 
   it('rejects a GOOGLE_REDIRECT_URI that is not a URL', () => {
     expect(() => loadEnv({ ...REQUIRED, GOOGLE_REDIRECT_URI: 'callback' })).toThrow(EnvError);
+  });
+
+  it('resolves browser origins from DASHBOARD_ORIGIN, CORS_ORIGIN and CORS_ORIGIN_PATTERN', () => {
+    expect(resolveBrowserOrigins(loadEnv(REQUIRED))).toEqual({
+      origins: ['http://localhost:5173'],
+      patterns: [],
+    });
+    const env = loadEnv({
+      ...REQUIRED,
+      DASHBOARD_ORIGIN: 'https://postrail.haroonsajid-ai.workers.dev',
+      CORS_ORIGIN: 'https://postrail.haroonsajid-ai.workers.dev/, https://staging.example.com ,',
+      CORS_ORIGIN_PATTERN: 'https://*-postrail.haroonsajid-ai.workers.dev',
+    });
+    expect(resolveBrowserOrigins(env)).toEqual({
+      origins: ['https://postrail.haroonsajid-ai.workers.dev', 'https://staging.example.com'],
+      patterns: ['https://*-postrail.haroonsajid-ai.workers.dev'],
+    });
+  });
+
+  it('rejects CORS_ORIGIN entries that are not bare origins', () => {
+    expect(() => loadEnv({ ...REQUIRED, CORS_ORIGIN: 'https://a.example/app' })).toThrow(
+      /CORS_ORIGIN:/,
+    );
+    expect(() => loadEnv({ ...REQUIRED, CORS_ORIGIN: 'a.example' })).toThrow(/CORS_ORIGIN:/);
+  });
+
+  it('rejects CORS_ORIGIN_PATTERN entries without a wildcard or scheme', () => {
+    expect(() => loadEnv({ ...REQUIRED, CORS_ORIGIN_PATTERN: 'https://a.example' })).toThrow(
+      /CORS_ORIGIN_PATTERN/,
+    );
+    expect(() => loadEnv({ ...REQUIRED, CORS_ORIGIN_PATTERN: '*.example' })).toThrow(
+      /CORS_ORIGIN_PATTERN/,
+    );
   });
 });
 

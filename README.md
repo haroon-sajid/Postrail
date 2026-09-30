@@ -18,5 +18,6 @@ cp .env.example .env   # then set DATABASE_URL to the Neon dev branch
 pnpm dev               # API on http://localhost:8080
 ```
 
-Read [CLAUDE.md](./CLAUDE.md) for the working rules and
-[docs/adr](./docs/adr) for the architecture decisions.
+Read [CLAUDE.md](./CLAUDE.md) for the working rules,
+[docs/adr](./docs/adr) for the architecture decisions and
+[docs/deploy.md](./docs/deploy.md) for the Cloudflare and Render setup.

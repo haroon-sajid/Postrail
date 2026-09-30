@@ -68,12 +68,14 @@ docs/adr            Architecture decision records.
    Routes under `/internal/*` are for Cloud Tasks and Cloud Scheduler only.
 9. **Definition of done.** Before finishing any task, these must all pass:
    `pnpm typecheck`, `pnpm lint`, `pnpm test`.
-10. **Dashboard.** `/app/*` routes need a session cookie and an `Origin` equal to
-    `DASHBOARD_ORIGIN`; resource routes are declared once and mounted under both `/v1`
+10. **Dashboard.** `/app/*` routes need a session cookie and an `Origin` the API trusts
+    (`DASHBOARD_ORIGIN`, `CORS_ORIGIN`, `CORS_ORIGIN_PATTERN`; ADR 0008); resource routes are declared once and mounted under both `/v1`
     and `/app/orgs/{orgId}` (ADR 0007). When a shared schema or route changes, regenerate
     the client: `pnpm --filter @postrail/api openapi:export` then
     `pnpm --filter @postrail/web api:types`. The web app imports
-    `@postrail/shared/browser`, never the package root (it pulls in `node:crypto`).
+    `@postrail/shared/browser`, never the package root (it pulls in `node:crypto`). The API
+    URL comes only from `apps/web/src/lib/config.ts` (`VITE_API_URL`, baked in at build
+    time; see `docs/deploy.md`).
 
 ## Commands
 

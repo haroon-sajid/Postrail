@@ -27,7 +27,7 @@ export default defineConfig({
     {
       command: 'pnpm exec vite --port 5174 --strictPort',
       url: E2E_WEB_ORIGIN,
-      env: { VITE_API_ORIGIN: E2E_API_ORIGIN },
+      env: { VITE_API_URL: E2E_API_ORIGIN },
       reuseExistingServer: false,
       timeout: 60_000,
     },
