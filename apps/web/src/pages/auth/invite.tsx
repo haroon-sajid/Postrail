@@ -40,8 +40,8 @@ export function InvitePage() {
       <Card className="w-full max-w-sm">
         <CardContent className="p-6">
           <div className="mb-6 flex justify-center">
-            <Logo variant="light" className="dark:hidden" />
-            <Logo variant="dark" className="hidden dark:block" />
+            <Logo variant="light" className="h-10 w-auto dark:hidden" />
+            <Logo variant="dark" className="hidden h-10 w-auto dark:block" />
           </div>
           {preview.isPending ? (
             <div className="space-y-3" aria-busy>

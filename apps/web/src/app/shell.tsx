@@ -228,8 +228,8 @@ function SidebarContent({ collapsed, onToggle }: { collapsed: boolean; onToggle?
           <LogoIcon className="size-7" />
         ) : (
           <>
-            <Logo variant="light" className="h-6 w-auto dark:hidden" />
-            <Logo variant="dark" className="hidden h-6 w-auto dark:block" />
+            <Logo variant="light" className="h-8 w-auto dark:hidden" />
+            <Logo variant="dark" className="hidden h-8 w-auto dark:block" />
           </>
         )}
       </div>

@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="brand/postrail-logo-dark.svg" />
+    <img src="brand/postrail-logo.svg" alt="Postrail" width="280" />
+  </picture>
+</p>
+
 # Postrail
 
 Multi-tenant email API. Tenants connect their own Gmail or Outlook mailbox and send
