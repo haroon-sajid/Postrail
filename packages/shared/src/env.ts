@@ -34,10 +34,16 @@ export const envSchema = z.object({
 
   /** Signs session cookies and magic links. `openssl rand -hex 32`. */
   BETTER_AUTH_SECRET: z.string().min(32, 'must be at least 32 characters'),
-  /** Public base URL of this API; OAuth callbacks and magic links point here. */
-  API_ORIGIN: z.url().default('http://localhost:8080'),
-  /** Canonical origin of the dashboard: invite links point here and it is always trusted. */
-  DASHBOARD_ORIGIN: z.url().default('http://localhost:5173'),
+  /**
+   * Public base URL of this API; OAuth callbacks and magic links point here. Defaults to
+   * localhost outside production; in production it is required and must be https.
+   */
+  API_ORIGIN: z.url().optional(),
+  /**
+   * Canonical origin of the dashboard: invite links point here and it is always trusted.
+   * Same rule as API_ORIGIN: a localhost default in dev, required https in production.
+   */
+  DASHBOARD_ORIGIN: z.url().optional(),
   /** Further browser origins trusted for CORS, CSRF and sign-in. Comma separated. */
   CORS_ORIGIN: z.string().optional(),
   /**
@@ -77,43 +83,70 @@ function isOrigin(value: string): boolean {
   }
 }
 
-/** The base schema plus the cross-field rules: queue driver vars, and origin lists. */
-export const envSchemaWithRules = envSchema.superRefine((env, ctx) => {
-  for (const origin of splitList(env.CORS_ORIGIN)) {
-    if (!isOrigin(origin.replace(/\/+$/, ''))) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['CORS_ORIGIN'],
-        message: 'each entry must be a bare http(s) origin such as https://app.example.com',
-      });
-      break;
-    }
-  }
-  for (const pattern of splitList(env.CORS_ORIGIN_PATTERN)) {
-    if (!ORIGIN_PATTERN.test(pattern)) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['CORS_ORIGIN_PATTERN'],
-        message:
-          'each entry must be an http(s) origin containing * such as https://*-app.example.com',
-      });
-      break;
-    }
-  }
-  const required =
-    env.QUEUE_DRIVER === 'cloudtasks' ? CLOUD_TASKS_VARS : (['INTERNAL_SECRET'] as const);
-  for (const name of required) {
-    if (env[name] === undefined) {
-      ctx.addIssue({
-        code: 'custom',
-        path: [name],
-        message: `required when QUEUE_DRIVER=${env.QUEUE_DRIVER}`,
-      });
-    }
-  }
-});
+const LOCAL_API_ORIGIN = 'http://localhost:8080';
+const LOCAL_DASHBOARD_ORIGIN = 'http://localhost:5173';
 
-export type Env = z.infer<typeof envSchema>;
+/** Origins that would silently point emails and callbacks at a laptop if left to default. */
+const PRODUCTION_ORIGIN_VARS = ['API_ORIGIN', 'DASHBOARD_ORIGIN'] as const;
+
+/**
+ * The base schema plus the cross-field rules (queue driver vars, origin lists, production
+ * origins), then the dev-only defaults for the two public origins. Defaults are applied
+ * last so that "missing in production" is still detectable.
+ */
+export const envSchemaWithRules = envSchema
+  .superRefine((env, ctx) => {
+    if (env.NODE_ENV === 'production') {
+      for (const name of PRODUCTION_ORIGIN_VARS) {
+        const value = env[name];
+        if (value === undefined) {
+          ctx.addIssue({ code: 'custom', path: [name], message: 'required in production' });
+        } else if (!value.startsWith('https://')) {
+          ctx.addIssue({ code: 'custom', path: [name], message: 'must use https in production' });
+        }
+      }
+    }
+    for (const origin of splitList(env.CORS_ORIGIN)) {
+      if (!isOrigin(origin.replace(/\/+$/, ''))) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['CORS_ORIGIN'],
+          message: 'each entry must be a bare http(s) origin such as https://app.example.com',
+        });
+        break;
+      }
+    }
+    for (const pattern of splitList(env.CORS_ORIGIN_PATTERN)) {
+      if (!ORIGIN_PATTERN.test(pattern)) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['CORS_ORIGIN_PATTERN'],
+          message:
+            'each entry must be an http(s) origin containing * such as https://*-app.example.com',
+        });
+        break;
+      }
+    }
+    const required =
+      env.QUEUE_DRIVER === 'cloudtasks' ? CLOUD_TASKS_VARS : (['INTERNAL_SECRET'] as const);
+    for (const name of required) {
+      if (env[name] === undefined) {
+        ctx.addIssue({
+          code: 'custom',
+          path: [name],
+          message: `required when QUEUE_DRIVER=${env.QUEUE_DRIVER}`,
+        });
+      }
+    }
+  })
+  .transform((env) => ({
+    ...env,
+    API_ORIGIN: env.API_ORIGIN ?? LOCAL_API_ORIGIN,
+    DASHBOARD_ORIGIN: env.DASHBOARD_ORIGIN ?? LOCAL_DASHBOARD_ORIGIN,
+  }));
+
+/** The validated environment. Inferred from the output side, so the origins are plain strings. */
+export type Env = z.infer<typeof envSchemaWithRules>;
 
 export type QueueConfig =
   | { driver: 'local'; internalSecret: string }

@@ -47,8 +47,14 @@ CORS_ORIGIN_PATTERN=https://*-postrail.haroonsajid-ai.workers.dev
 GOOGLE_REDIRECT_URI=https://postrail-api.onrender.com/api/google/callback
 ```
 
+- `API_ORIGIN` is the API's own public URL. Better Auth builds magic links and OAuth
+  callback URLs from it. **Required in production and must be https**; the API exits at
+  startup naming the variable if it is missing or plain http. Render value:
+  `https://postrail-api.onrender.com`.
 - `DASHBOARD_ORIGIN` is the canonical dashboard. Invite and magic-link emails point here
-  and it is always trusted.
+  and it is always trusted. **Required in production and must be https**, same check as
+  above. Cloudflare value: `https://postrail.haroonsajid-ai.workers.dev`.
+- Outside production both default to localhost, so nothing changes for local development.
 - `CORS_ORIGIN` is a comma-separated list of further exact origins to trust. It may repeat
   `DASHBOARD_ORIGIN`; duplicates are dropped.
 - `CORS_ORIGIN_PATTERN` is a comma-separated list of wildcard origins for hosts that are

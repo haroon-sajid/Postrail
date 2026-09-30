@@ -131,6 +131,48 @@ describe('loadEnv', () => {
     });
   });
 
+  it('requires API_ORIGIN and DASHBOARD_ORIGIN in production', () => {
+    let error: unknown;
+    try {
+      loadEnv({ ...REQUIRED, NODE_ENV: 'production' });
+    } catch (e) {
+      error = e;
+    }
+    expect(error).toBeInstanceOf(EnvError);
+    const { problems } = error as EnvError;
+    expect(problems).toContain('API_ORIGIN: required in production');
+    expect(problems).toContain('DASHBOARD_ORIGIN: required in production');
+  });
+
+  it('requires https origins in production', () => {
+    expect(() =>
+      loadEnv({
+        ...REQUIRED,
+        NODE_ENV: 'production',
+        API_ORIGIN: 'http://postrail-api.onrender.com',
+        DASHBOARD_ORIGIN: 'http://postrail.haroonsajid-ai.workers.dev',
+      }),
+    ).toThrow(/API_ORIGIN: must use https in production[\s\S]*DASHBOARD_ORIGIN: must use https/);
+  });
+
+  it('accepts https origins in production and keeps them as given', () => {
+    const env = loadEnv({
+      ...REQUIRED,
+      NODE_ENV: 'production',
+      API_ORIGIN: 'https://postrail-api.onrender.com',
+      DASHBOARD_ORIGIN: 'https://postrail.haroonsajid-ai.workers.dev',
+    });
+    expect(env.API_ORIGIN).toBe('https://postrail-api.onrender.com');
+    expect(env.DASHBOARD_ORIGIN).toBe('https://postrail.haroonsajid-ai.workers.dev');
+  });
+
+  it('still defaults both origins to localhost outside production', () => {
+    expect(loadEnv({ ...REQUIRED, NODE_ENV: 'test' })).toMatchObject({
+      API_ORIGIN: 'http://localhost:8080',
+      DASHBOARD_ORIGIN: 'http://localhost:5173',
+    });
+  });
+
   it('rejects CORS_ORIGIN entries that are not bare origins', () => {
     expect(() => loadEnv({ ...REQUIRED, CORS_ORIGIN: 'https://a.example/app' })).toThrow(
       /CORS_ORIGIN:/,
