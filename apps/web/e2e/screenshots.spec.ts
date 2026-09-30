@@ -61,5 +61,18 @@ test.describe('screenshots', () => {
         });
       }
     }
+
+    // Shell states that no route reaches on its own: collapsed sidebar, open account menu.
+    await page.setViewportSize({ width: 1280, height: 1000 });
+    await page.goto(`/o/${E2E_ORG_ID}/logs`);
+    await page.getByRole('heading', { level: 1 }).waitFor();
+    await page.getByRole('button', { name: 'Collapse sidebar' }).click();
+    await page.waitForTimeout(400);
+    await page.screenshot({ path: 'test-results/screens/shell-collapsed-1280.png' });
+    await page.getByRole('button', { name: 'Expand sidebar' }).click();
+    await page.getByRole('button', { name: /Account menu/ }).click();
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: 'test-results/screens/shell-account-menu-1280.png' });
+    await page.keyboard.press('Escape');
   });
 });

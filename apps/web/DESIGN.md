@@ -41,15 +41,18 @@ tokens.css.
 
 ## Layout
 
-- Left sidebar, 248px, collapsible to 64px icons; under 1024px it becomes a drawer from
-  the top bar. Logo, org switcher (name + role), "Workspace" and "Settings" groups,
-  documentation link, collapse toggle. The active item has a tinted background and an
-  emerald icon.
-- Top bar, 56px, translucent white: breadcrumb (org / section / page), `Live` pill with a
-  pulsing dot, a search field that opens `Cmd+K`, docs, user avatar.
-- Page: 24px title + one-line description left, primary action right. Content up to
-  1440px wide with 16 / 24 / 32px gutters at mobile / tablet / desktop. Minimum viewport
-  375px with no horizontal scroll; tables scroll inside their card.
+- Left sidebar, 256px, flat on the page background (no border), collapsible to 64px
+  icons with tooltips; under 1024px it becomes a drawer behind a small header. Top to
+  bottom: wordmark + collapse toggle, the workspace card (avatar, "Workspace", name),
+  `Home` then the `Send`, `Data`, `Develop` and `Settings` groups, and at the bottom
+  the getting-started card (until done), the free-preview card, the account card (avatar,
+  email; opens account settings, theme and log out) and a Docs / Search row. The active
+  item has a tinted background; icons stay neutral.
+- No top bar. The page is one white panel with a 12px inset from the sidebar and the
+  viewport edges, 12px radius, hairline border. Inside it the `PageHeader` strip carries
+  the section icon, the title (16px semibold), a one-line description and the actions,
+  then the content with 20px padding. Content spans the panel; tables scroll inside
+  their card. Minimum viewport 375px with no horizontal scroll.
 - Grids: stat cards 1 → 2 → 4 columns (`sm`, `xl`); two-column detail layouts collapse
   under `lg`; side-by-side table + snippet only from `2xl`.
 

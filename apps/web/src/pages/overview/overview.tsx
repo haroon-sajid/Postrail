@@ -1,36 +1,14 @@
-import { useQuery } from '@tanstack/react-query';
-import { api, unwrap } from '@/api/client';
 import { useOrg } from '@/app/org-context';
 import { PageHeader } from '@/components/page-header';
 import { CardSkeleton, ErrorState, TableSkeleton } from '@/components/states';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useOverview } from './hooks';
+import { useOnboardingStatus, useOverview } from './hooks';
 import { MailboxUsage } from './mailbox-usage';
 import { OnboardingCard } from './onboarding';
 import { RecentFailures } from './recent-failures';
 import { SendsChart, SendsLegend } from './sends-chart';
 import { StatCard, StatCardSkeleton } from './stat-card';
-
-export function useOnboardingStatus(orgId: string) {
-  return useQuery({
-    queryKey: ['org', orgId, 'onboarding'],
-    queryFn: async () => {
-      const [mailboxes, keys, emails] = await Promise.all([
-        api.GET('/app/orgs/{orgId}/mailboxes', { params: { path: { orgId } } }).then(unwrap),
-        api.GET('/app/orgs/{orgId}/api-keys', { params: { path: { orgId } } }).then(unwrap),
-        api
-          .GET('/app/orgs/{orgId}/emails', { params: { path: { orgId }, query: { limit: 1 } } })
-          .then(unwrap),
-      ]);
-      return {
-        hasMailbox: mailboxes.data.length > 0,
-        hasApiKey: keys.data.some((k) => !k.revoked_at),
-        hasSent: emails.data.length > 0,
-      };
-    },
-  });
-}
 
 export function OverviewPage() {
   const { org } = useOrg();

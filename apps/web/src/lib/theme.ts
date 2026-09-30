@@ -22,9 +22,10 @@ export function applyTheme(theme: Theme): void {
   }
 }
 
-export function useTheme(): [Theme, () => void] {
+/** Current theme, a toggle, and a setter for menus that list both choices. */
+export function useTheme(): [Theme, () => void, (theme: Theme) => void] {
   const [theme, setTheme] = useState<Theme>(readTheme);
   useEffect(() => applyTheme(theme), [theme]);
   const toggle = useCallback(() => setTheme((t) => (t === 'dark' ? 'light' : 'dark')), []);
-  return [theme, toggle];
+  return [theme, toggle, setTheme];
 }

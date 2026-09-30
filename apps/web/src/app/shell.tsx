@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import {
   Check,
+  ChevronRight,
   ChevronsUpDown,
   LogOut,
   Menu as MenuIcon,
@@ -8,11 +9,22 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
+  Rocket,
   Search,
+  Settings,
+  Sprout,
   Sun,
 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
-import { NavLink, Navigate, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import {
+  Link,
+  NavLink,
+  Navigate,
+  Outlet,
+  useLocation,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 import { toast } from 'sonner';
 import { authClient } from '@/api/auth';
 import { errorMessage } from '@/api/client';
@@ -31,10 +43,14 @@ import {
 } from '@/components/ui/dialog';
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input, Label } from '@/components/ui/input';
@@ -42,13 +58,20 @@ import { WithTooltip } from '@/components/ui/tooltip';
 import { useTheme } from '@/lib/theme';
 import { useIsMobile } from '@/lib/use-media-query';
 import { cn, initials } from '@/lib/utils';
+import { useOnboardingStatus } from '@/pages/overview/hooks';
 import { CommandPalette } from './command-palette';
-import { breadcrumbFor, DOCS_URL, DocsIcon, MAIN_NAV, SETTINGS_NAV, type NavItem } from './nav';
+import { DOCS_URL, DocsIcon, NAV_GROUPS, type NavItem } from './nav';
 import { OrgContext, orgPath, useOrg, type OrgContextValue } from './org-context';
 import { FullPageSkeleton } from './shell-skeleton';
 
 const COLLAPSE_KEY = 'postrail.sidebar-collapsed';
 
+/**
+ * The console frame: a flat sidebar on the page background and one white content panel
+ * with a hairline border, inset from the edges. Everything the user is, or can switch,
+ * lives in the sidebar (workspace at the top, account at the bottom); the panel is only
+ * ever the page. Under 1024px the sidebar becomes a drawer behind a small header.
+ */
 export function AppShell() {
   const { orgId = '' } = useParams();
   const me = useMe();
@@ -96,6 +119,7 @@ export function AppShell() {
       return !c;
     });
   };
+  const openSearch = () => setSearchOpen(true);
 
   return (
     <OrgContext.Provider value={ctx}>
@@ -103,70 +127,53 @@ export function AppShell() {
         {!isMobile ? (
           <aside
             className={cn(
-              'sticky top-0 hidden h-screen shrink-0 flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200 lg:flex',
+              'sticky top-0 hidden h-screen shrink-0 flex-col transition-[width] duration-200 lg:flex',
               collapsed ? 'w-[var(--sidebar-width-collapsed)]' : 'w-[var(--sidebar-width)]',
             )}
             aria-label="Sidebar"
           >
-            <SidebarContent collapsed={collapsed} onToggle={toggleCollapsed} />
+            <SidebarContent
+              collapsed={collapsed}
+              onToggle={toggleCollapsed}
+              onSearch={openSearch}
+            />
           </aside>
         ) : null}
 
-        <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-30 flex h-[var(--topbar-height)] items-center gap-3 border-b border-border bg-bg/85 px-4 backdrop-blur sm:px-6 lg:px-8">
-            {isMobile ? (
+        <div className="flex min-w-0 flex-1 flex-col p-2 lg:py-3 lg:pl-0 lg:pr-3">
+          {isMobile ? (
+            <div className="mb-2 flex h-11 items-center gap-2 px-1">
               <Dialog open={drawerOpen} onOpenChange={setDrawerOpen}>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="-ml-2"
                   aria-label="Open navigation"
                   onClick={() => setDrawerOpen(true)}
                 >
                   <MenuIcon />
                 </Button>
                 <DrawerContent aria-label="Navigation">
-                  <SidebarContent collapsed={false} />
+                  <SidebarContent collapsed={false} onSearch={openSearch} />
                 </DrawerContent>
               </Dialog>
-            ) : null}
-            <Breadcrumb orgName={ctx.org.name} />
-            <div className="ml-auto flex items-center gap-2">
-              <LiveBadge />
-              <button
-                type="button"
-                className="hidden h-9 w-60 items-center gap-2 rounded-md border border-border bg-bg-subtle px-3 text-sm text-fg-muted shadow-xs transition-colors hover:border-border-strong hover:bg-bg md:flex"
-                onClick={() => setSearchOpen(true)}
-                aria-label="Search (Ctrl+K)"
-              >
-                <Search className="size-4" />
-                <span className="flex-1 text-left">Search…</span>
-                <kbd className="rounded-sm border border-border bg-bg px-1.5 py-0.5 text-[10px] font-medium text-fg-muted">
-                  ⌘K
-                </kbd>
-              </button>
+              <Logo variant="light" className="h-7 w-auto dark:hidden" />
+              <Logo variant="dark" className="hidden h-7 w-auto dark:block" />
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden"
+                className="ml-auto"
                 aria-label="Search"
-                onClick={() => setSearchOpen(true)}
+                onClick={openSearch}
               >
                 <Search />
               </Button>
-              <WithTooltip label="Documentation">
-                <Button asChild variant="ghost" size="icon" className="hidden sm:inline-flex">
-                  <a href={DOCS_URL} target="_blank" rel="noreferrer" aria-label="Documentation">
-                    <DocsIcon />
-                  </a>
-                </Button>
-              </WithTooltip>
-              <UserMenu />
             </div>
-          </header>
+          ) : null}
 
-          <main className="mx-auto w-full max-w-[var(--content-max)] flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-            <Outlet />
+          <main className="flex min-h-[calc(100vh-24px)] flex-1 flex-col overflow-hidden rounded-xl border border-border bg-bg shadow-xs">
+            <div className="flex-1 p-4 sm:p-5">
+              <Outlet />
+            </div>
           </main>
         </div>
       </div>
@@ -175,152 +182,169 @@ export function AppShell() {
   );
 }
 
-function LiveBadge() {
-  return (
-    <span
-      className="hidden items-center gap-1.5 rounded-full border border-success/25 bg-success-bg px-2.5 py-1 text-xs font-medium text-success-fg sm:inline-flex"
-      title="Sending through real mailboxes"
-    >
-      <span className="relative flex size-1.5">
-        <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60" />
-        <span className="relative inline-flex size-1.5 rounded-full bg-success" />
-      </span>
-      Live
-    </span>
-  );
-}
-
-function Breadcrumb({ orgName }: { orgName: string }) {
-  const { orgId = '' } = useParams();
-  const location = useLocation();
-  const sub = location.pathname.replace(orgPath(orgId), '');
-  const crumbs = breadcrumbFor(sub);
-  return (
-    <nav aria-label="Breadcrumb" className="min-w-0 truncate text-sm">
-      <ol className="flex items-center gap-2">
-        <li className="hidden truncate text-fg-muted sm:block">{orgName}</li>
-        {crumbs.map((c, i) => (
-          <li key={c} className="flex items-center gap-2">
-            <span className={cn('text-fg-faint', i === 0 && 'hidden sm:inline')} aria-hidden>
-              /
-            </span>
-            <span className={cn(i === crumbs.length - 1 ? 'font-medium text-fg' : 'text-fg-muted')}>
-              {c}
-            </span>
-          </li>
-        ))}
-      </ol>
-    </nav>
-  );
-}
-
-function SidebarContent({ collapsed, onToggle }: { collapsed: boolean; onToggle?: () => void }) {
+function SidebarContent({
+  collapsed,
+  onToggle,
+  onSearch,
+}: {
+  collapsed: boolean;
+  onToggle?: () => void;
+  onSearch: () => void;
+}) {
   const { orgId = '' } = useParams();
   return (
     <>
       <div
         className={cn(
-          'flex h-[var(--topbar-height)] shrink-0 items-center px-4',
-          collapsed && 'justify-center px-0',
+          'flex h-14 shrink-0 items-center px-4',
+          collapsed ? 'justify-center px-0' : 'justify-between',
         )}
       >
         {collapsed ? (
           <LogoIcon className="size-7" />
         ) : (
           <>
-            <Logo variant="light" className="h-8 w-auto dark:hidden" />
-            <Logo variant="dark" className="hidden h-8 w-auto dark:block" />
+            <Logo variant="light" className="h-7 w-auto dark:hidden" />
+            <Logo variant="dark" className="hidden h-7 w-auto dark:block" />
+            {onToggle ? <CollapseButton collapsed={false} onToggle={onToggle} /> : null}
           </>
         )}
       </div>
-      <div className={cn('px-3 pb-2', collapsed && 'px-2')}>
+      {collapsed && onToggle ? (
+        <div className="flex justify-center pb-2">
+          <CollapseButton collapsed onToggle={onToggle} />
+        </div>
+      ) : null}
+
+      <div className={cn('px-3 pb-1', collapsed && 'px-2')}>
         <OrgSwitcher collapsed={collapsed} />
       </div>
+
       <nav
-        className={cn(
-          'scrollbar-thin flex-1 space-y-6 overflow-y-auto px-3 py-3',
-          collapsed && 'px-2',
-        )}
+        className={cn('scrollbar-thin flex-1 overflow-y-auto px-3 py-2', collapsed && 'px-2')}
         aria-label="Main"
       >
-        <NavGroup items={MAIN_NAV} orgId={orgId} collapsed={collapsed} title="Workspace" />
-        <NavGroup items={SETTINGS_NAV} orgId={orgId} collapsed={collapsed} title="Settings" />
+        {NAV_GROUPS.map((group, i) => (
+          <div key={group.title ?? 'top'}>
+            {group.title ? (
+              collapsed ? (
+                <div className="mx-2 my-2 border-t border-sidebar-border" aria-hidden />
+              ) : (
+                <p className="mb-1 mt-4 px-2.5 text-[11px] font-semibold uppercase tracking-wider text-fg-faint">
+                  {group.title}
+                </p>
+              )
+            ) : null}
+            <ul className={cn('space-y-0.5', i === 0 && !collapsed && 'mt-1')}>
+              {group.items.map((item) => (
+                <li key={item.to || 'home'}>
+                  <SidebarLink item={item} orgId={orgId} collapsed={collapsed} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </nav>
-      <div className={cn('space-y-0.5 border-t border-sidebar-border p-3', collapsed && 'p-2')}>
-        <WithTooltip label={collapsed ? 'Docs' : undefined}>
-          <a
-            href={DOCS_URL}
-            target="_blank"
-            rel="noreferrer"
-            className={cn(navItemClass, collapsed && 'justify-center px-0')}
-          >
-            <DocsIcon />
-            {!collapsed ? <span>Documentation</span> : null}
-          </a>
-        </WithTooltip>
-        {onToggle ? (
-          <button
-            type="button"
-            onClick={onToggle}
-            className={cn(navItemClass, 'w-full', collapsed && 'justify-center px-0')}
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            {collapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
-            {!collapsed ? <span>Collapse</span> : null}
-          </button>
-        ) : null}
+
+      <div className={cn('space-y-2 px-3 pb-3', collapsed && 'px-2')}>
+        {!collapsed ? <GettingStartedCard /> : null}
+        {!collapsed ? <PreviewCard /> : null}
+        <UserCard collapsed={collapsed} />
+        <div
+          className={cn(
+            'flex items-center pt-1 text-xs text-fg-muted',
+            collapsed ? 'flex-col gap-1' : 'justify-between px-1',
+          )}
+        >
+          <WithTooltip label={collapsed ? 'Documentation' : undefined}>
+            <a
+              href={DOCS_URL}
+              target="_blank"
+              rel="noreferrer"
+              className={cn(footerLinkClass, collapsed && 'size-8 justify-center px-0')}
+            >
+              <DocsIcon />
+              {!collapsed ? 'Docs' : null}
+            </a>
+          </WithTooltip>
+          <WithTooltip label={collapsed ? 'Search (Ctrl+K)' : undefined}>
+            <button
+              type="button"
+              onClick={onSearch}
+              className={cn(footerLinkClass, collapsed && 'size-8 justify-center px-0')}
+              aria-label="Search (Ctrl+K)"
+            >
+              <Search />
+              {!collapsed ? (
+                <>
+                  Search
+                  <kbd className="ml-1 rounded-sm border border-border bg-bg px-1 py-px text-[10px] font-medium text-fg-muted">
+                    ⌘K
+                  </kbd>
+                </>
+              ) : null}
+            </button>
+          </WithTooltip>
+        </div>
       </div>
     </>
   );
 }
 
-const navItemClass =
-  'group flex h-9 items-center gap-3 rounded-md px-2.5 text-sm font-medium text-sidebar-fg transition-colors hover:bg-sidebar-active hover:text-sidebar-fg-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-fg-faint group-hover:[&_svg]:text-sidebar-fg-strong';
+const footerLinkClass =
+  'inline-flex h-8 items-center gap-1.5 rounded-md px-2 font-medium text-fg-muted transition-colors hover:bg-sidebar-active hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 [&_svg]:size-3.5';
 
-function NavGroup({
-  items,
-  orgId,
-  collapsed,
-  title,
-}: {
-  items: NavItem[];
-  orgId: string;
-  collapsed: boolean;
-  title?: string;
-}) {
+function CollapseButton({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
   return (
-    <div>
-      {title && !collapsed ? (
-        <p className="mb-1.5 px-2.5 text-[11px] font-semibold uppercase tracking-wider text-fg-faint">
-          {title}
-        </p>
-      ) : null}
-      <ul className="space-y-0.5">
-        {items.map((item) => (
-          <li key={item.to || 'overview'}>
-            <WithTooltip label={collapsed ? item.label : undefined}>
-              <NavLink
-                to={orgPath(orgId, item.to)}
-                end={item.end ?? false}
-                className={({ isActive }) =>
-                  cn(
-                    navItemClass,
-                    collapsed && 'justify-center px-0',
-                    isActive &&
-                      'bg-sidebar-active text-sidebar-fg-strong shadow-xs [&_svg]:text-primary',
-                  )
-                }
-              >
-                <item.icon />
-                {!collapsed ? <span className="truncate">{item.label}</span> : null}
-              </NavLink>
-            </WithTooltip>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <WithTooltip label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex size-8 items-center justify-center rounded-md text-fg-faint transition-colors hover:bg-sidebar-active hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 [&_svg]:size-4"
+        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+      >
+        {collapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
+      </button>
+    </WithTooltip>
   );
 }
+
+const navItemClass =
+  'group flex items-center rounded-md text-[13px] font-medium text-sidebar-fg transition-colors hover:bg-sidebar-active hover:text-sidebar-fg-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-fg-muted';
+
+function SidebarLink({
+  item,
+  orgId,
+  collapsed,
+}: {
+  item: NavItem;
+  orgId: string;
+  collapsed: boolean;
+}) {
+  return (
+    <WithTooltip label={collapsed ? item.label : undefined}>
+      <NavLink
+        to={orgPath(orgId, item.to)}
+        end={item.end ?? false}
+        aria-label={collapsed ? item.label : undefined}
+        className={({ isActive }) =>
+          cn(
+            navItemClass,
+            collapsed ? 'mx-auto size-9 justify-center' : 'h-9 gap-2.5 px-2.5',
+            isActive && 'bg-sidebar-active text-sidebar-fg-strong [&_svg]:text-sidebar-fg-strong',
+          )
+        }
+      >
+        <item.icon aria-hidden />
+        {!collapsed ? <span className="truncate">{item.label}</span> : null}
+      </NavLink>
+    </WithTooltip>
+  );
+}
+
+/** White card in the sidebar: workspace switcher, account, getting started. */
+const sidebarCardClass =
+  'flex w-full items-center gap-2.5 rounded-lg border border-border bg-bg text-left shadow-xs transition-colors hover:bg-bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40';
 
 function OrgSwitcher({ collapsed }: { collapsed: boolean }) {
   const { org, orgs } = useOrg();
@@ -333,29 +357,29 @@ function OrgSwitcher({ collapsed }: { collapsed: boolean }) {
           <button
             type="button"
             className={cn(
-              'flex h-10 w-full items-center gap-2.5 rounded-md border border-border bg-bg px-2.5 text-left text-sm shadow-xs transition-colors hover:bg-bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40',
-              collapsed && 'justify-center px-0',
+              sidebarCardClass,
+              collapsed ? 'mx-auto size-10 justify-center' : 'h-12 px-2.5',
             )}
-            aria-label={`Switch org (current: ${org.name})`}
+            aria-label={`Switch workspace (current: ${org.name})`}
           >
-            <span className="flex size-6 shrink-0 items-center justify-center rounded-sm bg-navy text-[11px] font-semibold text-white dark:bg-emerald dark:text-navy">
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-navy text-xs font-semibold text-white dark:bg-emerald dark:text-navy">
               {initials(org.name)}
             </span>
             {!collapsed ? (
               <>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-medium text-fg">{org.name}</span>
-                  <span className="block truncate text-[11px] capitalize leading-3 text-fg-muted">
-                    {org.role}
+                  <span className="block text-[11px] leading-3 text-fg-muted">Workspace</span>
+                  <span className="block truncate text-sm font-semibold leading-5 text-fg">
+                    {org.name}
                   </span>
                 </span>
-                <ChevronsUpDown className="size-4 shrink-0 text-fg-faint" />
+                <ChevronsUpDown className="size-4 shrink-0 text-fg-faint" aria-hidden />
               </>
             ) : null}
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-60">
-          <DropdownMenuLabel>Organisations</DropdownMenuLabel>
+        <DropdownMenuContent align="start" className="w-[calc(var(--sidebar-width)-24px)]">
+          <DropdownMenuLabel>Workspaces</DropdownMenuLabel>
           {orgs.map((o: Org) => (
             <DropdownMenuItem key={o.id} onSelect={() => void navigate(orgPath(o.id))}>
               <span className="flex size-5 shrink-0 items-center justify-center rounded-sm bg-bg-muted text-[10px] font-semibold text-fg">
@@ -368,12 +392,143 @@ function OrgSwitcher({ collapsed }: { collapsed: boolean }) {
           ))}
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={() => setCreating(true)}>
-            <Plus /> New organisation
+            <Plus /> New workspace
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       <CreateOrgDialog open={creating} onOpenChange={setCreating} />
     </>
+  );
+}
+
+/** Progress toward a first email, until every step is done. Mirrors the overview card. */
+function GettingStartedCard() {
+  const { org } = useOrg();
+  const status = useOnboardingStatus(org.id);
+  if (!status.data) return null;
+  const done = [status.data.hasMailbox, status.data.hasApiKey, status.data.hasSent].filter(
+    Boolean,
+  ).length;
+  if (done === 3) return null;
+  return (
+    <SidebarCardLink to={orgPath(org.id)} icon={<Rocket className="text-primary" />}>
+      <span className="flex-1 truncate text-sm font-medium text-fg">Getting started</span>
+      <span className="text-xs tabular text-fg-muted">{done}/3</span>
+    </SidebarCardLink>
+  );
+}
+
+function PreviewCard() {
+  const { org } = useOrg();
+  return (
+    <SidebarCardLink to={orgPath(org.id, '/settings/billing')} icon={<Sprout />}>
+      <span className="flex-1 truncate text-sm font-medium text-fg">Free preview</span>
+    </SidebarCardLink>
+  );
+}
+
+function SidebarCardLink({
+  to,
+  icon,
+  children,
+}: {
+  to: string;
+  icon: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <Link to={to} className={cn(sidebarCardClass, 'h-10 px-2.5 [&_svg]:size-4 [&_svg]:shrink-0')}>
+      <span className="text-fg-muted">{icon}</span>
+      {children}
+      <ChevronRight className="text-fg-faint" aria-hidden />
+    </Link>
+  );
+}
+
+function UserCard({ collapsed }: { collapsed: boolean }) {
+  const { user, org } = useOrg();
+  const [theme, , setTheme] = useTheme();
+  const client = useQueryClient();
+  const navigate = useNavigate();
+  const avatar = user.image ? (
+    <img
+      src={user.image}
+      alt=""
+      className="size-7 shrink-0 rounded-full"
+      referrerPolicy="no-referrer"
+    />
+  ) : (
+    <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-emerald text-xs font-semibold text-navy">
+      {initials(user.name || user.email)}
+    </span>
+  );
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className={cn(
+            sidebarCardClass,
+            collapsed ? 'mx-auto size-10 justify-center' : 'h-12 px-2.5',
+          )}
+          aria-label={`Account menu for ${user.email}`}
+        >
+          {avatar}
+          {!collapsed ? (
+            <>
+              <span className="min-w-0 flex-1 truncate text-sm text-fg">{user.email}</span>
+              <ChevronsUpDown className="size-4 shrink-0 text-fg-faint" aria-hidden />
+            </>
+          ) : null}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent side="top" align="start" className="w-[calc(var(--sidebar-width)-24px)]">
+        <DropdownMenuLabel className="flex items-center gap-2.5 py-2.5">
+          {avatar}
+          <span className="min-w-0">
+            <span className="block truncate text-sm font-medium text-fg">
+              {user.name || 'Signed in'}
+            </span>
+            <span className="block truncate font-normal text-fg-muted">{user.email}</span>
+          </span>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={() => void navigate(orgPath(org.id, '/settings'))}>
+          <Settings /> Account settings
+        </DropdownMenuItem>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            {theme === 'dark' ? <Moon /> : <Sun />}
+            {theme === 'dark' ? 'Dark' : 'Light'}
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <DropdownMenuCheckboxItem
+              checked={theme === 'light'}
+              onCheckedChange={() => setTheme('light')}
+            >
+              Light
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              checked={theme === 'dark'}
+              onCheckedChange={() => setTheme('dark')}
+            >
+              Dark
+            </DropdownMenuCheckboxItem>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onSelect={async () => {
+            await authClient.signOut();
+            client.setQueryData(meKey, null);
+            await client.invalidateQueries();
+            void navigate('/login');
+          }}
+        >
+          <LogOut /> Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -405,7 +560,7 @@ function CreateOrgDialog({
           }}
         >
           <DialogHeader>
-            <DialogTitle>New organisation</DialogTitle>
+            <DialogTitle>New workspace</DialogTitle>
             <DialogDescription>
               A separate workspace with its own mailboxes, keys and members.
             </DialogDescription>
@@ -431,62 +586,11 @@ function CreateOrgDialog({
               disabled={!name.trim()}
               loading={create.isPending}
             >
-              Create organisation
+              Create workspace
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function UserMenu() {
-  const { user } = useOrg();
-  const [theme, toggleTheme] = useTheme();
-  const client = useQueryClient();
-  const navigate = useNavigate();
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          type="button"
-          className="flex size-8 items-center justify-center rounded-full bg-navy text-xs font-semibold text-white ring-2 ring-bg ring-offset-1 ring-offset-border transition hover:ring-offset-border-strong focus-visible:outline-none focus-visible:ring-ring dark:bg-emerald dark:text-navy"
-          aria-label={`Account menu for ${user.email}`}
-        >
-          {user.image ? (
-            <img
-              src={user.image}
-              alt=""
-              className="size-8 rounded-full"
-              referrerPolicy="no-referrer"
-            />
-          ) : (
-            initials(user.name || user.email)
-          )}
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-64">
-        <DropdownMenuLabel className="truncate">
-          <span className="block text-sm text-fg">{user.name || 'Signed in'}</span>
-          <span className="block font-normal text-fg-muted">{user.email}</span>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={toggleTheme}>
-          {theme === 'dark' ? <Sun /> : <Moon />}
-          {theme === 'dark' ? 'Light mode' : 'Dark mode'}
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onSelect={async () => {
-            await authClient.signOut();
-            client.setQueryData(meKey, null);
-            await client.invalidateQueries();
-            void navigate('/login');
-          }}
-        >
-          <LogOut /> Sign out
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 }
