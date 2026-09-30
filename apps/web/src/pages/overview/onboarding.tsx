@@ -1,6 +1,6 @@
 import { ArrowRight, Check, Circle } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { API_URL } from '@/lib/config';
+import { PUBLIC_API_URL } from '@/lib/config';
 import { orgPath, useOrg } from '@/app/org-context';
 import { CodeBlock } from '@/components/code-block';
 import { Button } from '@/components/ui/button';
@@ -18,14 +18,14 @@ export interface OnboardingStatus {
 export const KEY_PLACEHOLDER = 'pr_live_YOUR_API_KEY';
 
 export function curlSnippet(apiKey = KEY_PLACEHOLDER): string {
-  return `curl -X POST ${API_URL}/v1/emails \\
+  return `curl -X POST ${PUBLIC_API_URL}/v1/emails \\
   -H "Authorization: Bearer ${apiKey}" \\
   -H "Content-Type: application/json" \\
   -d '{"to":"you@example.com","subject":"Hello from Postrail","text":"It works."}'`;
 }
 
 export function nodeSnippet(apiKey = KEY_PLACEHOLDER): string {
-  return `const res = await fetch('${API_URL}/v1/emails', {
+  return `const res = await fetch('${PUBLIC_API_URL}/v1/emails', {
   method: 'POST',
   headers: {
     Authorization: 'Bearer ${apiKey}',

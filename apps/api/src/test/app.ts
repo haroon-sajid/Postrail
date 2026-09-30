@@ -56,6 +56,8 @@ export interface TestAppOverrides {
   dashboardOrigin?: string;
   /** Extra wildcard origins, e.g. preview deployments, on top of the dashboard origin. */
   originPatterns?: string[];
+  /** Defaults to true, matching local dev. */
+  corsEnabled?: boolean;
 }
 
 /** Test sessions: the user is passed as a header instead of a Better Auth cookie. */
@@ -156,6 +158,7 @@ export function createTestApp(overrides: TestAppOverrides = {}) {
       origins: [overrides.dashboardOrigin ?? TEST_DASHBOARD_ORIGIN],
       patterns: overrides.originPatterns,
     }),
+    corsEnabled: overrides.corsEnabled ?? true,
   });
 
   /** Mints a key for `orgId` and returns the headers a client would send. */

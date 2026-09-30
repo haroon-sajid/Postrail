@@ -68,6 +68,15 @@ describe('CORS on /app', () => {
     expect(res.headers.get('access-control-allow-credentials')).toBe('true');
   });
 
+  it('emits no CORS headers at all when disabled, as in production behind the proxy', async () => {
+    const prod = createTestApp({ corsEnabled: false });
+    const res = await prod.app.request('/app/me', {
+      method: 'OPTIONS',
+      headers: { origin: 'http://localhost:5173', 'access-control-request-method': 'GET' },
+    });
+    expect(res.headers.get('access-control-allow-origin')).toBeNull();
+  });
+
   it('sets no allow-origin header for a foreign origin', async () => {
     const res = await preflight('https://evil.example');
     expect(res.headers.get('access-control-allow-origin')).toBeNull();

@@ -3,8 +3,9 @@ import { API_URL } from '@/lib/config';
 import type { paths } from './schema';
 
 /**
- * Typed client generated from the API's own OpenAPI document. The API is on another
- * origin, so the session cookie only travels with credentials: 'include'.
+ * Typed client generated from the API's own OpenAPI document. API_URL is empty behind the
+ * Worker proxy (relative requests) and absolute in local dev; credentials: 'include' keeps
+ * the session cookie travelling in the cross-origin case.
  */
 export const api = createClient<paths>({ baseUrl: API_URL, credentials: 'include' });
 

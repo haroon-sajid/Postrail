@@ -1,15 +1,18 @@
 /**
  * Where the API lives. This is the only place the dashboard learns the API URL.
  *
- * Vite bakes VITE_API_URL into the bundle at build time, so it must be set as a build
- * variable wherever the bundle is built (Cloudflare, CI, a laptop). A dev server on
- * localhost falls back to the local API. Anything else without the variable throws
- * here, at import time, so a misconfigured production build fails on first paint
- * instead of quietly calling localhost from a user's browser.
+ * In production the Cloudflare Worker (src/worker.ts) proxies /api, /v1, /app and the
+ * docs to the API, so the dashboard talks to its own origin and API_URL is the empty
+ * string: every request is a relative URL on the current host. A dev server on localhost
+ * talks to the local API directly. VITE_API_URL overrides both, for the rare build that
+ * must call an API on another origin; Vite bakes it in at build time.
  */
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
 
 export const LOCAL_API_URL = 'http://localhost:8080';
+
+/** Same origin as the page: requests use relative URLs. */
+export const SAME_ORIGIN = '';
 
 export interface ApiUrlEnv {
   readonly VITE_API_URL?: string;
@@ -19,10 +22,7 @@ export function resolveApiUrl(env: ApiUrlEnv, hostname: string): string {
   const configured = env.VITE_API_URL?.trim();
   if (configured) return normalize(configured);
   if (LOCAL_HOSTS.has(hostname)) return LOCAL_API_URL;
-  throw new Error(
-    `VITE_API_URL is not set, and ${hostname} is not localhost, so this build has no API to talk to. ` +
-      'Set VITE_API_URL as a build-time variable and rebuild; Vite bakes it into the bundle.',
-  );
+  return SAME_ORIGIN;
 }
 
 function normalize(value: string): string {
@@ -40,4 +40,8 @@ function normalize(value: string): string {
   return value.replace(/\/+$/, '');
 }
 
+/** Base for requests. Empty when the API is same-origin. */
 export const API_URL = resolveApiUrl(import.meta.env, window.location.hostname);
+
+/** Absolute base for links and code samples shown to people. */
+export const PUBLIC_API_URL = API_URL || window.location.origin;

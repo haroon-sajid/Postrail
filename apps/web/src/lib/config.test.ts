@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { LOCAL_API_URL, resolveApiUrl } from './config';
+import { LOCAL_API_URL, resolveApiUrl, SAME_ORIGIN } from './config';
 
 const PROD = 'postrail.haroonsajid-ai.workers.dev';
 
@@ -28,9 +28,12 @@ describe('resolveApiUrl', () => {
     expect(resolveApiUrl({ VITE_API_URL: '  ' }, '[::1]')).toBe(LOCAL_API_URL);
   });
 
-  it('throws a clear error off localhost when the variable is unset', () => {
-    expect(() => resolveApiUrl({}, PROD)).toThrow(/VITE_API_URL is not set/);
-    expect(() => resolveApiUrl({}, PROD)).toThrow(new RegExp(PROD));
+  it('defaults to same origin everywhere else, so the Worker proxy handles the API', () => {
+    expect(resolveApiUrl({}, PROD)).toBe(SAME_ORIGIN);
+    expect(resolveApiUrl({ VITE_API_URL: '' }, 'pr-7-postrail.haroonsajid-ai.workers.dev')).toBe(
+      SAME_ORIGIN,
+    );
+    expect(SAME_ORIGIN).toBe('');
   });
 
   it('rejects a value that is not an absolute http(s) URL', () => {

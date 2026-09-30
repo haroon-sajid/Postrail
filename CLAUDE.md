@@ -75,7 +75,9 @@ docs/adr            Architecture decision records.
     `pnpm --filter @postrail/web api:types`. The web app imports
     `@postrail/shared/browser`, never the package root (it pulls in `node:crypto`). The API
     URL comes only from `apps/web/src/lib/config.ts` (`VITE_API_URL`, baked in at build
-    time; see `docs/deploy.md`).
+    time; see `docs/deploy.md`). In production the Worker in `apps/web/src/worker.ts`
+    proxies `/api`, `/v1`, `/app`, `/openapi.json`, `/docs` and `/health` to the API so the
+    dashboard is same-origin and cookies are first-party (ADR 0009).
 
 ## Commands
 

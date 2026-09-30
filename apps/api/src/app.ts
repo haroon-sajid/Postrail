@@ -1,4 +1,5 @@
 import { swaggerUI } from '@hono/swagger-ui';
+import { type MiddlewareHandler } from 'hono';
 import { cors } from 'hono/cors';
 import { requireApiKey } from './lib/auth';
 import { csrfProtection } from './lib/csrf';
@@ -55,16 +56,23 @@ export interface AppDeps {
   authHandler?: (request: Request) => Promise<Response>;
   /** Browser origins allowed to call /app and /api/auth with cookies. See lib/origins.ts. */
   isAllowedOrigin: OriginMatcher;
+  /**
+   * Emit CORS headers for allowed origins. Only local dev needs them: in production the
+   * dashboard's Worker proxies the API on the same origin, so no CORS is the safer default.
+   */
+  corsEnabled: boolean;
 }
 
 /** Builds the HTTP app from explicit dependencies so tests never touch real env or DB. */
 export function createApp(deps: AppDeps) {
   const app = createRouter();
   // Echo the origin back only when it is trusted; anything else gets no CORS headers.
-  const browser = cors({
-    origin: (origin) => (deps.isAllowedOrigin(origin) ? origin : null),
-    credentials: true,
-  });
+  const browser: MiddlewareHandler = deps.corsEnabled
+    ? cors({
+        origin: (origin) => (deps.isAllowedOrigin(origin) ? origin : null),
+        credentials: true,
+      })
+    : (_c, next) => next();
 
   app.use(requestLogging(deps.logger));
   app.onError(createErrorHandler(deps.logger));

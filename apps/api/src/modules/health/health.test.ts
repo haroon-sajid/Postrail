@@ -15,4 +15,12 @@ describe('health', () => {
     const body: unknown = await res.json();
     expect(healthResponseSchema.parse(body)).toEqual({ ok: true, version: 'test' });
   });
+
+  it('GET /health returns the same payload, for callers behind the dashboard proxy', async () => {
+    const { app } = createTestApp();
+    const res = await app.request('/health');
+    expect(res.status).toBe(200);
+    const body: unknown = await res.json();
+    expect(healthResponseSchema.parse(body)).toEqual({ ok: true, version: 'test' });
+  });
 });

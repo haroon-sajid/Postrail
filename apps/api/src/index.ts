@@ -162,6 +162,7 @@ function main(): void {
     sessionResolver: sessionResolverFor(auth),
     authHandler: (request) => auth.handler(request),
     isAllowedOrigin: createOriginMatcher(browserOrigins),
+    corsEnabled: env.NODE_ENV !== 'production',
   });
 
   serve({ fetch: app.fetch, port: env.PORT }, (info) => {

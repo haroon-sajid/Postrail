@@ -1,8 +1,26 @@
 {
   "name": "postrail",
+  "main": "src/worker.ts",
   "compatibility_date": "2026-09-01",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     "not_found_handling": "single-page-application",
+    // Only these paths run src/worker.ts (the API proxy); everything else is served
+    // straight from the static assets. Keep in sync with isProxiedPath in src/worker.ts.
+    "run_worker_first": [
+      "/api/*",
+      "/v1/*",
+      "/app/*",
+      "/openapi.json",
+      "/docs",
+      "/docs/*",
+      "/health",
+    ],
+  },
+  "vars": {
+    // Where the Worker forwards API traffic. Not secret. Override per environment in the
+    // Cloudflare dashboard if the API moves.
+    "API_UPSTREAM": "https://postrail-api.onrender.com",
   },
 }
