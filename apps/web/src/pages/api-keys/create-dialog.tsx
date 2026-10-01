@@ -46,7 +46,7 @@ export function CreateKeyDialog({ open, onOpenChange, create }: CreateKeyDialogP
 
   return (
     <Dialog open={open} onOpenChange={close}>
-      <DialogContent size="sm">
+      <DialogContent size="md">
         {created ? (
           <>
             <DialogHeader>
@@ -84,8 +84,8 @@ export function CreateKeyDialog({ open, onOpenChange, create }: CreateKeyDialogP
             <DialogHeader>
               <DialogTitle>Create API key</DialogTitle>
               <DialogDescription>
-                Keys act for the whole organisation. Name it after the app or environment that will
-                use it.
+                Keys act for the whole workspace. Name it after the app or environment that will use
+                it.
               </DialogDescription>
             </DialogHeader>
             <DialogBody>

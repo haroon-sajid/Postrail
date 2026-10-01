@@ -66,7 +66,7 @@ export function WebhookDialog({
 
   return (
     <Dialog open={open} onOpenChange={close}>
-      <DialogContent size="sm">
+      <DialogContent size="md">
         {created ? (
           <>
             <DialogHeader>

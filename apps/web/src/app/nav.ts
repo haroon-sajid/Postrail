@@ -1,26 +1,37 @@
 import {
+  BarChart3,
+  BellRing,
   BookOpen,
-  Building2,
+  Contact,
   CreditCard,
   FileText,
+  FlaskConical,
   Home,
   Inbox,
   KeyRound,
   ListFilter,
+  Plug,
+  Send,
+  Settings,
   ShieldBan,
-  Users,
   Webhook,
   type LucideIcon,
 } from 'lucide-react';
 import { PUBLIC_API_URL } from '@/lib/config';
 
+export const DOCS_URL = `${PUBLIC_API_URL}/docs`;
+
 export interface NavItem {
   label: string;
-  /** Path under the org, '' for the overview. */
+  /** Route path, '/' for the overview. For an external item, its URL. */
   to: string;
   icon: LucideIcon;
   /** Exact match for the index route so it is not highlighted for every child. */
   end?: boolean;
+  /** `soon` marks a page that only describes a planned feature (pages/upcoming). */
+  badge?: 'soon';
+  /** Leaves the console: opens in a new tab and is never the current page. */
+  external?: boolean;
 }
 
 export interface NavGroup {
@@ -29,21 +40,34 @@ export interface NavGroup {
   items: NavItem[];
 }
 
-/** The sidebar, top to bottom. Titles follow what the user is doing, not our modules. */
+/**
+ * The sidebar, top to bottom. Titles follow what the user is doing, not our modules.
+ * System holds what is configured once; members, profile and the audit log are tabs of
+ * Settings rather than items of their own.
+ */
 export const NAV_GROUPS: NavGroup[] = [
-  { items: [{ label: 'Home', to: '', icon: Home, end: true }] },
+  {
+    items: [
+      { label: 'Home', to: '/', icon: Home, end: true },
+      { label: 'Docs', to: DOCS_URL, icon: BookOpen, external: true },
+    ],
+  },
   {
     title: 'Send',
     items: [
       { label: 'Mailboxes', to: '/mailboxes', icon: Inbox },
       { label: 'Templates', to: '/templates', icon: FileText },
+      { label: 'Broadcasts', to: '/broadcasts', icon: Send, badge: 'soon' },
+      { label: 'Contacts', to: '/contacts', icon: Contact, badge: 'soon' },
     ],
   },
   {
-    title: 'Data',
+    title: 'Observe',
     items: [
       { label: 'Logs', to: '/logs', icon: ListFilter },
+      { label: 'Metrics', to: '/metrics', icon: BarChart3, badge: 'soon' },
       { label: 'Suppressions', to: '/suppressions', icon: ShieldBan },
+      { label: 'Alerts', to: '/alerts', icon: BellRing, badge: 'soon' },
     ],
   },
   {
@@ -51,33 +75,24 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: 'API Keys', to: '/api-keys', icon: KeyRound },
       { label: 'Webhooks', to: '/webhooks', icon: Webhook },
+      { label: 'Playground', to: '/playground', icon: FlaskConical, badge: 'soon' },
     ],
   },
   {
-    title: 'Settings',
+    title: 'System',
     items: [
-      { label: 'General', to: '/settings', icon: Building2, end: true },
-      { label: 'Members', to: '/settings/members', icon: Users },
-      { label: 'Billing', to: '/settings/billing', icon: CreditCard },
+      { label: 'Integrations', to: '/integrations', icon: Plug, badge: 'soon' },
+      { label: 'Billing', to: '/billing', icon: CreditCard },
+      { label: 'Settings', to: '/settings', icon: Settings },
     ],
   },
 ];
 
-export const ALL_NAV_ITEMS: NavItem[] = NAV_GROUPS.flatMap((g) => g.items);
+const ROUTED_ITEMS: NavItem[] = NAV_GROUPS.flatMap((g) => g.items).filter((n) => !n.external);
 
-export const DOCS_URL = `${PUBLIC_API_URL}/docs`;
-export const DocsIcon = BookOpen;
-
-/** The nav item that owns `subPath` (e.g. "/webhooks/123" belongs to Webhooks). */
-export function navItemFor(subPath: string): NavItem | undefined {
-  return ALL_NAV_ITEMS.filter((n) =>
-    n.end ? subPath === n.to : n.to !== '' && subPath.startsWith(n.to),
-  ).sort((a, b) => b.to.length - a.to.length)[0];
-}
-
-/** Breadcrumb labels for a path, e.g. "/settings/members" -> ["Settings", "Members"]. */
-export function breadcrumbFor(subPath: string): string[] {
-  const match = navItemFor(subPath);
-  if (!match) return subPath === '' ? ['Home'] : ['Not found'];
-  return subPath.startsWith('/settings') ? ['Settings', match.label] : [match.label];
+/** The nav item that owns `path` (e.g. "/webhooks/123" belongs to Webhooks). */
+export function navItemFor(path: string): NavItem | undefined {
+  return ROUTED_ITEMS.filter((n) => (n.end ? path === n.to : path.startsWith(n.to))).sort(
+    (a, b) => b.to.length - a.to.length,
+  )[0];
 }

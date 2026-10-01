@@ -1,81 +1,127 @@
-import {
-  DEFAULT_MAILBOX_DAILY_LIMIT,
-  INVITE_TTL_DAYS,
-  MAX_BATCH_SIZE,
-  MAX_BODY_CHARS,
-  MAX_WEBHOOK_ATTEMPTS,
-} from '@postrail/shared/browser';
+import { Pencil, Plus, Settings2 } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { useOrg } from '@/app/org-context';
 import { PageHeader } from '@/components/page-header';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { LineTabsList, LineTabsTrigger, Tabs, TabsContent } from '@/components/ui/tabs';
+import { PackagesTab } from './billing-packages';
+import { PaymentsTab } from './billing-payments';
+import { UtilizationTab } from './billing-utilization';
+import { SettingsLayout } from './layout';
+import { notAvailableYet } from './not-available';
 
-const LIMITS: { label: string; value: string; note: string }[] = [
-  {
-    label: 'Sends per mailbox per day',
-    value: DEFAULT_MAILBOX_DAILY_LIMIT.toLocaleString(),
-    note: 'Adjustable per mailbox. Gmail itself caps free accounts around 500.',
-  },
-  {
-    label: 'API requests',
-    value: '120 burst, 2 per second',
-    note: 'Per API key. Over the limit returns RATE_LIMITED with Retry-After.',
-  },
-  {
-    label: 'Messages per batch call',
-    value: MAX_BATCH_SIZE.toLocaleString(),
-    note: 'POST /v1/emails/batch',
-  },
-  {
-    label: 'Body size',
-    value: `${(MAX_BODY_CHARS / 1000).toLocaleString()}k characters`,
-    note: 'HTML and text combined.',
-  },
-  {
-    label: 'Webhook delivery attempts',
-    value: String(MAX_WEBHOOK_ATTEMPTS),
-    note: 'With exponential backoff before a delivery is marked failed.',
-  },
-  {
-    label: 'Invite link validity',
-    value: `${INVITE_TTL_DAYS} days`,
-    note: 'Members, mailboxes, keys, templates and webhooks are otherwise unlimited.',
-  },
-];
+const TABS = ['utilization', 'payments', 'packages'] as const;
+type BillingTab = (typeof TABS)[number];
 
+/**
+ * Subscription at a glance, then usage, payments and plans as tabs. The open tab lives in
+ * the URL (`?tab=packages`) so a link lands on it. Billing itself does not exist yet, so
+ * usage is real and everything about money is laid out but inert.
+ */
 export function BillingSettingsPage() {
+  const { org } = useOrg();
+  const [params, setParams] = useSearchParams();
+  const requested = params.get('tab');
+  const tab: BillingTab = TABS.find((t) => t === requested) ?? 'utilization';
+  const setTab = (next: string) =>
+    setParams(next === 'utilization' ? {} : { tab: next }, { replace: true });
+
   return (
     <>
-      <PageHeader title="Billing" description="What this organisation can use." />
-      <div className="max-w-2xl space-y-6">
+      <PageHeader title="Billing" description="Your plan, usage, payments and packages." />
+      <SettingsLayout>
         <Card>
-          <CardHeader>
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                Free plan <Badge tone="success">Current</Badge>
-              </CardTitle>
-              <CardDescription>
-                Postrail is free while in preview. Paid plans and invoices are not available yet.
-              </CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <dl className="divide-y divide-border">
-              {LIMITS.map((l) => (
-                <div
-                  key={l.label}
-                  className="grid gap-1 px-5 py-3.5 sm:grid-cols-[1fr_auto] sm:gap-4"
+          <dl className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            <SummaryItem label="Workspace">
+              <span className="truncate text-fg-muted">{org.name}</span>
+              <Button asChild size="icon-sm" aria-label="Rename workspace">
+                <Link to="/settings">
+                  <Pencil />
+                </Link>
+              </Button>
+            </SummaryItem>
+            <SummaryItem label="Plan">
+              Free
+              <Button size="icon-sm" aria-label="Change plan" onClick={() => setTab('packages')}>
+                <Settings2 />
+              </Button>
+            </SummaryItem>
+            <SummaryItem label="Monthly add-ons">
+              $0.00 <span className="text-xs font-normal text-fg-muted">/mo</span>
+            </SummaryItem>
+            <SummaryItem
+              label="Credit balance"
+              footer={
+                <Button size="sm" onClick={() => notAvailableYet('Applying a coupon')}>
+                  Apply coupon
+                </Button>
+              }
+            >
+              $0.00
+              <Button
+                size="icon-sm"
+                aria-label="Add credit"
+                onClick={() => notAvailableYet('Adding credit')}
+              >
+                <Plus />
+              </Button>
+            </SummaryItem>
+            <SummaryItem
+              label="Next invoice"
+              footer={
+                <button
+                  type="button"
+                  className="rounded-sm text-xs text-fg-muted underline-offset-4 hover:text-fg hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+                  onClick={() => setTab('payments')}
                 >
-                  <div className="min-w-0">
-                    <dt className="text-sm font-medium text-fg">{l.label}</dt>
-                    <dd className="text-xs text-fg-muted">{l.note}</dd>
-                  </div>
-                  <dd className="tabular text-sm text-fg sm:text-right">{l.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </CardContent>
+                  Add payment method
+                </button>
+              }
+            >
+              None
+            </SummaryItem>
+          </dl>
         </Card>
-      </div>
+
+        <Tabs value={tab} onValueChange={setTab}>
+          <LineTabsList aria-label="Billing sections">
+            <LineTabsTrigger value="utilization">Utilization</LineTabsTrigger>
+            <LineTabsTrigger value="payments">Payments</LineTabsTrigger>
+            <LineTabsTrigger value="packages">Packages</LineTabsTrigger>
+          </LineTabsList>
+          <TabsContent value="utilization" className="pt-5 focus-visible:outline-none">
+            <UtilizationTab />
+          </TabsContent>
+          <TabsContent value="payments" className="pt-5 focus-visible:outline-none">
+            <PaymentsTab />
+          </TabsContent>
+          <TabsContent value="packages" className="pt-5 focus-visible:outline-none">
+            <PackagesTab />
+          </TabsContent>
+        </Tabs>
+      </SettingsLayout>
     </>
+  );
+}
+
+function SummaryItem({
+  label,
+  footer,
+  children,
+}: {
+  label: string;
+  footer?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <div className="min-w-0 px-5 py-5">
+      <dt className="text-xs text-fg-muted">{label}</dt>
+      <dd className="mt-2 flex min-h-8 items-center gap-2 text-xl font-semibold leading-7 text-fg">
+        {children}
+      </dd>
+      {footer ? <dd className="mt-2">{footer}</dd> : null}
+    </div>
   );
 }

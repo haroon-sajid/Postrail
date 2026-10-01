@@ -14,7 +14,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import type { z } from 'zod';
 import { errorMessage } from '@/api/client';
-import { orgPath, useOrg } from '@/app/org-context';
+import { useOrg } from '@/app/org-context';
 import { PageHeader } from '@/components/page-header';
 import { ErrorState } from '@/components/states';
 import { Badge } from '@/components/ui/badge';
@@ -77,7 +77,7 @@ function Editor({ initial, id }: { initial: FormValues; id: string | undefined }
   const navigate = useNavigate();
   const create = useCreateTemplate(org.id);
   const update = useUpdateTemplate(org.id);
-  const [theme] = useTheme();
+  const { theme } = useTheme();
   const [sample, setSample] = useState('{\n  "name": "Ada",\n  "code": "482913"\n}');
   const [testing, setTesting] = useState(false);
   const form = useForm<FormValues>({
@@ -107,7 +107,7 @@ function Editor({ initial, id }: { initial: FormValues; id: string | undefined }
       } else {
         const created = await create.mutateAsync(values);
         toast.success(`Created ${created.slug}`);
-        void navigate(orgPath(org.id, `/templates/${created.id}`), { replace: true });
+        void navigate(`/templates/${created.id}`, { replace: true });
       }
     } catch (error) {
       toast.error(errorMessage(error));
@@ -126,7 +126,7 @@ function Editor({ initial, id }: { initial: FormValues; id: string | undefined }
         actions={
           <>
             <Button asChild variant="ghost">
-              <Link to={orgPath(org.id, '/templates')}>
+              <Link to="/templates">
                 <ArrowLeft /> Back
               </Link>
             </Button>

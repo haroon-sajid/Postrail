@@ -42,8 +42,7 @@ export function LoginPage() {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.12),transparent_55%)]"
       />
       <div className="mb-8 flex justify-center">
-        <Logo variant="light" className="h-10 w-auto dark:hidden" />
-        <Logo variant="dark" className="hidden h-10 w-auto dark:block" />
+        <Logo size="lg" />
       </div>
       <Card className="relative w-full max-w-[400px] shadow-md">
         <CardContent className="p-8">

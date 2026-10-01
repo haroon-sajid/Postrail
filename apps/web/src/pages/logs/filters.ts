@@ -14,6 +14,7 @@ export interface LogFilters {
   cursor: string;
 }
 
+const MINUTE_MS = 60 * 1000;
 const RANGE_MS: Record<Exclude<RangePreset, 'custom'>, number> = {
   '24h': 24 * 60 * 60 * 1000,
   '7d': 7 * 24 * 60 * 60 * 1000,
@@ -74,7 +75,10 @@ export function toQuery(filters: LogFilters, now: Date = new Date()) {
     from = filters.from ? new Date(filters.from).toISOString() : undefined;
     to = filters.to ? new Date(filters.to).toISOString() : undefined;
   } else {
-    from = new Date(now.getTime() - RANGE_MS[filters.range]).toISOString();
+    // Whole minutes. This object is part of the query key and is rebuilt on every render;
+    // with millisecond precision each render asked for a new list, which rendered again.
+    const minute = Math.floor(now.getTime() / MINUTE_MS) * MINUTE_MS;
+    from = new Date(minute - RANGE_MS[filters.range]).toISOString();
   }
   return {
     limit: 25,

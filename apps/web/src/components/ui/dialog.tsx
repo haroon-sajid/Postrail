@@ -26,17 +26,25 @@ export interface DialogContentProps extends DialogPrimitive.DialogContentProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-/** Centered modal. Focus is trapped; Escape and the overlay close it. */
+/**
+ * Width by what the modal holds: `sm` (448px) a confirmation or a field or two, `md`
+ * (528px) a form or a secret to copy, `lg` (672px) search and bulk content.
+ */
+// In px: the root font size is 14px, so rem-based max-w-* classes come out 12% narrower.
+const sizeClass = { sm: 'max-w-[448px]', md: 'max-w-[528px]', lg: 'max-w-[672px]' } as const;
+
+/**
+ * Centered modal. Focus is trapped; Escape and the overlay close it. Never taller than
+ * the viewport: a long form scrolls inside the modal instead of running off screen.
+ */
 export function DialogContent({ className, children, size = 'md', ...props }: DialogContentProps) {
   return (
     <DialogPrimitive.Portal>
       <Overlay />
       <DialogPrimitive.Content
         className={cn(
-          'motion-modal fixed left-1/2 top-1/2 z-50 w-[calc(100vw-32px)] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-border bg-bg-elevated p-0 shadow-lg outline-none',
-          size === 'sm' && 'max-w-md',
-          size === 'md' && 'max-w-xl',
-          size === 'lg' && 'max-w-3xl',
+          'motion-modal scrollbar-thin fixed left-1/2 top-1/2 z-50 max-h-[calc(100dvh-32px)] w-[calc(100vw-32px)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-border bg-bg-elevated p-0 shadow-lg outline-none',
+          sizeClass[size],
           className,
         )}
         {...props}

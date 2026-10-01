@@ -7,6 +7,8 @@ export interface OrgContextValue {
   user: { id: string; email: string; name: string; image: string | null };
   canManage: boolean;
   isOwner: boolean;
+  /** Makes another of the user's orgs the active one and opens `to` (its overview by default). */
+  switchOrg: (orgId: string, to?: string) => void;
 }
 
 export const OrgContext = createContext<OrgContextValue | null>(null);
@@ -17,5 +19,3 @@ export function useOrg(): OrgContextValue {
   if (!value) throw new Error('useOrg must be used inside the app shell');
   return value;
 }
-
-export const orgPath = (orgId: string, sub = '') => `/o/${orgId}${sub}`;

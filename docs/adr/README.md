@@ -14,6 +14,7 @@ write a new one that supersedes it.
 | [0007](./0007-user-auth-and-dashboard.md)           | User authentication and dashboard | Accepted |
 | [0008](./0008-deployment-origins.md)                | Deployment origins and API URL    | Accepted |
 | [0009](./0009-same-origin-proxy.md)                 | Same-origin proxy via the Worker  | Accepted |
+| [0010](./0010-dashboard-urls-without-org-id.md)     | Dashboard URLs without the org id | Accepted |
 
 ## Template
 

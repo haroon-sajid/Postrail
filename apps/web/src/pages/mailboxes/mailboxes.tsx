@@ -7,7 +7,7 @@ import type { Mailbox } from '@/api/types';
 import { useOrg } from '@/app/org-context';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { PageHeader } from '@/components/page-header';
-import { EmptyState, ErrorState } from '@/components/states';
+import { ErrorState, PageEmptyState } from '@/components/states';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -109,20 +109,18 @@ export function MailboxesPage() {
           <ErrorState error={mailboxes.error} onRetry={() => void mailboxes.refetch()} />
         </Card>
       ) : mailboxes.data.length === 0 ? (
-        <Card>
-          <EmptyState
-            icon={Inbox}
-            title="No mailboxes connected"
-            description="Connect a Gmail account to start sending. Each mailbox gets its own daily limit."
-            action={
-              canManage ? (
-                <Button variant="primary" onClick={() => setConnecting(true)}>
-                  <Plus /> Connect mailbox
-                </Button>
-              ) : null
-            }
-          />
-        </Card>
+        <PageEmptyState
+          icon={Inbox}
+          title="No mailboxes connected"
+          description="Connect a Gmail account to start sending. Each mailbox gets its own daily limit."
+          action={
+            canManage ? (
+              <Button variant="primary" onClick={() => setConnecting(true)}>
+                <Plus /> Connect mailbox
+              </Button>
+            ) : null
+          }
+        />
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {mailboxes.data.map((m) => (

@@ -55,6 +55,14 @@ describe('log filters <-> URL', () => {
     expect(custom.from).toBe(new Date('2026-09-01T00:00').toISOString());
     expect(custom.to).toBe(new Date('2026-09-02T00:00').toISOString());
   });
+
+  it('gives renders within the same minute the same bound, so the query key is stable', () => {
+    const filters = { ...DEFAULT_FILTERS, range: '7d' as const };
+    const first = toQuery(filters, new Date('2026-09-29T12:00:00.004Z'));
+    const later = toQuery(filters, new Date('2026-09-29T12:00:41.950Z'));
+    expect(later).toEqual(first);
+    expect(first.from).toBe('2026-09-22T12:00:00.000Z');
+  });
 });
 
 describe('<FiltersBar />', () => {

@@ -8,7 +8,7 @@ import { CodeBlock } from '@/components/code-block';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Copyable } from '@/components/copy-button';
 import { PageHeader } from '@/components/page-header';
-import { EmptyState, ErrorState, TableSkeleton } from '@/components/states';
+import { ErrorState, PageEmptyState, TableSkeleton } from '@/components/states';
 import { RelativeTime } from '@/components/time';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,7 +22,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { curlSnippet, KEY_PLACEHOLDER, nodeSnippet } from '@/pages/overview/onboarding';
+import { curlSnippet, nodeSnippet } from '@/pages/overview/onboarding';
 import { CreateKeyDialog } from './create-dialog';
 import { useApiKeys, useCreateApiKey, useRevokeApiKey } from './hooks';
 
@@ -37,42 +37,39 @@ export function ApiKeysPage() {
 
   const active = keys.data?.filter((k) => !k.revoked_at) ?? [];
   const snippetKey = selected ?? active[0]?.prefix;
-  const snippet = snippetKey ? `${snippetKey}…` : KEY_PLACEHOLDER;
+
+  const createButton = canManage ? (
+    <Button variant="primary" onClick={() => setCreating(true)}>
+      <Plus /> Create key
+    </Button>
+  ) : null;
 
   return (
     <>
       <PageHeader
         title="API keys"
-        description="Bearer keys your applications use to call the API. Each acts for the whole organisation."
-        actions={
-          canManage ? (
-            <Button variant="primary" onClick={() => setCreating(true)}>
-              <Plus /> Create key
-            </Button>
-          ) : null
-        }
+        description="Bearer keys your applications use to call the API. Each acts for the whole workspace."
+        actions={createButton}
       />
 
-      <div className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_440px]">
+      {keys.isPending ? (
         <Card>
-          {keys.isPending ? (
-            <TableSkeleton rows={4} cols={5} />
-          ) : keys.isError ? (
-            <ErrorState error={keys.error} onRetry={() => void keys.refetch()} />
-          ) : keys.data.length === 0 ? (
-            <EmptyState
-              icon={KeyRound}
-              title="No API keys yet"
-              description="Create a key to authenticate requests to /v1. You will see it once."
-              action={
-                canManage ? (
-                  <Button variant="primary" onClick={() => setCreating(true)}>
-                    <Plus /> Create key
-                  </Button>
-                ) : null
-              }
-            />
-          ) : (
+          <TableSkeleton rows={4} cols={5} />
+        </Card>
+      ) : keys.isError ? (
+        <Card>
+          <ErrorState error={keys.error} onRetry={() => void keys.refetch()} />
+        </Card>
+      ) : keys.data.length === 0 ? (
+        <PageEmptyState
+          icon={KeyRound}
+          title="No API keys yet"
+          description="Create a key to authenticate requests to /v1. You will see it once."
+          action={createButton}
+        />
+      ) : (
+        <div className="space-y-5">
+          <Card>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -131,36 +128,12 @@ export function ApiKeysPage() {
                 ))}
               </TableBody>
             </Table>
-          )}
-        </Card>
+          </Card>
 
-        <Card>
-          <CardHeader>
-            <div>
-              <CardTitle>Send with this key</CardTitle>
-              <CardDescription>
-                {snippetKey
-                  ? 'Only the prefix is shown here; use the full key you saved.'
-                  : 'Create a key to fill these in.'}
-              </CardDescription>
-            </div>
-          </CardHeader>
-          <div className="p-5">
-            <Tabs defaultValue="curl">
-              <TabsList>
-                <TabsTrigger value="curl">curl</TabsTrigger>
-                <TabsTrigger value="node">Node</TabsTrigger>
-              </TabsList>
-              <TabsContent value="curl" className="mt-3">
-                <CodeBlock code={curlSnippet(snippet)} title="curl" />
-              </TabsContent>
-              <TabsContent value="node" className="mt-3">
-                <CodeBlock code={nodeSnippet(snippet)} title="node" />
-              </TabsContent>
-            </Tabs>
-          </div>
-        </Card>
-      </div>
+          {/* Under the table at full width: beside it the snippet was too narrow to read. */}
+          {snippetKey ? <SnippetCard prefix={snippetKey} /> : null}
+        </div>
+      )}
 
       <CreateKeyDialog
         open={creating}
@@ -187,5 +160,36 @@ export function ApiKeysPage() {
         }}
       />
     </>
+  );
+}
+
+/** A ready-to-edit request for the key picked in the table. Shown once a live key exists. */
+function SnippetCard({ prefix }: { prefix: string }) {
+  const placeholder = `${prefix}…`;
+  return (
+    <Card>
+      <Tabs defaultValue="curl">
+        <CardHeader className="items-center">
+          <div>
+            <CardTitle>Send with this key</CardTitle>
+            <CardDescription>
+              Only the prefix is shown here; use the full key you saved. Click a row to switch keys.
+            </CardDescription>
+          </div>
+          <TabsList>
+            <TabsTrigger value="curl">curl</TabsTrigger>
+            <TabsTrigger value="node">Node</TabsTrigger>
+          </TabsList>
+        </CardHeader>
+        <div className="p-5">
+          <TabsContent value="curl">
+            <CodeBlock code={curlSnippet(placeholder)} title="curl" />
+          </TabsContent>
+          <TabsContent value="node">
+            <CodeBlock code={nodeSnippet(placeholder)} title="node" />
+          </TabsContent>
+        </div>
+      </Tabs>
+    </Card>
   );
 }

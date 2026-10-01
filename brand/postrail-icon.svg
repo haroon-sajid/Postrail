@@ -1,6 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Postrail">
-  <rect width="512" height="512" rx="116" fill="#0F1B2D"/>
-  <rect x="104" y="164" width="300" height="208" rx="40" fill="#F5F5F2"/>
-  <path d="M142 204 L254 288 L366 204" fill="none" stroke="#0F1B2D" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="394" cy="164" r="60" fill="#12B981" stroke="#0F1B2D" stroke-width="22"/>
-  <path d="M368 165 L386 183 L420 147" fill="none" stroke="#F5F5F2" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10B981"/>
+      <stop offset="1" stop-color="#047857"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="124" fill="url(#tile)"/>
+  <path d="M154 142H268a90 90 0 0 1 0 180H198V370H154Z" fill="#fff" stroke="#fff" stroke-width="28" stroke-linejoin="round"/>
+  <path d="M190 190 258 246 326 190" fill="none" stroke="#059669" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

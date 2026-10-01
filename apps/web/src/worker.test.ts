@@ -25,6 +25,10 @@ describe('isProxiedPath', () => {
     '/index.html',
     '/login',
     '/orgs/123/logs',
+    // Dashboard routes (ADR 0010) that share a stem with a proxied prefix.
+    '/api-keys',
+    '/billing',
+    '/settings/audit-log',
     '/assets/index-abc123.js',
     '/api',
     '/apix/thing',

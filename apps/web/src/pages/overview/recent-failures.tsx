@@ -1,7 +1,6 @@
 import { CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { Email } from '@/api/types';
-import { orgPath, useOrg } from '@/app/org-context';
 import { EmptyState } from '@/components/states';
 import { RelativeTime } from '@/components/time';
 import {
@@ -15,7 +14,6 @@ import {
 
 /** The last few failed messages, each linking to its log entry. */
 export function RecentFailures({ failures }: { failures: Email[] }) {
-  const { org } = useOrg();
   if (failures.length === 0) {
     return (
       <EmptyState
@@ -39,10 +37,7 @@ export function RecentFailures({ failures }: { failures: Email[] }) {
         {failures.map((f) => (
           <TableRow key={f.id}>
             <TableCell className="max-w-48 truncate font-medium">
-              <Link
-                to={orgPath(org.id, `/logs?m=${f.id}`)}
-                className="text-fg underline-offset-4 hover:underline"
-              >
+              <Link to={`/logs?m=${f.id}`} className="text-fg underline-offset-4 hover:underline">
                 {f.to}
               </Link>
             </TableCell>

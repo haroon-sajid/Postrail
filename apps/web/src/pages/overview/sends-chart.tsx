@@ -18,8 +18,17 @@ export function SendsLegend() {
   );
 }
 
-/** 30 days of sends, stacked sent over failed. Colours come straight from the tokens. */
-export function SendsChart({ series }: { series: Point[] }) {
+/**
+ * 30 days of sends, stacked sent over failed. Colours come straight from the tokens.
+ * `label` replaces the description when the points are not one per day.
+ */
+export function SendsChart({
+  series,
+  label = 'Sends per day for the last 30 days, sent versus failed',
+}: {
+  series: Point[];
+  label?: string;
+}) {
   const total = series.reduce((n, p) => n + p.sent + p.failed, 0);
   const empty = total === 0;
   return (
@@ -27,11 +36,7 @@ export function SendsChart({ series }: { series: Point[] }) {
       <div
         className={empty ? 'h-64 w-full opacity-60' : 'h-64 w-full'}
         role="img"
-        aria-label={
-          empty
-            ? 'No sends in the last 30 days'
-            : 'Sends per day for the last 30 days, sent versus failed'
-        }
+        aria-label={empty ? 'No sends in the last 30 days' : label}
       >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={series} margin={{ top: 8, right: 0, bottom: 0, left: -16 }} barGap={2}>

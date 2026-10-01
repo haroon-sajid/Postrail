@@ -1,7 +1,6 @@
 import { Inbox } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { Overview } from '@/api/types';
-import { orgPath, useOrg } from '@/app/org-context';
 import { EmptyState } from '@/components/states';
 import { StatusPill } from '@/components/status-pill';
 import { Button } from '@/components/ui/button';
@@ -18,7 +17,6 @@ function tone(pct: number): 'primary' | 'warning' | 'danger' {
 
 /** sent_today over daily_limit per mailbox, most used first. */
 export function MailboxUsage({ usage }: { usage: Usage[] }) {
-  const { org } = useOrg();
   if (usage.length === 0) {
     return (
       <EmptyState
@@ -27,7 +25,7 @@ export function MailboxUsage({ usage }: { usage: Usage[] }) {
         description="Connect a Gmail account to start sending."
         action={
           <Button asChild variant="primary" size="sm">
-            <Link to={orgPath(org.id, '/mailboxes')}>Connect mailbox</Link>
+            <Link to="/mailboxes">Connect mailbox</Link>
           </Button>
         }
       />

@@ -1,5 +1,13 @@
-import { createBrowserRouter, Navigate, Outlet, useLocation } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  Navigate,
+  Outlet,
+  redirect,
+  useLocation,
+  type LoaderFunctionArgs,
+} from 'react-router-dom';
 import { useMe } from '@/api/me';
+import { writeActiveOrgId } from '@/lib/active-org';
 import { AppShell } from './shell';
 import { FullPageSkeleton } from './shell-skeleton';
 import { ApiKeysPage } from '@/pages/api-keys/api-keys';
@@ -9,9 +17,13 @@ import { LogsPage } from '@/pages/logs/logs';
 import { MailboxesPage } from '@/pages/mailboxes/mailboxes';
 import { NotFoundPage } from '@/pages/not-found';
 import { OverviewPage } from '@/pages/overview/overview';
+import { AuditLogSettingsPage } from '@/pages/settings/audit-log';
 import { BillingSettingsPage } from '@/pages/settings/billing';
 import { GeneralSettingsPage } from '@/pages/settings/general';
 import { MembersSettingsPage } from '@/pages/settings/members';
+import { ProfileSettingsPage } from '@/pages/settings/profile';
+import { UPCOMING } from '@/pages/upcoming/upcoming';
+import { UpcomingPage } from '@/pages/upcoming/upcoming-page';
 import { SuppressionsPage } from '@/pages/suppressions/suppressions';
 import { TemplateEditorPage } from '@/pages/templates/editor';
 import { TemplatesPage } from '@/pages/templates/templates';
@@ -30,23 +42,29 @@ function RequireAuth() {
   return <Outlet />;
 }
 
-/** `/` lands on the first org; a user with no org gets one created at sign-in. */
-function Home() {
-  const me = useMe();
-  if (me.isPending) return <FullPageSkeleton />;
-  const first = me.data?.orgs[0];
-  return first ? <Navigate to={`/o/${first.id}`} replace /> : <Navigate to="/login" replace />;
+/**
+ * Links minted before ADR 0010 carried the org in the path (`/o/{orgId}/logs`). Keep
+ * them working: remember that org as the active one and continue to the clean path.
+ */
+function legacyOrgRedirect({ params, request }: LoaderFunctionArgs) {
+  if (params.orgId) writeActiveOrgId(params.orgId);
+  return redirect(`/${params['*'] ?? ''}${new URL(request.url).search}`);
+}
+
+function billingRedirect({ request }: LoaderFunctionArgs) {
+  return redirect(`/billing${new URL(request.url).search}`);
 }
 
 export const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
+  { path: '/o/:orgId/*', loader: legacyOrgRedirect },
   {
     element: <RequireAuth />,
     children: [
-      { path: '/', element: <Home /> },
       { path: '/invite/:token', element: <InvitePage /> },
       {
-        path: '/o/:orgId',
+        // The shell resolves the active org itself, so no route carries an org id.
+        path: '/',
         element: <AppShell />,
         children: [
           { index: true, element: <OverviewPage /> },
@@ -61,11 +79,19 @@ export const router = createBrowserRouter([
           { path: 'suppressions', element: <SuppressionsPage /> },
           { path: 'settings', element: <GeneralSettingsPage /> },
           { path: 'settings/members', element: <MembersSettingsPage /> },
-          { path: 'settings/billing', element: <BillingSettingsPage /> },
+          { path: 'settings/profile', element: <ProfileSettingsPage /> },
+          { path: 'settings/audit-log', element: <AuditLogSettingsPage /> },
+          { path: 'billing', element: <BillingSettingsPage /> },
+          // Billing sat under Settings before it became its own sidebar item.
+          { path: 'settings/billing', loader: billingRedirect },
+          // Planned features: one explanatory page each until they are built.
+          ...UPCOMING.map((feature) => ({
+            path: feature.path.slice(1),
+            element: <UpcomingPage feature={feature} />,
+          })),
           { path: '*', element: <NotFoundPage /> },
         ],
       },
     ],
   },
-  { path: '*', element: <NotFoundPage /> },
 ]);

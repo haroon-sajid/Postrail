@@ -14,7 +14,6 @@ import { EmptyState, ErrorState, TableSkeleton } from '@/components/states';
 import { RelativeTime } from '@/components/time';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogBody,
@@ -51,6 +50,7 @@ import {
   type CreateInviteBody,
   type MemberRole,
 } from './hooks';
+import { SETTINGS_DESCRIPTION, SettingsLayout, SettingsSection, SettingsTabs } from './layout';
 
 const ROLE_LABEL: Record<MemberRole, string> = { owner: 'Owner', admin: 'Admin', member: 'Member' };
 const ROLE_HELP: Record<MemberRole, string> = {
@@ -116,23 +116,18 @@ export function MembersSettingsPage() {
 
   return (
     <>
-      <PageHeader
-        title="Members"
-        description="Who can sign in to this organisation and what they can change."
-        actions={inviteButton}
-      />
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <div>
-              <CardTitle>Members</CardTitle>
-              <CardDescription>
-                {members.data
-                  ? `${members.data.length} ${members.data.length === 1 ? 'person' : 'people'}`
-                  : 'Loading'}
-              </CardDescription>
-            </div>
-          </CardHeader>
+      <PageHeader title="Settings" description={SETTINGS_DESCRIPTION} actions={inviteButton} />
+      <SettingsLayout>
+        <SettingsTabs />
+        <SettingsSection
+          flush
+          title="Members"
+          description={
+            members.data
+              ? `${members.data.length} ${members.data.length === 1 ? 'person has' : 'people have'} access to this workspace.`
+              : 'Loading'
+          }
+        >
           {members.isPending ? (
             <TableSkeleton rows={3} cols={4} />
           ) : members.isError ? (
@@ -204,7 +199,7 @@ export function MembersSettingsPage() {
                           <Button
                             variant="ghost"
                             size="icon-sm"
-                            aria-label={self ? 'Leave organisation' : `Remove ${m.email}`}
+                            aria-label={self ? 'Leave workspace' : `Remove ${m.email}`}
                             className="text-fg-muted hover:text-danger-fg"
                             onClick={() => setRemoving(m)}
                           >
@@ -218,17 +213,13 @@ export function MembersSettingsPage() {
               </TableBody>
             </Table>
           )}
-        </Card>
+        </SettingsSection>
 
-        <Card>
-          <CardHeader>
-            <div>
-              <CardTitle>Pending invites</CardTitle>
-              <CardDescription>
-                Links expire after 7 days. Re-invite to send a new one.
-              </CardDescription>
-            </div>
-          </CardHeader>
+        <SettingsSection
+          flush
+          title="Pending invites"
+          description="Links expire after 7 days. Re-invite to send a new one."
+        >
           {invites.isPending ? (
             <TableSkeleton rows={2} cols={4} />
           ) : invites.isError ? (
@@ -278,8 +269,8 @@ export function MembersSettingsPage() {
               </TableBody>
             </Table>
           )}
-        </Card>
-      </div>
+        </SettingsSection>
+      </SettingsLayout>
 
       <InviteDialog
         open={inviting}

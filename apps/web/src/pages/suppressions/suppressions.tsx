@@ -7,7 +7,7 @@ import { useOrg } from '@/app/org-context';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Copyable } from '@/components/copy-button';
 import { PageHeader } from '@/components/page-header';
-import { EmptyState, ErrorState, TableSkeleton } from '@/components/states';
+import { EmptyState, ErrorState, PageEmptyState, TableSkeleton } from '@/components/states';
 import { RelativeTime } from '@/components/time';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -64,84 +64,86 @@ export function SuppressionsPage() {
         description="Addresses that are never sent to. Invalid recipients are added here automatically."
         actions={actions}
       />
-      <Card>
-        <div className="flex items-center gap-3 border-b border-border bg-bg-subtle/40 px-5 py-4">
-          <div className="relative w-full max-w-sm">
-            <Search className="pointer-events-none absolute left-3 top-2.5 size-4 text-fg-muted" />
-            <Input
-              type="search"
-              aria-label="Search suppressions"
-              placeholder="Search by email"
-              className="pl-9"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
+      {suppressions.data?.length === 0 ? (
+        <PageEmptyState
+          icon={ShieldBan}
+          title="No suppressed addresses"
+          description="Add one by hand, paste a list, or let failed sends add invalid recipients for you."
+          action={
+            <Button variant="primary" onClick={() => setDialog('add')}>
+              <Plus /> Add address
+            </Button>
+          }
+        />
+      ) : (
+        <Card>
+          <div className="flex items-center gap-3 border-b border-border bg-bg-subtle/40 px-5 py-4">
+            <div className="relative w-full max-w-sm">
+              <Search className="pointer-events-none absolute left-3 top-2.5 size-4 text-fg-muted" />
+              <Input
+                type="search"
+                aria-label="Search suppressions"
+                placeholder="Search by email"
+                className="pl-9"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </div>
+            {suppressions.data ? (
+              <span className="tabular text-xs text-fg-muted">
+                {q ? `${rows.length} of ${suppressions.data.length}` : suppressions.data.length}{' '}
+                {suppressions.data.length === 1 ? 'address' : 'addresses'}
+              </span>
+            ) : null}
           </div>
-          {suppressions.data ? (
-            <span className="tabular text-xs text-fg-muted">
-              {q ? `${rows.length} of ${suppressions.data.length}` : suppressions.data.length}{' '}
-              {suppressions.data.length === 1 ? 'address' : 'addresses'}
-            </span>
-          ) : null}
-        </div>
-        {suppressions.isPending ? (
-          <TableSkeleton rows={5} cols={4} />
-        ) : suppressions.isError ? (
-          <ErrorState error={suppressions.error} onRetry={() => void suppressions.refetch()} />
-        ) : suppressions.data.length === 0 ? (
-          <EmptyState
-            icon={ShieldBan}
-            title="No suppressed addresses"
-            description="Add one by hand, paste a list, or let failed sends add invalid recipients for you."
-            action={
-              <Button variant="primary" onClick={() => setDialog('add')}>
-                <Plus /> Add address
-              </Button>
-            }
-          />
-        ) : rows.length === 0 ? (
-          <EmptyState title="No matches" description={`Nothing contains "${query.trim()}".`} />
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Email</TableHead>
-                <TableHead>Reason</TableHead>
-                <TableHead>Added</TableHead>
-                <TableHead className="w-10" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map((s) => (
-                <TableRow key={s.email}>
-                  <TableCell>
-                    <Copyable value={s.email} />
-                  </TableCell>
-                  <TableCell>
-                    <Badge tone={s.reason === 'manual' ? 'outline' : 'warning'}>
-                      {reasonLabel(s.reason)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <RelativeTime value={s.created_at} className="text-fg-muted" />
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      aria-label={`Remove ${s.email}`}
-                      className="text-fg-muted hover:text-danger-fg"
-                      onClick={() => setRemoving(s)}
-                    >
-                      <Trash2 />
-                    </Button>
-                  </TableCell>
+          {suppressions.isPending ? (
+            <TableSkeleton rows={5} cols={4} />
+          ) : suppressions.isError ? (
+            <ErrorState error={suppressions.error} onRetry={() => void suppressions.refetch()} />
+          ) : rows.length === 0 ? (
+            <EmptyState title="No matches" description={`Nothing contains "${query.trim()}".`} />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Reason</TableHead>
+                  <TableHead>Added</TableHead>
+                  <TableHead className="w-10" />
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </Card>
+              </TableHeader>
+              <TableBody>
+                {rows.map((s) => (
+                  <TableRow key={s.email}>
+                    <TableCell>
+                      <Copyable value={s.email} />
+                    </TableCell>
+                    <TableCell>
+                      <Badge tone={s.reason === 'manual' ? 'outline' : 'warning'}>
+                        {reasonLabel(s.reason)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <RelativeTime value={s.created_at} className="text-fg-muted" />
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label={`Remove ${s.email}`}
+                        className="text-fg-muted hover:text-danger-fg"
+                        onClick={() => setRemoving(s)}
+                      >
+                        <Trash2 />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </Card>
+      )}
 
       <AddSuppressionDialog
         open={dialog === 'add'}

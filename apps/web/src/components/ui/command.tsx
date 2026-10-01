@@ -15,6 +15,7 @@ export function CommandDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
+        size="lg"
         className="top-[12%] translate-y-0 overflow-hidden p-0 [&>button]:hidden"
         aria-describedby={undefined}
       >

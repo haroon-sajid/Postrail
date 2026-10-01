@@ -29,6 +29,18 @@ export function EmptyState({
   );
 }
 
+/**
+ * For a page that has nothing to list yet: the empty state stands alone, centred in the
+ * panel, instead of sitting in a card with blank space under it.
+ */
+export function PageEmptyState(props: Parameters<typeof EmptyState>[0]) {
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center pb-16">
+      <EmptyState {...props} />
+    </div>
+  );
+}
+
 export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () => void }) {
   return (
     <div role="alert" className="flex flex-col items-center justify-center px-6 py-16 text-center">

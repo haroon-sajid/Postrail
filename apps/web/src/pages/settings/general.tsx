@@ -8,20 +8,19 @@ import type { z } from 'zod';
 import { errorMessage } from '@/api/client';
 import { useOrg } from '@/app/org-context';
 import { ConfirmDialog } from '@/components/confirm-dialog';
-import { Copyable } from '@/components/copy-button';
+import { CopyButton } from '@/components/copy-button';
 import { PageHeader } from '@/components/page-header';
-import { AbsoluteTime } from '@/components/time';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { FieldError, FieldHint, Input, Label } from '@/components/ui/input';
+import { formatAbsolute } from '@/lib/format';
 import { useDeleteOrg, useUpdateOrg } from './hooks';
+import {
+  ReadonlyField,
+  SETTINGS_DESCRIPTION,
+  SettingsLayout,
+  SettingsSection,
+  SettingsTabs,
+} from './layout';
 
 type NameValues = z.infer<typeof updateOrgRequestSchema>;
 
@@ -39,30 +38,41 @@ export function GeneralSettingsPage() {
 
   return (
     <>
-      <PageHeader title="General" description="Name and identity of this organisation." />
-      <div className="max-w-2xl space-y-6">
-        <Card>
-          <form
-            noValidate
-            onSubmit={form.handleSubmit(async (values) => {
-              try {
-                const updated = await update.mutateAsync(values.name);
-                form.reset({ name: updated.name });
-                toast.success('Organisation renamed');
-              } catch (error) {
-                toast.error(errorMessage(error));
-              }
-            })}
+      <PageHeader title="Settings" description={SETTINGS_DESCRIPTION} />
+      <SettingsLayout>
+        <SettingsTabs />
+        <form
+          noValidate
+          onSubmit={form.handleSubmit(async (values) => {
+            try {
+              const updated = await update.mutateAsync(values.name);
+              form.reset({ name: updated.name });
+              toast.success('Workspace renamed');
+            } catch (error) {
+              toast.error(errorMessage(error));
+            }
+          })}
+        >
+          <SettingsSection
+            title="Workspace"
+            description="The name is shown in the sidebar and in invite emails."
+            footer={
+              canManage ? (
+                <Button
+                  type="submit"
+                  variant="primary"
+                  disabled={!form.formState.isDirty}
+                  loading={form.formState.isSubmitting}
+                >
+                  Save
+                </Button>
+              ) : null
+            }
           >
-            <CardHeader>
+            {/* Two columns on a wide panel, so no single field has to span all of it. */}
+            <div className="grid gap-5 lg:grid-cols-2">
               <div>
-                <CardTitle>Organisation</CardTitle>
-                <CardDescription>Shown in the sidebar and in invite emails.</CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="org-name">Name</Label>
+                <Label htmlFor="org-name">Workspace name</Label>
                 <Input
                   id="org-name"
                   maxLength={80}
@@ -73,58 +83,45 @@ export function GeneralSettingsPage() {
                 <FieldError message={form.formState.errors.name?.message} />
                 {!canManage ? <FieldHint>Only owners and admins can rename.</FieldHint> : null}
               </div>
-              <dl className="grid gap-x-6 gap-y-3 text-sm sm:grid-cols-[auto_1fr] sm:items-center">
-                <dt className="font-medium text-fg">Organisation id</dt>
-                <dd className="min-w-0">
-                  <Copyable value={org.id} className="max-w-full [&_code]:whitespace-nowrap" />
-                </dd>
-                <dt className="font-medium text-fg">Created</dt>
-                <dd>
-                  <AbsoluteTime value={org.created_at} className="text-fg-muted" />
-                </dd>
-              </dl>
-            </CardContent>
-            {canManage ? (
-              <CardFooter>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={!form.formState.isDirty}
-                  loading={form.formState.isSubmitting}
-                >
-                  Save
-                </Button>
-              </CardFooter>
-            ) : null}
-          </form>
-        </Card>
+              <div>
+                <p className="mb-1.5 text-sm font-medium text-fg">Workspace ID</p>
+                <ReadonlyField action={<CopyButton value={org.id} label="Workspace ID" />}>
+                  <code className="text-xs">{org.id}</code>
+                </ReadonlyField>
+              </div>
+              <div>
+                <p className="mb-1.5 text-sm font-medium text-fg">Created</p>
+                <ReadonlyField>{formatAbsolute(org.created_at)}</ReadonlyField>
+              </div>
+              <div>
+                <p className="mb-1.5 text-sm font-medium text-fg">Your role</p>
+                <ReadonlyField>
+                  <span className="capitalize">{org.role}</span>
+                </ReadonlyField>
+              </div>
+            </div>
+          </SettingsSection>
+        </form>
 
         {isOwner ? (
-          <Card className="border-danger/40">
-            <CardHeader>
-              <div>
-                <CardTitle>Danger zone</CardTitle>
-                <CardDescription>
-                  Deleting removes mailboxes, keys, logs, templates, webhooks and members. There is
-                  no undo.
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Button variant="danger" onClick={() => setDeleting(true)}>
-                Delete organisation
-              </Button>
-            </CardContent>
-          </Card>
+          <SettingsSection
+            danger
+            title="Delete workspace"
+            description="Permanently removes its mailboxes, API keys, logs, templates, webhooks and members. This cannot be undone."
+          >
+            <Button variant="danger" onClick={() => setDeleting(true)}>
+              Delete workspace
+            </Button>
+          </SettingsSection>
         ) : null}
-      </div>
+      </SettingsLayout>
 
       <ConfirmDialog
         open={deleting}
         onOpenChange={setDeleting}
         title={`Delete ${org.name}?`}
         description="Connected Gmail tokens are revoked from our side and every API key stops working immediately."
-        confirmLabel="Delete organisation"
+        confirmLabel="Delete workspace"
         destructive
         typeToConfirm={org.name}
         pending={remove.isPending}

@@ -9,7 +9,6 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import { orgPath, useOrg } from './org-context';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -21,13 +20,12 @@ export function CommandPalette({
   open: boolean;
   onOpenChange: (o: boolean) => void;
 }) {
-  const { org } = useOrg();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const go = (path: string) => {
     onOpenChange(false);
     setQuery('');
-    void navigate(orgPath(org.id, path));
+    void navigate(path);
   };
   const trimmed = query.trim();
   const isId = UUID.test(trimmed);

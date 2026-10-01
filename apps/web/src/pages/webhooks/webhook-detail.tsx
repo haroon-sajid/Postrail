@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { errorMessage } from '@/api/client';
 import type { WebhookCreated } from '@/api/types';
-import { orgPath, useOrg } from '@/app/org-context';
+import { useOrg } from '@/app/org-context';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Copyable } from '@/components/copy-button';
 import { PageHeader } from '@/components/page-header';
@@ -72,7 +72,7 @@ export function WebhookDetailPage() {
         actions={
           <>
             <Button asChild variant="ghost">
-              <Link to={orgPath(org.id, '/webhooks')}>
+              <Link to="/webhooks">
                 <ArrowLeft /> Back
               </Link>
             </Button>
@@ -262,7 +262,7 @@ export function WebhookDetailPage() {
           try {
             await remove.mutateAsync(w.id);
             toast.success('Webhook deleted');
-            void navigate(orgPath(org.id, '/webhooks'));
+            void navigate('/webhooks');
           } catch (error) {
             toast.error(errorMessage(error));
           }

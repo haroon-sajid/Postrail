@@ -157,7 +157,7 @@ export function LogsPage() {
                   }}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="max-w-64 text-[13px]">
+                    <TableCell key={cell.id} className="max-w-64">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

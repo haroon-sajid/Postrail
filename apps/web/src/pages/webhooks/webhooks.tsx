@@ -1,9 +1,9 @@
 import { Plus, Webhook as WebhookIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { orgPath, useOrg } from '@/app/org-context';
+import { useOrg } from '@/app/org-context';
 import { PageHeader } from '@/components/page-header';
-import { EmptyState, ErrorState, TableSkeleton } from '@/components/states';
+import { ErrorState, PageEmptyState, TableSkeleton } from '@/components/states';
 import { StatusPill } from '@/components/status-pill';
 import { RelativeTime } from '@/components/time';
 import { Badge } from '@/components/ui/badge';
@@ -42,57 +42,59 @@ export function WebhooksPage() {
         description="Signed HTTP notifications when a message is sent or fails, or a mailbox disconnects."
         actions={newButton}
       />
-      <Card>
-        {webhooks.isPending ? (
-          <TableSkeleton rows={3} cols={4} />
-        ) : webhooks.isError ? (
-          <ErrorState error={webhooks.error} onRetry={() => void webhooks.refetch()} />
-        ) : webhooks.data.length === 0 ? (
-          <EmptyState
-            icon={WebhookIcon}
-            title="No webhooks yet"
-            description="Add an endpoint to be told about deliveries instead of polling the logs."
-            action={newButton}
-          />
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>URL</TableHead>
-                <TableHead>Events</TableHead>
-                <TableHead>Last delivery</TableHead>
-                <TableHead>Created</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {webhooks.data.map((w) => (
-                <TableRow
-                  key={w.id}
-                  data-clickable
-                  onClick={() => void navigate(orgPath(org.id, `/webhooks/${w.id}`))}
-                >
-                  <TableCell className="max-w-80 truncate font-medium">{w.url}</TableCell>
-                  <TableCell>
-                    <span className="flex flex-wrap gap-1">
-                      {w.events.map((e) => (
-                        <Badge key={e} tone="outline">
-                          {e}
-                        </Badge>
-                      ))}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <LastDelivery webhookId={w.id} />
-                  </TableCell>
-                  <TableCell>
-                    <RelativeTime value={w.created_at} className="text-fg-muted" />
-                  </TableCell>
+      {webhooks.data?.length === 0 ? (
+        <PageEmptyState
+          icon={WebhookIcon}
+          title="No webhooks yet"
+          description="Add an endpoint to be told about deliveries instead of polling the logs."
+          action={newButton}
+        />
+      ) : (
+        <Card>
+          {webhooks.isPending ? (
+            <TableSkeleton rows={3} cols={4} />
+          ) : webhooks.isError ? (
+            <ErrorState error={webhooks.error} onRetry={() => void webhooks.refetch()} />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>URL</TableHead>
+                  <TableHead>Events</TableHead>
+                  <TableHead>Last delivery</TableHead>
+                  <TableHead>Created</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </Card>
+              </TableHeader>
+              <TableBody>
+                {webhooks.data.map((w) => (
+                  <TableRow
+                    key={w.id}
+                    data-clickable
+                    onClick={() => void navigate(`/webhooks/${w.id}`)}
+                  >
+                    <TableCell className="max-w-80 truncate font-medium">{w.url}</TableCell>
+                    <TableCell>
+                      <span className="flex flex-wrap gap-1">
+                        {w.events.map((e) => (
+                          <Badge key={e} tone="outline">
+                            {e}
+                          </Badge>
+                        ))}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <LastDelivery webhookId={w.id} />
+                    </TableCell>
+                    <TableCell>
+                      <RelativeTime value={w.created_at} className="text-fg-muted" />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </Card>
+      )}
 
       <WebhookDialog
         open={creating}

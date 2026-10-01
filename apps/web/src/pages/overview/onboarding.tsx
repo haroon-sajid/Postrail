@@ -1,7 +1,6 @@
 import { ArrowRight, Check, Circle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PUBLIC_API_URL } from '@/lib/config';
-import { orgPath, useOrg } from '@/app/org-context';
 import { CodeBlock } from '@/components/code-block';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -42,7 +41,6 @@ const { id, status } = await res.json();`;
 
 /** Three steps to a first email. Derived from server data, so it stays until all are done. */
 export function OnboardingCard({ status }: { status: OnboardingStatus }) {
-  const { org } = useOrg();
   const steps = [
     {
       done: status.hasMailbox,
@@ -51,7 +49,7 @@ export function OnboardingCard({ status }: { status: OnboardingStatus }) {
       body: 'Email goes out through your own Gmail account, under your name.',
       action: (
         <Button asChild variant={status.hasMailbox ? 'secondary' : 'primary'} size="sm">
-          <Link to={orgPath(org.id, '/mailboxes')}>
+          <Link to="/mailboxes">
             {status.hasMailbox ? 'Manage mailboxes' : 'Connect Gmail'}
             {!status.hasMailbox ? <ArrowRight /> : null}
           </Link>
@@ -69,7 +67,7 @@ export function OnboardingCard({ status }: { status: OnboardingStatus }) {
           variant={status.hasMailbox && !status.hasApiKey ? 'primary' : 'secondary'}
           size="sm"
         >
-          <Link to={orgPath(org.id, '/api-keys')}>
+          <Link to="/api-keys">
             {status.hasApiKey ? 'View keys' : 'Create key'}
             {status.hasMailbox && !status.hasApiKey ? <ArrowRight /> : null}
           </Link>
@@ -90,7 +88,7 @@ export function OnboardingCard({ status }: { status: OnboardingStatus }) {
     <Card data-testid="onboarding">
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b border-border px-5 py-4">
         <div>
-          <h2 className="text-[15px] font-semibold leading-6 text-fg">Get started</h2>
+          <h2 className="text-base font-semibold leading-6 text-fg">Get started</h2>
           <p className="mt-0.5 text-sm text-fg-muted">
             Three steps to your first email. Usually under five minutes.
           </p>

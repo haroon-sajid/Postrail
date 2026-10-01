@@ -8,6 +8,7 @@ import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { writeActiveOrgId } from '@/lib/active-org';
 
 /** Landing page for an invite link. The user is already signed in (RequireAuth). */
 export function InvitePage() {
@@ -25,7 +26,8 @@ export function InvitePage() {
     onSuccess: async ({ org }) => {
       await client.invalidateQueries({ queryKey: meKey });
       toast.success(`You joined ${org.name}`);
-      void navigate(`/o/${org.id}`);
+      writeActiveOrgId(org.id);
+      void navigate('/');
     },
     onError: (error) => toast.error(errorMessage(error)),
   });
@@ -40,8 +42,7 @@ export function InvitePage() {
       <Card className="w-full max-w-sm">
         <CardContent className="p-6">
           <div className="mb-6 flex justify-center">
-            <Logo variant="light" className="h-10 w-auto dark:hidden" />
-            <Logo variant="dark" className="hidden h-10 w-auto dark:block" />
+            <Logo size="lg" />
           </div>
           {preview.isPending ? (
             <div className="space-y-3" aria-busy>
