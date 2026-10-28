@@ -43,5 +43,15 @@ export type WebhookDelivery = ResponseOf<
   'get'
 >['data'][number];
 export type Suppression = ResponseOf<'/app/orgs/{orgId}/suppressions', 'get'>['data'][number];
+export type AuthUser = ResponseOf<'/app/orgs/{orgId}/auth/users/{id}', 'get'>;
+export type AuthUserList = ResponseOf<'/app/orgs/{orgId}/auth/users', 'get'>;
+export type AuthSettings = ResponseOf<'/app/orgs/{orgId}/auth/settings', 'get'>;
+export type Contact = ResponseOf<'/app/orgs/{orgId}/contacts/{id}', 'get'>;
+export type ContactList = ResponseOf<'/app/orgs/{orgId}/contact-lists', 'get'>['data'][number];
+export type Broadcast = ResponseOf<'/app/orgs/{orgId}/broadcasts/{id}', 'get'>;
+export type BroadcastRecipient = ResponseOf<
+  '/app/orgs/{orgId}/broadcasts/{id}/recipients',
+  'get'
+>['data'][number];
 export type Member = ResponseOf<'/app/orgs/{orgId}/members', 'get'>['data'][number];
 export type Invite = ResponseOf<'/app/orgs/{orgId}/invites', 'get'>['data'][number];

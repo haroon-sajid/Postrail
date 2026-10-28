@@ -2700,6 +2700,2836 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/auth/sign-in/google": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start a Google sign-in
+         * @description Returns a Google consent URL. Redirect the browser to it; the user comes back to `redirect_url` with `?code=...`, which you swap at `/v1/auth/exchange`, or with `?error=...`. `state` comes back unchanged so you can tie the redirect to the browser that started it.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Where to return the user */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        redirect_url: string;
+                        state?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Redirect the browser here */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uri */
+                            url: string;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/sign-in/github": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start a GitHub sign-in
+         * @description Returns a GitHub consent URL. Redirect the browser to it; the user comes back to `redirect_url` with `?code=...`, which you swap at `/v1/auth/exchange`, or with `?error=...`. `state` comes back unchanged so you can tie the redirect to the browser that started it.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Where to return the user */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        redirect_url: string;
+                        state?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Redirect the browser here */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uri */
+                            url: string;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/sign-in/magic-link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Email a sign-in link
+         * @description Sends a link to `redirect_url?code=...` from one of your connected mailboxes. Swap the code at `/v1/auth/exchange`. The link works once and expires after 15 minutes.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Who to email and where the link leads */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: email */
+                        email: string;
+                        redirect_url: string;
+                        state?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Email queued */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: email */
+                            email: string;
+                            /** Format: date-time */
+                            expires_at: string;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/sign-in/otp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Email a six-digit sign-in code
+         * @description Sends a code from one of your connected mailboxes. It expires after 10 minutes and a newer code replaces it.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Who to email */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: email */
+                        email: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Email queued */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: email */
+                            email: string;
+                            /** Format: date-time */
+                            expires_at: string;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/sign-in/otp/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check an emailed code and sign the user in
+         * @description Five wrong guesses retire the code.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description The address and the code the user typed */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: email */
+                        email: string;
+                        code: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Signed in */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            user: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: email */
+                                email: string;
+                                email_verified: boolean;
+                                name: string | null;
+                                image: string | null;
+                                providers: ("google" | "github")[];
+                                /** Format: date-time */
+                                created_at: string;
+                                /** Format: date-time */
+                                last_sign_in_at: string | null;
+                            };
+                            session: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                user_id: string;
+                                /** Format: date-time */
+                                expires_at: string;
+                                /** Format: date-time */
+                                created_at: string;
+                                token: string;
+                            };
+                            access_token: string;
+                            /** Format: date-time */
+                            access_token_expires_at: string;
+                            is_new_user: boolean;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/exchange": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Swap a redirect code for a user and a session
+         * @description Finishes an OAuth or magic-link sign-in. Codes are single use. Returns the session token, which is never shown again, and a short-lived access token (a JWT) you can verify without calling Postrail.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description The `code` query parameter */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        code: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Signed in */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            user: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: email */
+                                email: string;
+                                email_verified: boolean;
+                                name: string | null;
+                                image: string | null;
+                                providers: ("google" | "github")[];
+                                /** Format: date-time */
+                                created_at: string;
+                                /** Format: date-time */
+                                last_sign_in_at: string | null;
+                            };
+                            session: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                user_id: string;
+                                /** Format: date-time */
+                                expires_at: string;
+                                /** Format: date-time */
+                                created_at: string;
+                                token: string;
+                            };
+                            access_token: string;
+                            /** Format: date-time */
+                            access_token_expires_at: string;
+                            is_new_user: boolean;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/sessions/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check a session token
+         * @description Answers `active: false` for an expired, revoked or unknown token; that is not an error. For checks on every request, verify the access token against the JWKS instead.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description The session token */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        token: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Whether the session is live, and whose it is */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            active: boolean;
+                            user: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: email */
+                                email: string;
+                                email_verified: boolean;
+                                name: string | null;
+                                image: string | null;
+                                providers: ("google" | "github")[];
+                                /** Format: date-time */
+                                created_at: string;
+                                /** Format: date-time */
+                                last_sign_in_at: string | null;
+                            } | null;
+                            session: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                user_id: string;
+                                /** Format: date-time */
+                                expires_at: string;
+                                /** Format: date-time */
+                                created_at: string;
+                            } | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/sessions/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get a fresh access token for a session
+         * @description Call this when the access token is about to expire. A session that was revoked or expired answers `active: false` and no token, which is how sign-out reaches a tenant that verifies offline.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description The session token */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        token: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description A new access token, or `active: false` */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            active: boolean;
+                            user: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: email */
+                                email: string;
+                                email_verified: boolean;
+                                name: string | null;
+                                image: string | null;
+                                providers: ("google" | "github")[];
+                                /** Format: date-time */
+                                created_at: string;
+                                /** Format: date-time */
+                                last_sign_in_at: string | null;
+                            } | null;
+                            session: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                user_id: string;
+                                /** Format: date-time */
+                                expires_at: string;
+                                /** Format: date-time */
+                                created_at: string;
+                            } | null;
+                            access_token: string | null;
+                            /** Format: date-time */
+                            access_token_expires_at: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/sessions/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** End a session (sign out) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description The session token */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        token: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Session ended, or already was */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List end users
+         * @description Newest first. Pass next_cursor from the previous page to continue.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                    cursor?: string;
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A page of users */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: email */
+                                email: string;
+                                email_verified: boolean;
+                                name: string | null;
+                                image: string | null;
+                                providers: ("google" | "github")[];
+                                /** Format: date-time */
+                                created_at: string;
+                                /** Format: date-time */
+                                last_sign_in_at: string | null;
+                            }[];
+                            next_cursor: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add an end user (admin)
+         * @description Creates a user who has not signed in yet. This is how people get in while sign-ups are closed.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Who to add */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: email */
+                        email: string;
+                        name?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The new user */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: email */
+                            email: string;
+                            email_verified: boolean;
+                            name: string | null;
+                            image: string | null;
+                            providers: ("google" | "github")[];
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            last_sign_in_at: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one end user */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The user */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: email */
+                            email: string;
+                            email_verified: boolean;
+                            name: string | null;
+                            image: string | null;
+                            providers: ("google" | "github")[];
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            last_sign_in_at: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete an end user (admin)
+         * @description Removes the user, their linked providers and every session.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description User deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/users/{id}/revoke-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign a user out everywhere (admin) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description How many sessions were ended */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            revoked: number;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get sign-in settings */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Current settings */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            app_name: string | null;
+                            redirect_urls: string[];
+                            methods: {
+                                google: boolean;
+                                github: boolean;
+                                magic_link: boolean;
+                                email_otp: boolean;
+                            };
+                            signups_enabled: boolean;
+                            google: {
+                                /** @enum {string} */
+                                mode: "shared" | "custom";
+                                client_id: string | null;
+                                callback_url: string;
+                            };
+                            github: {
+                                client_id: string | null;
+                                callback_url: string;
+                            };
+                            email_templates: {
+                                magic_link: string | null;
+                                email_otp: string | null;
+                            };
+                            tokens: {
+                                issuer: string;
+                                audience: string;
+                                jwks_url: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change sign-in settings (admin)
+         * @description Send only what changes. `redirect_urls` replaces the whole list. `google: null` returns to the shared Google client; `github: null` removes the GitHub OAuth app.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Fields to change */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        app_name?: string | null;
+                        redirect_urls?: string[];
+                        methods?: {
+                            google?: boolean;
+                            github?: boolean;
+                            magic_link?: boolean;
+                            email_otp?: boolean;
+                        };
+                        signups_enabled?: boolean;
+                        google?: {
+                            client_id: string;
+                            client_secret: string;
+                        } | null;
+                        github?: {
+                            client_id: string;
+                            client_secret: string;
+                        } | null;
+                        email_templates?: {
+                            magic_link?: string | null;
+                            email_otp?: string | null;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description Updated settings */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            app_name: string | null;
+                            redirect_urls: string[];
+                            methods: {
+                                google: boolean;
+                                github: boolean;
+                                magic_link: boolean;
+                                email_otp: boolean;
+                            };
+                            signups_enabled: boolean;
+                            google: {
+                                /** @enum {string} */
+                                mode: "shared" | "custom";
+                                client_id: string | null;
+                                callback_url: string;
+                            };
+                            github: {
+                                client_id: string | null;
+                                callback_url: string;
+                            };
+                            email_templates: {
+                                magic_link: string | null;
+                                email_otp: string | null;
+                            };
+                            tokens: {
+                                issuer: string;
+                                audience: string;
+                                jwks_url: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/v1/mailboxes": {
         parameters: {
             query?: never;
@@ -6238,7 +9068,7 @@ export interface paths {
                                 /** Format: uuid */
                                 id: string;
                                 url: string;
-                                events: ("email.sent" | "email.failed" | "mailbox.disconnected")[];
+                                events: ("email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted")[];
                                 /** Format: date-time */
                                 created_at: string;
                             }[];
@@ -6385,7 +9215,7 @@ export interface paths {
                     "application/json": {
                         /** Format: uri */
                         url: string;
-                        events: ("email.sent" | "email.failed" | "mailbox.disconnected")[];
+                        events: ("email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted")[];
                     };
                 };
             };
@@ -6400,7 +9230,7 @@ export interface paths {
                             /** Format: uuid */
                             id: string;
                             url: string;
-                            events: ("email.sent" | "email.failed" | "mailbox.disconnected")[];
+                            events: ("email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted")[];
                             /** Format: date-time */
                             created_at: string;
                             secret: string;
@@ -6564,7 +9394,7 @@ export interface paths {
                             /** Format: uuid */
                             id: string;
                             url: string;
-                            events: ("email.sent" | "email.failed" | "mailbox.disconnected")[];
+                            events: ("email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted")[];
                             /** Format: date-time */
                             created_at: string;
                         };
@@ -6853,7 +9683,7 @@ export interface paths {
                     "application/json": {
                         /** Format: uri */
                         url?: string;
-                        events?: ("email.sent" | "email.failed" | "mailbox.disconnected")[];
+                        events?: ("email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted")[];
                     };
                 };
             };
@@ -6868,7 +9698,7 @@ export interface paths {
                             /** Format: uuid */
                             id: string;
                             url: string;
-                            events: ("email.sent" | "email.failed" | "mailbox.disconnected")[];
+                            events: ("email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted")[];
                             /** Format: date-time */
                             created_at: string;
                         };
@@ -7032,7 +9862,7 @@ export interface paths {
                                 /** Format: uuid */
                                 endpoint_id: string;
                                 /** @enum {string} */
-                                event: "email.sent" | "email.failed" | "mailbox.disconnected";
+                                event: "email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted";
                                 /** @enum {string} */
                                 status: "pending" | "sending" | "delivered" | "failed";
                                 attempts: number;
@@ -7212,7 +10042,7 @@ export interface paths {
                             /** Format: uuid */
                             endpoint_id: string;
                             /** @enum {string} */
-                            event: "email.sent" | "email.failed" | "mailbox.disconnected";
+                            event: "email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted";
                             /** @enum {string} */
                             status: "pending" | "sending" | "delivered" | "failed";
                             attempts: number;
@@ -7547,7 +10377,7 @@ export interface paths {
                             /** Format: uuid */
                             id: string;
                             url: string;
-                            events: ("email.sent" | "email.failed" | "mailbox.disconnected")[];
+                            events: ("email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted")[];
                             /** Format: date-time */
                             created_at: string;
                             secret: string;
@@ -7680,6 +10510,4659 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/v1/contacts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List contacts
+         * @description Newest first. Pass next_cursor from the previous page to continue.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                    cursor?: string;
+                    q?: string;
+                    list_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A page of contacts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: email */
+                                email: string;
+                                properties: {
+                                    [key: string]: string;
+                                };
+                                list_ids: string[];
+                                suppressed: boolean;
+                                /** Format: date-time */
+                                created_at: string;
+                                /** Format: date-time */
+                                updated_at: string;
+                            }[];
+                            next_cursor: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a contact, or update the one with that address
+         * @description An existing contact keeps its other properties and lists: the properties given are merged in and the lists given are added.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description The contact */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: email */
+                        email: string;
+                        properties?: {
+                            [key: string]: string;
+                        };
+                        list_ids?: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description An existing contact was updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: email */
+                            email: string;
+                            properties: {
+                                [key: string]: string;
+                            };
+                            list_ids: string[];
+                            suppressed: boolean;
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            updated_at: string;
+                        };
+                    };
+                };
+                /** @description Contact created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: email */
+                            email: string;
+                            properties: {
+                                [key: string]: string;
+                            };
+                            list_ids: string[];
+                            suppressed: boolean;
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            updated_at: string;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/contacts/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add or update up to 1000 contacts */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Contacts, and optionally a list to put them on */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        contacts: {
+                            /** Format: email */
+                            email: string;
+                            properties?: {
+                                [key: string]: string;
+                            };
+                        }[];
+                        /** Format: uuid */
+                        list_id?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description How many were new and how many updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            created: number;
+                            updated: number;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/contacts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one contact */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The contact */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: email */
+                            email: string;
+                            properties: {
+                                [key: string]: string;
+                            };
+                            list_ids: string[];
+                            suppressed: boolean;
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            updated_at: string;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete a contact
+         * @description Messages already sent to the address keep their history in Logs.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Contact deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Replace a contact’s properties or lists */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Fields to replace */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        properties?: {
+                            [key: string]: string;
+                        };
+                        list_ids?: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated contact */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: email */
+                            email: string;
+                            properties: {
+                                [key: string]: string;
+                            };
+                            list_ids: string[];
+                            suppressed: boolean;
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            updated_at: string;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/contact-lists": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List contact lists with their sizes */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The lists */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                                contact_count: number;
+                                /** Format: date-time */
+                                created_at: string;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Create a contact list */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description A name */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description List created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            name: string;
+                            contact_count: number;
+                            /** Format: date-time */
+                            created_at: string;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/contact-lists/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete a contact list
+         * @description The contacts on it are kept.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Rename a contact list */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description The new name */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The renamed list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            name: string;
+                            contact_count: number;
+                            /** Format: date-time */
+                            created_at: string;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/contact-lists/{id}/contacts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Put contacts on a list */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Contact ids */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        contact_ids: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description How many were not on it before */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            added: number;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/contact-lists/{id}/contacts/{contactId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Take a contact off a list */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    contactId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Removed from the list */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/broadcasts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List broadcasts
+         * @description Newest first, each with where its recipients stand.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Broadcasts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                                /** @enum {string} */
+                                status: "draft" | "sending" | "sent" | "canceled";
+                                template: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    slug: string;
+                                } | null;
+                                list: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                                subject: string | null;
+                                stats: {
+                                    total: number;
+                                    pending: number;
+                                    queued: number;
+                                    sent: number;
+                                    failed: number;
+                                    skipped: number;
+                                };
+                                /** Format: date-time */
+                                created_at: string;
+                                /** Format: date-time */
+                                started_at: string | null;
+                                /** Format: date-time */
+                                completed_at: string | null;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Create a draft broadcast
+         * @description Nothing is sent until you call `/broadcasts/{id}/send`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description A name, a template and a contact list */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        /** Format: uuid */
+                        template_id: string;
+                        /** Format: uuid */
+                        list_id: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Draft created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            name: string;
+                            /** @enum {string} */
+                            status: "draft" | "sending" | "sent" | "canceled";
+                            template: {
+                                /** Format: uuid */
+                                id: string;
+                                slug: string;
+                            } | null;
+                            list: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                            } | null;
+                            subject: string | null;
+                            stats: {
+                                total: number;
+                                pending: number;
+                                queued: number;
+                                sent: number;
+                                failed: number;
+                                skipped: number;
+                            };
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            started_at: string | null;
+                            /** Format: date-time */
+                            completed_at: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/broadcasts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one broadcast */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The broadcast */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            name: string;
+                            /** @enum {string} */
+                            status: "draft" | "sending" | "sent" | "canceled";
+                            template: {
+                                /** Format: uuid */
+                                id: string;
+                                slug: string;
+                            } | null;
+                            list: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                            } | null;
+                            subject: string | null;
+                            stats: {
+                                total: number;
+                                pending: number;
+                                queued: number;
+                                sent: number;
+                                failed: number;
+                                skipped: number;
+                            };
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            started_at: string | null;
+                            /** Format: date-time */
+                            completed_at: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete a broadcast (admin)
+         * @description Not while it is sending; cancel it first. Messages it already sent stay in Logs.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Broadcast deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Change a draft broadcast */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Fields to change */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        /** Format: uuid */
+                        template_id?: string;
+                        /** Format: uuid */
+                        list_id?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated draft */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            name: string;
+                            /** @enum {string} */
+                            status: "draft" | "sending" | "sent" | "canceled";
+                            template: {
+                                /** Format: uuid */
+                                id: string;
+                                slug: string;
+                            } | null;
+                            list: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                            } | null;
+                            subject: string | null;
+                            stats: {
+                                total: number;
+                                pending: number;
+                                queued: number;
+                                sent: number;
+                                failed: number;
+                                skipped: number;
+                            };
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            started_at: string | null;
+                            /** Format: date-time */
+                            completed_at: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v1/broadcasts/{id}/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start sending a draft (admin)
+         * @description Freezes the template and the list as they are now, then sends as fast as the mailboxes allow. A broadcast uses at most 80% of each mailbox’s daily limit, so a large list is spread over several days and application email keeps flowing. Suppressed addresses are skipped, and every email carries an unsubscribe link.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Now sending */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            name: string;
+                            /** @enum {string} */
+                            status: "draft" | "sending" | "sent" | "canceled";
+                            template: {
+                                /** Format: uuid */
+                                id: string;
+                                slug: string;
+                            } | null;
+                            list: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                            } | null;
+                            subject: string | null;
+                            stats: {
+                                total: number;
+                                pending: number;
+                                queued: number;
+                                sent: number;
+                                failed: number;
+                                skipped: number;
+                            };
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            started_at: string | null;
+                            /** Format: date-time */
+                            completed_at: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/broadcasts/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Stop a broadcast that is sending (admin)
+         * @description Recipients still waiting are skipped. Messages already queued go out.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Canceled */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            name: string;
+                            /** @enum {string} */
+                            status: "draft" | "sending" | "sent" | "canceled";
+                            template: {
+                                /** Format: uuid */
+                                id: string;
+                                slug: string;
+                            } | null;
+                            list: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                            } | null;
+                            subject: string | null;
+                            stats: {
+                                total: number;
+                                pending: number;
+                                queued: number;
+                                sent: number;
+                                failed: number;
+                                skipped: number;
+                            };
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            started_at: string | null;
+                            /** Format: date-time */
+                            completed_at: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/broadcasts/{id}/recipients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List a broadcast’s recipients and what happened to each
+         * @description By address. `message_id` is the message in `/emails` once one exists.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                    cursor?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A page of recipients */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: email */
+                                email: string;
+                                /** @enum {string} */
+                                status: "pending" | "queued" | "sent" | "failed" | "skipped";
+                                /** Format: uuid */
+                                message_id: string | null;
+                                error: string | null;
+                            }[];
+                            next_cursor: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/app/orgs/{orgId}/auth/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List end users
+         * @description Newest first. Pass next_cursor from the previous page to continue.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                    cursor?: string;
+                    q?: string;
+                };
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A page of users */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: email */
+                                email: string;
+                                email_verified: boolean;
+                                name: string | null;
+                                image: string | null;
+                                providers: ("google" | "github")[];
+                                /** Format: date-time */
+                                created_at: string;
+                                /** Format: date-time */
+                                last_sign_in_at: string | null;
+                            }[];
+                            next_cursor: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add an end user (admin)
+         * @description Creates a user who has not signed in yet. This is how people get in while sign-ups are closed.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            /** @description Who to add */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: email */
+                        email: string;
+                        name?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The new user */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: email */
+                            email: string;
+                            email_verified: boolean;
+                            name: string | null;
+                            image: string | null;
+                            providers: ("google" | "github")[];
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            last_sign_in_at: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/app/orgs/{orgId}/auth/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one end user */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The user */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: email */
+                            email: string;
+                            email_verified: boolean;
+                            name: string | null;
+                            image: string | null;
+                            providers: ("google" | "github")[];
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            last_sign_in_at: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete an end user (admin)
+         * @description Removes the user, their linked providers and every session.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description User deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/app/orgs/{orgId}/auth/users/{id}/revoke-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign a user out everywhere (admin) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description How many sessions were ended */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            revoked: number;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/app/orgs/{orgId}/auth/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get sign-in settings */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Current settings */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            app_name: string | null;
+                            redirect_urls: string[];
+                            methods: {
+                                google: boolean;
+                                github: boolean;
+                                magic_link: boolean;
+                                email_otp: boolean;
+                            };
+                            signups_enabled: boolean;
+                            google: {
+                                /** @enum {string} */
+                                mode: "shared" | "custom";
+                                client_id: string | null;
+                                callback_url: string;
+                            };
+                            github: {
+                                client_id: string | null;
+                                callback_url: string;
+                            };
+                            email_templates: {
+                                magic_link: string | null;
+                                email_otp: string | null;
+                            };
+                            tokens: {
+                                issuer: string;
+                                audience: string;
+                                jwks_url: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change sign-in settings (admin)
+         * @description Send only what changes. `redirect_urls` replaces the whole list. `google: null` returns to the shared Google client; `github: null` removes the GitHub OAuth app.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            /** @description Fields to change */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        app_name?: string | null;
+                        redirect_urls?: string[];
+                        methods?: {
+                            google?: boolean;
+                            github?: boolean;
+                            magic_link?: boolean;
+                            email_otp?: boolean;
+                        };
+                        signups_enabled?: boolean;
+                        google?: {
+                            client_id: string;
+                            client_secret: string;
+                        } | null;
+                        github?: {
+                            client_id: string;
+                            client_secret: string;
+                        } | null;
+                        email_templates?: {
+                            magic_link?: string | null;
+                            email_otp?: string | null;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description Updated settings */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            app_name: string | null;
+                            redirect_urls: string[];
+                            methods: {
+                                google: boolean;
+                                github: boolean;
+                                magic_link: boolean;
+                                email_otp: boolean;
+                            };
+                            signups_enabled: boolean;
+                            google: {
+                                /** @enum {string} */
+                                mode: "shared" | "custom";
+                                client_id: string | null;
+                                callback_url: string;
+                            };
+                            github: {
+                                client_id: string | null;
+                                callback_url: string;
+                            };
+                            email_templates: {
+                                magic_link: string | null;
+                                email_otp: string | null;
+                            };
+                            tokens: {
+                                issuer: string;
+                                audience: string;
+                                jwks_url: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/app/orgs/{orgId}/mailboxes": {
@@ -11253,7 +18736,7 @@ export interface paths {
                                 /** Format: uuid */
                                 id: string;
                                 url: string;
-                                events: ("email.sent" | "email.failed" | "mailbox.disconnected")[];
+                                events: ("email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted")[];
                                 /** Format: date-time */
                                 created_at: string;
                             }[];
@@ -11402,7 +18885,7 @@ export interface paths {
                     "application/json": {
                         /** Format: uri */
                         url: string;
-                        events: ("email.sent" | "email.failed" | "mailbox.disconnected")[];
+                        events: ("email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted")[];
                     };
                 };
             };
@@ -11417,7 +18900,7 @@ export interface paths {
                             /** Format: uuid */
                             id: string;
                             url: string;
-                            events: ("email.sent" | "email.failed" | "mailbox.disconnected")[];
+                            events: ("email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted")[];
                             /** Format: date-time */
                             created_at: string;
                             secret: string;
@@ -11582,7 +19065,7 @@ export interface paths {
                             /** Format: uuid */
                             id: string;
                             url: string;
-                            events: ("email.sent" | "email.failed" | "mailbox.disconnected")[];
+                            events: ("email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted")[];
                             /** Format: date-time */
                             created_at: string;
                         };
@@ -11873,7 +19356,7 @@ export interface paths {
                     "application/json": {
                         /** Format: uri */
                         url?: string;
-                        events?: ("email.sent" | "email.failed" | "mailbox.disconnected")[];
+                        events?: ("email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted")[];
                     };
                 };
             };
@@ -11888,7 +19371,7 @@ export interface paths {
                             /** Format: uuid */
                             id: string;
                             url: string;
-                            events: ("email.sent" | "email.failed" | "mailbox.disconnected")[];
+                            events: ("email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted")[];
                             /** Format: date-time */
                             created_at: string;
                         };
@@ -12053,7 +19536,7 @@ export interface paths {
                                 /** Format: uuid */
                                 endpoint_id: string;
                                 /** @enum {string} */
-                                event: "email.sent" | "email.failed" | "mailbox.disconnected";
+                                event: "email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted";
                                 /** @enum {string} */
                                 status: "pending" | "sending" | "delivered" | "failed";
                                 attempts: number;
@@ -12234,7 +19717,7 @@ export interface paths {
                             /** Format: uuid */
                             endpoint_id: string;
                             /** @enum {string} */
-                            event: "email.sent" | "email.failed" | "mailbox.disconnected";
+                            event: "email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted";
                             /** @enum {string} */
                             status: "pending" | "sending" | "delivered" | "failed";
                             attempts: number;
@@ -12571,7 +20054,7 @@ export interface paths {
                             /** Format: uuid */
                             id: string;
                             url: string;
-                            events: ("email.sent" | "email.failed" | "mailbox.disconnected")[];
+                            events: ("email.sent" | "email.failed" | "mailbox.disconnected" | "user.created" | "user.signed_in" | "user.deleted")[];
                             /** Format: date-time */
                             created_at: string;
                             secret: string;
@@ -12700,6 +20183,3473 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/app/orgs/{orgId}/contacts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List contacts
+         * @description Newest first. Pass next_cursor from the previous page to continue.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                    cursor?: string;
+                    q?: string;
+                    list_id?: string;
+                };
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A page of contacts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: email */
+                                email: string;
+                                properties: {
+                                    [key: string]: string;
+                                };
+                                list_ids: string[];
+                                suppressed: boolean;
+                                /** Format: date-time */
+                                created_at: string;
+                                /** Format: date-time */
+                                updated_at: string;
+                            }[];
+                            next_cursor: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a contact, or update the one with that address
+         * @description An existing contact keeps its other properties and lists: the properties given are merged in and the lists given are added.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            /** @description The contact */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: email */
+                        email: string;
+                        properties?: {
+                            [key: string]: string;
+                        };
+                        list_ids?: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description An existing contact was updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: email */
+                            email: string;
+                            properties: {
+                                [key: string]: string;
+                            };
+                            list_ids: string[];
+                            suppressed: boolean;
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            updated_at: string;
+                        };
+                    };
+                };
+                /** @description Contact created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: email */
+                            email: string;
+                            properties: {
+                                [key: string]: string;
+                            };
+                            list_ids: string[];
+                            suppressed: boolean;
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            updated_at: string;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/app/orgs/{orgId}/contacts/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add or update up to 1000 contacts */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            /** @description Contacts, and optionally a list to put them on */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        contacts: {
+                            /** Format: email */
+                            email: string;
+                            properties?: {
+                                [key: string]: string;
+                            };
+                        }[];
+                        /** Format: uuid */
+                        list_id?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description How many were new and how many updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            created: number;
+                            updated: number;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/app/orgs/{orgId}/contacts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one contact */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The contact */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: email */
+                            email: string;
+                            properties: {
+                                [key: string]: string;
+                            };
+                            list_ids: string[];
+                            suppressed: boolean;
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            updated_at: string;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete a contact
+         * @description Messages already sent to the address keep their history in Logs.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Contact deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Replace a contact’s properties or lists */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            /** @description Fields to replace */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        properties?: {
+                            [key: string]: string;
+                        };
+                        list_ids?: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated contact */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: email */
+                            email: string;
+                            properties: {
+                                [key: string]: string;
+                            };
+                            list_ids: string[];
+                            suppressed: boolean;
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            updated_at: string;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/app/orgs/{orgId}/contact-lists": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List contact lists with their sizes */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The lists */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                                contact_count: number;
+                                /** Format: date-time */
+                                created_at: string;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Create a contact list */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            /** @description A name */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description List created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            name: string;
+                            contact_count: number;
+                            /** Format: date-time */
+                            created_at: string;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/app/orgs/{orgId}/contact-lists/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete a contact list
+         * @description The contacts on it are kept.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Rename a contact list */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            /** @description The new name */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The renamed list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            name: string;
+                            contact_count: number;
+                            /** Format: date-time */
+                            created_at: string;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/app/orgs/{orgId}/contact-lists/{id}/contacts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Put contacts on a list */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            /** @description Contact ids */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        contact_ids: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description How many were not on it before */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            added: number;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/app/orgs/{orgId}/contact-lists/{id}/contacts/{contactId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Take a contact off a list */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    contactId: string;
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Removed from the list */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/app/orgs/{orgId}/broadcasts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List broadcasts
+         * @description Newest first, each with where its recipients stand.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Broadcasts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                                /** @enum {string} */
+                                status: "draft" | "sending" | "sent" | "canceled";
+                                template: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    slug: string;
+                                } | null;
+                                list: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                } | null;
+                                subject: string | null;
+                                stats: {
+                                    total: number;
+                                    pending: number;
+                                    queued: number;
+                                    sent: number;
+                                    failed: number;
+                                    skipped: number;
+                                };
+                                /** Format: date-time */
+                                created_at: string;
+                                /** Format: date-time */
+                                started_at: string | null;
+                                /** Format: date-time */
+                                completed_at: string | null;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Create a draft broadcast
+         * @description Nothing is sent until you call `/broadcasts/{id}/send`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            /** @description A name, a template and a contact list */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        /** Format: uuid */
+                        template_id: string;
+                        /** Format: uuid */
+                        list_id: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Draft created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            name: string;
+                            /** @enum {string} */
+                            status: "draft" | "sending" | "sent" | "canceled";
+                            template: {
+                                /** Format: uuid */
+                                id: string;
+                                slug: string;
+                            } | null;
+                            list: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                            } | null;
+                            subject: string | null;
+                            stats: {
+                                total: number;
+                                pending: number;
+                                queued: number;
+                                sent: number;
+                                failed: number;
+                                skipped: number;
+                            };
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            started_at: string | null;
+                            /** Format: date-time */
+                            completed_at: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/app/orgs/{orgId}/broadcasts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one broadcast */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The broadcast */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            name: string;
+                            /** @enum {string} */
+                            status: "draft" | "sending" | "sent" | "canceled";
+                            template: {
+                                /** Format: uuid */
+                                id: string;
+                                slug: string;
+                            } | null;
+                            list: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                            } | null;
+                            subject: string | null;
+                            stats: {
+                                total: number;
+                                pending: number;
+                                queued: number;
+                                sent: number;
+                                failed: number;
+                                skipped: number;
+                            };
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            started_at: string | null;
+                            /** Format: date-time */
+                            completed_at: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete a broadcast (admin)
+         * @description Not while it is sending; cancel it first. Messages it already sent stay in Logs.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Broadcast deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Change a draft broadcast */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            /** @description Fields to change */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        /** Format: uuid */
+                        template_id?: string;
+                        /** Format: uuid */
+                        list_id?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated draft */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            name: string;
+                            /** @enum {string} */
+                            status: "draft" | "sending" | "sent" | "canceled";
+                            template: {
+                                /** Format: uuid */
+                                id: string;
+                                slug: string;
+                            } | null;
+                            list: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                            } | null;
+                            subject: string | null;
+                            stats: {
+                                total: number;
+                                pending: number;
+                                queued: number;
+                                sent: number;
+                                failed: number;
+                                skipped: number;
+                            };
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            started_at: string | null;
+                            /** Format: date-time */
+                            completed_at: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/app/orgs/{orgId}/broadcasts/{id}/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start sending a draft (admin)
+         * @description Freezes the template and the list as they are now, then sends as fast as the mailboxes allow. A broadcast uses at most 80% of each mailbox’s daily limit, so a large list is spread over several days and application email keeps flowing. Suppressed addresses are skipped, and every email carries an unsubscribe link.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Now sending */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            name: string;
+                            /** @enum {string} */
+                            status: "draft" | "sending" | "sent" | "canceled";
+                            template: {
+                                /** Format: uuid */
+                                id: string;
+                                slug: string;
+                            } | null;
+                            list: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                            } | null;
+                            subject: string | null;
+                            stats: {
+                                total: number;
+                                pending: number;
+                                queued: number;
+                                sent: number;
+                                failed: number;
+                                skipped: number;
+                            };
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            started_at: string | null;
+                            /** Format: date-time */
+                            completed_at: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/app/orgs/{orgId}/broadcasts/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Stop a broadcast that is sending (admin)
+         * @description Recipients still waiting are skipped. Messages already queued go out.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Canceled */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            name: string;
+                            /** @enum {string} */
+                            status: "draft" | "sending" | "sent" | "canceled";
+                            template: {
+                                /** Format: uuid */
+                                id: string;
+                                slug: string;
+                            } | null;
+                            list: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                            } | null;
+                            subject: string | null;
+                            stats: {
+                                total: number;
+                                pending: number;
+                                queued: number;
+                                sent: number;
+                                failed: number;
+                                skipped: number;
+                            };
+                            /** Format: date-time */
+                            created_at: string;
+                            /** Format: date-time */
+                            started_at: string | null;
+                            /** Format: date-time */
+                            completed_at: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/app/orgs/{orgId}/broadcasts/{id}/recipients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List a broadcast’s recipients and what happened to each
+         * @description By address. `message_id` is the message in `/emails` once one exists.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                    cursor?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A page of recipients */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: email */
+                                email: string;
+                                /** @enum {string} */
+                                status: "pending" | "queued" | "sent" | "failed" | "skipped";
+                                /** Format: uuid */
+                                message_id: string | null;
+                                error: string | null;
+                            }[];
+                            next_cursor: string | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Missing, invalid or revoked credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not allowed for this role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Conflict with an existing resource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Request understood but cannot be fulfilled */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Rate limited; see Retry-After */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Internal error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                /** @enum {string} */
+                                code: "VALIDATION_ERROR" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "SUPPRESSED" | "NO_MAILBOX" | "RATE_LIMITED" | "INTERNAL_ERROR";
+                                message: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;

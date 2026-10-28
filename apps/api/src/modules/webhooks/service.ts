@@ -180,6 +180,20 @@ function sampleData(event: WebhookEvent, now: Date): Record<string, unknown> {
       status: 'disconnected',
     };
   }
+  if (event === 'user.created' || event === 'user.signed_in' || event === 'user.deleted') {
+    return {
+      test: true,
+      id: randomUUID(),
+      email: 'someone@example.com',
+      email_verified: true,
+      name: 'Test User',
+      image: null,
+      providers: ['google'],
+      created_at: at,
+      last_sign_in_at: event === 'user.created' ? null : at,
+      ...(event === 'user.signed_in' ? { method: 'google' } : {}),
+    };
+  }
   return {
     test: true,
     id: randomUUID(),

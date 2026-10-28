@@ -30,6 +30,9 @@ const EVENT_HELP: Record<WebhookEvent, string> = {
   'email.sent': 'A message was accepted by the provider.',
   'email.failed': 'A message gave up after its last attempt.',
   'mailbox.disconnected': 'A mailbox lost its Google access and needs reconnecting.',
+  'user.created': 'Someone signed up to your app, or was added on the Users page.',
+  'user.signed_in': 'A user signed in. The payload says which method they used.',
+  'user.deleted': 'A user was deleted.',
 };
 
 export interface WebhookDialogProps {

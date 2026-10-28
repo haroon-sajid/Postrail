@@ -16,9 +16,18 @@ export const deliverWebhookJobSchema = z.object({
 });
 export type DeliverWebhookJob = z.infer<typeof deliverWebhookJobSchema>;
 
+/** One round of handing a broadcast's waiting recipients to delivery. */
+export const dispatchBroadcastJobSchema = z.object({
+  kind: z.literal('dispatch-broadcast'),
+  orgId: uuidSchema,
+  broadcastId: uuidSchema,
+});
+export type DispatchBroadcastJob = z.infer<typeof dispatchBroadcastJobSchema>;
+
 export const jobSchema = z.discriminatedUnion('kind', [
   sendEmailJobSchema,
   deliverWebhookJobSchema,
+  dispatchBroadcastJobSchema,
 ]);
 export type Job = z.infer<typeof jobSchema>;
 export type JobKind = Job['kind'];
@@ -33,4 +42,17 @@ export type WebhookOutcome = (typeof WEBHOOK_OUTCOMES)[number];
 
 export const webhookWorkerResultSchema = z.object({ outcome: z.enum(WEBHOOK_OUTCOMES) });
 
-export const resetCountersResponseSchema = z.object({ reset: z.number().int() });
+/**
+ * `dispatched` queued recipients and more may follow; `waiting` means no mailbox has room
+ * until the daily reset; `completed` means the last recipient was handed over.
+ */
+export const BROADCAST_OUTCOMES = ['dispatched', 'waiting', 'completed', 'skipped'] as const;
+export type BroadcastOutcome = (typeof BROADCAST_OUTCOMES)[number];
+
+export const broadcastWorkerResultSchema = z.object({ outcome: z.enum(BROADCAST_OUTCOMES) });
+
+/** `resumed` is how many broadcasts were set going again with the day's fresh capacity. */
+export const resetCountersResponseSchema = z.object({
+  reset: z.number().int(),
+  resumed: z.number().int(),
+});

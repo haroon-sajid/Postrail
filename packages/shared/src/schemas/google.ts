@@ -21,6 +21,15 @@ export const googleUserInfoSchema = z.object({
   email_verified: z.boolean().optional(),
 });
 
+/** userinfo with the `openid email profile` scopes, as end-user sign-in requests it. */
+export const googleProfileSchema = z.object({
+  sub: z.string().min(1),
+  email: z.email(),
+  email_verified: z.boolean().optional(),
+  name: z.string().optional(),
+  picture: z.string().optional(),
+});
+
 export const gmailSendResponseSchema = z.object({
   id: z.string().min(1),
   threadId: z.string().optional(),

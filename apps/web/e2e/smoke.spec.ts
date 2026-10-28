@@ -277,6 +277,100 @@ test('billing opens the tab named in the URL and its summary links switch tabs',
   expect(new URL(page.url()).search).toBe('');
 });
 
+test('sign-in methods saves a redirect URL and a switch, and users lists who signed in', async ({
+  page,
+  context,
+}) => {
+  await signIn(context);
+  await page.goto('/sign-in');
+  await expect(page.getByRole('heading', { name: 'Sign-in methods', level: 1 })).toBeVisible();
+  await expect(page.getByText("Using Postrail's shared Google client")).toBeVisible();
+
+  // The allow-list is edited as a draft and saved as a whole.
+  const redirect = 'https://app.example.com/auth/callback';
+  await page.getByLabel('Add a redirect URL').fill(redirect);
+  await page.getByRole('button', { name: 'Add', exact: true }).click();
+  await page.getByRole('button', { name: 'Save redirect URLs' }).click();
+  await expect(page.getByText('Redirect URLs saved')).toBeVisible();
+
+  const otp = page.getByRole('switch', { name: 'Email code sign-in' });
+  await expect(otp).toHaveAttribute('aria-checked', 'true');
+  await otp.click();
+  await expect(otp).toHaveAttribute('aria-checked', 'false');
+
+  // Both came from the API, not from local state.
+  await page.reload();
+  await expect(page.getByRole('button', { name: `Remove ${redirect}` })).toBeVisible();
+  await expect(otp).toHaveAttribute('aria-checked', 'false');
+
+  // Closing sign-ups points at the Users page, which is where people are then added.
+  const signups = page.getByRole('switch', { name: 'Allow new sign-ups' });
+  await signups.click();
+  await expect(signups).toHaveAttribute('aria-checked', 'false');
+  // GitHub cannot be switched on before the workspace has added its OAuth app.
+  await expect(page.getByRole('switch', { name: 'GitHub sign-in' })).toBeDisabled();
+
+  await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Users' }).click();
+  await expect(page.getByRole('heading', { name: 'Users', level: 1 })).toBeVisible();
+  expect(new URL(page.url()).pathname).toBe('/users');
+  const row = page.getByRole('row', { name: /ada@example\.com/ });
+  await expect(row.getByText('Ada Lovelace')).toBeVisible();
+  await expect(row.getByText('Google')).toBeVisible();
+  await page.getByRole('button', { name: 'Actions for ada@example.com' }).click();
+  await expect(page.getByRole('menuitem', { name: 'Sign out everywhere' })).toBeVisible();
+  await page.keyboard.press('Escape');
+
+  await page.getByRole('button', { name: 'Add user' }).first().click();
+  const dialog = page.getByRole('dialog');
+  await dialog.getByLabel('Email').fill('invited@example.com');
+  await dialog.getByRole('button', { name: 'Add user' }).click();
+  await expect(page.getByText('Added invited@example.com')).toBeVisible();
+  await expect(page.getByRole('row', { name: /invited@example\.com/ })).toBeVisible();
+});
+
+test('contacts can be added to a list and a broadcast sent to it', async ({ page, context }) => {
+  await signIn(context);
+  await page.goto('/contacts');
+  await expect(page.getByRole('heading', { name: 'Contacts', level: 1 })).toBeVisible();
+  // Two seeded contacts on the seeded list.
+  await expect(page.getByText('grace@example.com', { exact: true })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Add contact' }).click();
+  const dialog = page.getByRole('dialog');
+  await dialog.getByLabel('Email').fill('ada@example.com');
+  await dialog.getByRole('button', { name: 'Add property' }).click();
+  await dialog.getByLabel('Property 1 name').fill('first_name');
+  await dialog.getByLabel('Property 1 value').fill('Ada');
+  await dialog.getByRole('checkbox', { name: 'Newsletter' }).click();
+  await dialog.getByRole('button', { name: 'Add contact' }).click();
+  await expect(page.getByText('Added ada@example.com')).toBeVisible();
+
+  // The Lists tab has its own address and counts the new member.
+  await page.getByRole('tab', { name: 'Lists' }).click();
+  expect(new URL(page.url()).search).toBe('?tab=lists');
+  const list = page.getByRole('row', { name: /Newsletter/ });
+  await expect(list.getByRole('cell', { name: '3', exact: true })).toBeVisible();
+
+  // A broadcast starts as a draft and says who it would reach.
+  await page.getByRole('link', { name: 'Broadcasts' }).click();
+  await page.getByRole('button', { name: 'New broadcast' }).first().click();
+  await page.getByLabel('Name').fill('October news');
+  await page.getByRole('combobox', { name: 'Template' }).click();
+  await page.getByRole('option', { name: 'announcement' }).click();
+  await page.getByRole('combobox', { name: 'Contact list' }).click();
+  await page.getByRole('option', { name: /Newsletter/ }).click();
+  await page.getByRole('button', { name: 'Create draft' }).click();
+  await expect(page.getByRole('heading', { name: 'October news', level: 1 })).toBeVisible();
+  await expect(page.getByText('Draft: nothing has been sent')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Send', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Send to 3 contacts?' })).toBeVisible();
+  await page.getByRole('button', { name: 'Send broadcast' }).click();
+  await expect(page.getByText('Broadcast started')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Recipients' })).toBeVisible();
+  await expect(page.getByRole('cell', { name: 'ada@example.com' })).toBeVisible();
+});
+
 // Last on purpose: it adds an org to the shared in-memory server.
 test('a new workspace becomes the active one, survives a reload and can be switched back', async ({
   page,

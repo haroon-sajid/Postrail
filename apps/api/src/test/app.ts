@@ -1,10 +1,16 @@
+import { type AuthProvider } from '@postrail/shared';
 import { createApp } from '../app';
 import { type SessionUser } from '../lib/context';
 import { sharedSecretAuth } from '../lib/internal-auth';
 import { silentLogger } from '../lib/logger';
 import { createOriginMatcher } from '../lib/origins';
 import { InMemoryTokenBucket, type RateLimiter } from '../lib/rate-limit';
+import { createUnsubscribeLinks } from '../lib/unsubscribe';
 import { createApiKeyService } from '../modules/api-keys/service';
+import { createAuthService } from '../modules/auth/service';
+import { createBroadcastService } from '../modules/broadcasts/service';
+import { createBroadcastWorker } from '../modules/broadcasts/worker';
+import { createContactService } from '../modules/contacts/service';
 import { createEmailService } from '../modules/emails/service';
 import { createEmailWorker } from '../modules/emails/worker';
 import { createMailboxService, type MailboxServiceDeps } from '../modules/mailboxes/service';
@@ -15,9 +21,12 @@ import { createTemplateService } from '../modules/templates/service';
 import { createWebhookService } from '../modules/webhooks/service';
 import { createWebhookWorker } from '../modules/webhooks/worker';
 import { type GoogleClient } from '../providers/google-client';
+import { type IdentityProvider } from '../providers/identity';
+import { createJobHandler } from '../queue/handler';
 import { LocalQueue } from '../queue/local';
 import {
   fakeGoogleClient,
+  fakeIdentityProvider,
   fakeMailer,
   fakeWebhookReceiver,
   type InMemoryApiKeyStore,
@@ -27,6 +36,9 @@ import {
   type InMemoryWebhookStore,
   inMemoryApiKeyStore,
   inMemoryAuditStore,
+  inMemoryAuthStore,
+  inMemoryBroadcastStore,
+  inMemoryContactStore,
   inMemoryEmailStore,
   inMemoryMailboxStore,
   inMemoryOrgStore,
@@ -34,8 +46,10 @@ import {
   inMemorySuppressionStore,
   inMemoryTemplateStore,
   inMemoryWebhookStore,
+  TEST_API_ORIGIN,
   TEST_DASHBOARD_ORIGIN,
   testCipher,
+  testGoogleConfig,
   TEST_INTERNAL_SECRET,
   TEST_KEY_HEX,
 } from './fakes';
@@ -47,6 +61,8 @@ export interface TestAppOverrides {
   webhooks?: InMemoryWebhookStore;
   orgs?: InMemoryOrgStore;
   google?: GoogleClient;
+  /** End-user sign-in providers; `google` above is the mail-sending client. */
+  identityProviders?: Partial<Record<AuthProvider, IdentityProvider>>;
   rateLimiter?: RateLimiter;
   now?: MailboxServiceDeps['now'];
   /** HTTP status the fake webhook receiver answers with. */
@@ -117,12 +133,57 @@ export function createTestApp(overrides: TestAppOverrides = {}) {
     logger,
     now,
   });
-  queue.setHandler((job) =>
-    job.kind === 'send-email' ? worker.processSendJob(job) : webhookWorker.processDelivery(job),
-  );
-
   const emails = createEmailService({ messages: emailStore, mailboxes: store, queue });
+  const contactStore = inMemoryContactStore(emailStore.suppressions);
+  const broadcastStore = inMemoryBroadcastStore({
+    contacts: contactStore,
+    emails: emailStore,
+    mailboxes: store,
+  });
+  const unsubscribeLinks = createUnsubscribeLinks({
+    secret: TEST_KEY_HEX,
+    apiOrigin: TEST_API_ORIGIN,
+    now,
+  });
+  const broadcasts = createBroadcastService({
+    store: broadcastStore,
+    templates: templateStore,
+    contacts: contactStore,
+    queue,
+    audit,
+    now,
+  });
+  const broadcastWorker = createBroadcastWorker({
+    store: broadcastStore,
+    emails,
+    links: unsubscribeLinks,
+    queue,
+    logger,
+    now,
+  });
+  queue.setHandler(createJobHandler({ worker, webhookWorker, broadcastWorker }));
+
   const apiKeys = createApiKeyService({ store: apiKeyStore, audit, now });
+  const authStore = inMemoryAuthStore();
+  const identityProviders = {
+    google: fakeIdentityProvider('google'),
+    github: fakeIdentityProvider('github'),
+    ...overrides.identityProviders,
+  };
+  const endUserAuth = createAuthService({
+    store: authStore,
+    providers: identityProviders,
+    sharedGoogle: testGoogleConfig,
+    cipher: testCipher,
+    stateSecret: TEST_KEY_HEX,
+    apiOrigin: TEST_API_ORIGIN,
+    emails,
+    findTemplate: emailStore.findTemplate,
+    orgs: orgStore,
+    events: webhooks,
+    audit,
+    now,
+  });
   const orgs = createOrgService({
     store: orgStore,
     audit,
@@ -140,11 +201,16 @@ export function createTestApp(overrides: TestAppOverrides = {}) {
     templates: createTemplateService({ store: templateStore, emails }),
     suppressions: createSuppressionService(suppressionStore),
     webhooks,
+    endUserAuth,
+    contacts: createContactService(contactStore),
+    broadcasts,
+    unsubscribeLinks,
     orgs,
     orgStore,
     overview: createOverviewService(inMemoryOverviewStore(emailStore, store), now),
     worker,
     webhookWorker,
+    broadcastWorker,
     rateLimiter:
       overrides.rateLimiter ?? new InMemoryTokenBucket({ capacity: 10_000, refillPerSecond: 1000 }),
     internalAuth: sharedSecretAuth(TEST_INTERNAL_SECRET),
@@ -214,6 +280,12 @@ export function createTestApp(overrides: TestAppOverrides = {}) {
     templateStore,
     suppressionStore,
     orgStore,
+    authStore,
+    contactStore,
+    broadcastStore,
+    identityProviders,
+    unsubscribeLinks,
+    broadcastWorker,
     audit,
     mailer,
     google,

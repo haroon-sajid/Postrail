@@ -19,32 +19,6 @@ export interface UpcomingFeature {
  */
 export const UPCOMING: UpcomingFeature[] = [
   {
-    path: '/broadcasts',
-    title: 'Broadcasts',
-    description: 'One message to many recipients, paced across your mailboxes.',
-    headline: 'Send one message to a whole list',
-    body: 'Write an announcement once and send it to a list of contacts through your connected mailboxes, spread out so each mailbox stays inside its daily limit.',
-    points: [
-      'Pick a template and a contact list',
-      'Sends are paced across mailboxes and days',
-      'Every recipient shows up in Logs with its own status',
-    ],
-    today: { label: 'Open templates', to: '/templates' },
-  },
-  {
-    path: '/contacts',
-    title: 'Contacts',
-    description: 'The people you send to, kept in one place.',
-    headline: 'Keep your recipients in one place',
-    body: 'Store contacts with the properties your templates use, group them into lists, and let unsubscribes and invalid addresses stay in step with Suppressions.',
-    points: [
-      'Import from CSV or add through the API',
-      'Properties fill template variables',
-      'Suppressed addresses are skipped automatically',
-    ],
-    today: { label: 'Open suppressions', to: '/suppressions' },
-  },
-  {
     path: '/metrics',
     title: 'Metrics',
     description: 'How sending performs over time.',

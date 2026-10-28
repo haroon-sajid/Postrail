@@ -81,7 +81,7 @@ describe('POST /internal/cron/reset-daily-counters', () => {
     });
     expect(res.status).toBe(200);
     const body: unknown = await res.json();
-    expect(resetCountersResponseSchema.parse(body)).toEqual({ reset: 2 });
+    expect(resetCountersResponseSchema.parse(body)).toEqual({ reset: 2, resumed: 0 });
     expect(t.store.rows.map((r) => r.sentToday)).toEqual([0, 0, 0]);
   });
 });

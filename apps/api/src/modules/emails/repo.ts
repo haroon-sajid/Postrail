@@ -2,7 +2,7 @@ import { type Db, messageBodies, messages, suppressions, templates, withOrg } fr
 import { and, desc, eq, gte, ilike, lt, or, sql } from 'drizzle-orm';
 
 /** Users search literal text; `%` and `_` in it must not become wildcards. */
-function escapeLike(value: string): string {
+export function escapeLike(value: string): string {
   return value.replace(/[\\%_]/g, (ch) => `\\${ch}`);
 }
 
@@ -15,6 +15,8 @@ export interface NewMessageBody {
   text: string | null;
   replyTo: string | null;
   headers: Record<string, string> | null;
+  /** Holds a sign-in link or code: never shown, and deleted once delivery ends. */
+  sensitive?: boolean;
 }
 
 export interface NewMessage {
@@ -55,6 +57,8 @@ export interface EmailStore {
     now: Date,
   ) => Promise<MessageRow | undefined>;
   getBody: (orgId: string, id: string) => Promise<MessageBodyRow | undefined>;
+  /** Deletes the stored content. The message row and its history stay. */
+  purgeBody: (orgId: string, id: string) => Promise<void>;
   /** Terminal: records the provider id. The body is kept for preview and resend (ADR 0007). */
   markSent: (orgId: string, id: string, providerMessageId: string, sentAt: Date) => Promise<void>;
   /** Terminal: records the reason. */
@@ -140,6 +144,13 @@ export function createEmailStore(db: Db): EmailStore {
           .where(and(eq(messageBodies.orgId, orgId), eq(messageBodies.messageId, id)))
           .limit(1);
         return row;
+      }),
+
+    purgeBody: (orgId, id) =>
+      withOrg(db, orgId, async (tx) => {
+        await tx
+          .delete(messageBodies)
+          .where(and(eq(messageBodies.orgId, orgId), eq(messageBodies.messageId, id)));
       }),
 
     markSent: (orgId, id, providerMessageId, sentAt) =>

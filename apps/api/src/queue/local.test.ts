@@ -13,7 +13,7 @@ describe('LocalQueue (drain mode)', () => {
     const queue = new LocalQueue({ autoRun: false });
     const seen: string[] = [];
     queue.setHandler(async (j) => {
-      seen.push(j.kind === 'send-email' ? j.messageId : j.deliveryId);
+      seen.push(j.kind === 'send-email' ? j.messageId : j.kind);
       if (seen.length === 1) await queue.enqueue(job(3), { taskId: 'three' });
     });
     await queue.enqueue(job(1), { taskId: 'one' });

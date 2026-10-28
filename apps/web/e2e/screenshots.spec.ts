@@ -21,6 +21,10 @@ const PAGES = [
   '/templates',
   '/webhooks',
   '/suppressions',
+  '/broadcasts',
+  '/contacts',
+  '/users',
+  '/sign-in',
   '/settings',
   '/settings/members',
   '/settings/profile',
@@ -29,7 +33,7 @@ const PAGES = [
   '/billing?tab=payments',
   '/billing?tab=packages',
   // One planned-feature page stands for all of them; they share a component.
-  '/broadcasts',
+  '/metrics',
 ];
 const WIDTHS = [1920, 1280, 768, 375];
 

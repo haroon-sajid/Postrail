@@ -23,6 +23,7 @@ export type JobHandler = (job: Job) => Promise<unknown>;
 export const JOB_PATHS: Record<Job['kind'], string> = {
   'send-email': '/internal/tasks/send-email',
   'deliver-webhook': '/internal/tasks/deliver-webhook',
+  'dispatch-broadcast': '/internal/tasks/dispatch-broadcast',
 };
 
 export class QueueError extends Error {

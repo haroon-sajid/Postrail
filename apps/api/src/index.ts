@@ -1,5 +1,5 @@
 import { serve } from '@hono/node-server';
-import { createDb } from '@postrail/db';
+import { createDb, type Db, pendingMigrations } from '@postrail/db';
 import {
   createTokenCipher,
   EnvError,
@@ -14,12 +14,21 @@ import { createAuthServer, sessionResolverFor } from './lib/auth-server';
 import { type InternalAuth, oidcAuth, sharedSecretAuth } from './lib/internal-auth';
 import { createLogger, type Logger } from './lib/logger';
 import { createOriginMatcher } from './lib/origins';
+import { describePendingMigrations } from './lib/schema-check';
 import { InMemoryTokenBucket } from './lib/rate-limit';
 import { createSystemMailer } from './lib/system-mailer';
+import { createUnsubscribeLinks } from './lib/unsubscribe';
 import { resolveVersion } from './lib/version';
 import { createApiKeyStore } from './modules/api-keys/repo';
 import { createApiKeyService } from './modules/api-keys/service';
 import { createAuditStore } from './modules/audit/repo';
+import { createAuthStore } from './modules/auth/repo';
+import { createAuthService } from './modules/auth/service';
+import { createBroadcastStore } from './modules/broadcasts/repo';
+import { createBroadcastService } from './modules/broadcasts/service';
+import { createBroadcastWorker } from './modules/broadcasts/worker';
+import { createContactStore } from './modules/contacts/repo';
+import { createContactService } from './modules/contacts/service';
 import { createEmailStore } from './modules/emails/repo';
 import { createEmailService } from './modules/emails/service';
 import { createEmailWorker } from './modules/emails/worker';
@@ -37,7 +46,10 @@ import { createWebhookStore } from './modules/webhooks/repo';
 import { createWebhookService } from './modules/webhooks/service';
 import { createWebhookWorker } from './modules/webhooks/worker';
 import { createGoogleClient } from './providers/google-client';
+import { createGithubIdentityProvider } from './providers/github-identity';
+import { createGoogleIdentityProvider } from './providers/google-identity';
 import { CloudTasksQueue, googleAccessTokenProvider } from './queue/cloud-tasks';
+import { createJobHandler } from './queue/handler';
 import { LocalQueue } from './queue/local';
 import { type Queue } from './queue/types';
 
@@ -71,7 +83,31 @@ function buildQueue(
   };
 }
 
-function main(): void {
+/**
+ * Refuses to serve when the database has not had every migration this build expects. Run
+ * against an older schema, routes fail one query at a time with "Internal server error"
+ * and nothing says why; stopping here says it once, by name. On a host that only swaps
+ * in a deploy once it is healthy, the previous version keeps serving until the database
+ * is migrated.
+ */
+async function assertSchemaCurrent(db: Db, logger: Logger): Promise<void> {
+  let pending: string[];
+  try {
+    pending = await pendingMigrations(db);
+  } catch (error) {
+    // Could not ask (the database is unreachable, say). That is a different problem and
+    // may be temporary, so do not turn it into a refusal to start.
+    logger.warn({ err: error }, 'could not check for pending migrations');
+    return;
+  }
+  const problem = describePendingMigrations(pending);
+  if (!problem) return;
+  // Plain stderr like the env check: a person has to read this and act on it.
+  console.error(problem);
+  process.exit(1);
+}
+
+async function main(): Promise<void> {
   const env = readEnvOrExit();
   const logger = createLogger(env.LOG_LEVEL);
   const version = resolveVersion(env);
@@ -80,6 +116,7 @@ function main(): void {
   const browserOrigins = resolveBrowserOrigins(env);
 
   const db = createDb(env.DATABASE_URL);
+  await assertSchemaCurrent(db, logger);
   const audit = createAuditStore(db);
   const mailboxStore = createMailboxStore(db);
   const emailStore = createEmailStore(db);
@@ -112,10 +149,29 @@ function main(): void {
     queue,
     logger,
   });
+  const templateStore = createTemplateStore(db);
+  const contactStore = createContactStore(db);
+  const broadcastStore = createBroadcastStore(db);
+  const unsubscribeLinks = createUnsubscribeLinks({
+    secret: env.TOKEN_ENCRYPTION_KEY,
+    apiOrigin: env.API_ORIGIN,
+  });
+  const broadcasts = createBroadcastService({
+    store: broadcastStore,
+    templates: templateStore,
+    contacts: contactStore,
+    queue,
+    audit,
+  });
+  const broadcastWorker = createBroadcastWorker({
+    store: broadcastStore,
+    emails,
+    links: unsubscribeLinks,
+    queue,
+    logger,
+  });
   // In local mode the same process is the worker.
-  local?.setHandler((job) =>
-    job.kind === 'send-email' ? worker.processSendJob(job) : webhookWorker.processDelivery(job),
-  );
+  local?.setHandler(createJobHandler({ worker, webhookWorker, broadcastWorker }));
 
   const mailer = createSystemMailer({
     mailboxes: mailboxStore,
@@ -127,6 +183,23 @@ function main(): void {
     audit,
     mailer,
     dashboardOrigin: env.DASHBOARD_ORIGIN,
+  });
+
+  const endUserAuth = createAuthService({
+    store: createAuthStore(db),
+    providers: {
+      google: createGoogleIdentityProvider(),
+      github: createGithubIdentityProvider(),
+    },
+    sharedGoogle: { clientId: env.GOOGLE_CLIENT_ID, clientSecret: env.GOOGLE_CLIENT_SECRET },
+    cipher,
+    stateSecret: env.TOKEN_ENCRYPTION_KEY,
+    apiOrigin: env.API_ORIGIN,
+    emails,
+    findTemplate: emailStore.findTemplate,
+    orgs: orgStore,
+    events: webhooks,
+    audit,
   });
 
   const auth = createAuthServer({
@@ -149,14 +222,19 @@ function main(): void {
     apiKeys: createApiKeyService({ store: createApiKeyStore(db), audit }),
     mailboxes,
     emails,
-    templates: createTemplateService({ store: createTemplateStore(db), emails }),
+    templates: createTemplateService({ store: templateStore, emails }),
     suppressions: createSuppressionService(suppressionStore),
     webhooks,
+    endUserAuth,
+    contacts: createContactService(contactStore),
+    broadcasts,
+    unsubscribeLinks,
     orgs,
     orgStore,
     overview: createOverviewService(createOverviewStore(db)),
     worker,
     webhookWorker,
+    broadcastWorker,
     rateLimiter: new InMemoryTokenBucket(),
     internalAuth,
     sessionResolver: sessionResolverFor(auth),
@@ -173,4 +251,8 @@ function main(): void {
   });
 }
 
-main();
+main().catch((error: unknown) => {
+  // Startup failed before anything was listening; there is no request to attach this to.
+  console.error(error);
+  process.exit(1);
+});

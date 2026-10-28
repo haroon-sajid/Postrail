@@ -14,6 +14,13 @@ import { createRouter } from './lib/router';
 import { requireOrgMember, requireSession, type SessionResolver } from './lib/session';
 import { apiKeyRoutes } from './modules/api-keys/routes';
 import { type ApiKeyService } from './modules/api-keys/service';
+import { authAdminRoutes, authFlowRoutes, authPublicRoutes } from './modules/auth/routes';
+import { type AuthService } from './modules/auth/service';
+import { broadcastRoutes } from './modules/broadcasts/routes';
+import { type BroadcastService } from './modules/broadcasts/service';
+import { type BroadcastWorker } from './modules/broadcasts/worker';
+import { contactRoutes } from './modules/contacts/routes';
+import { type ContactService } from './modules/contacts/service';
 import { emailRoutes } from './modules/emails/routes';
 import { type EmailService } from './modules/emails/service';
 import { type EmailWorker } from './modules/emails/worker';
@@ -26,7 +33,8 @@ import { accountRoutes, orgRoutes } from './modules/orgs/routes';
 import { type OrgService } from './modules/orgs/service';
 import { overviewRoutes } from './modules/overview/routes';
 import { type OverviewService } from './modules/overview/service';
-import { suppressionRoutes } from './modules/suppressions/routes';
+import { type UnsubscribeLinks } from './lib/unsubscribe';
+import { suppressionRoutes, unsubscribeRoutes } from './modules/suppressions/routes';
 import { type SuppressionService } from './modules/suppressions/service';
 import { templateRoutes } from './modules/templates/routes';
 import { type TemplateService } from './modules/templates/service';
@@ -43,11 +51,18 @@ export interface AppDeps {
   templates: TemplateService;
   suppressions: SuppressionService;
   webhooks: WebhookService;
+  /** Sign-in for tenants' end users (ADR 0011). Dashboard sign-in is `authHandler`. */
+  endUserAuth: AuthService;
+  contacts: ContactService;
+  broadcasts: BroadcastService;
+  /** Mints and checks the unsubscribe link every broadcast email carries. */
+  unsubscribeLinks: UnsubscribeLinks;
   orgs: OrgService;
   orgStore: OrgStore;
   overview: OverviewService;
   worker: EmailWorker;
   webhookWorker: WebhookWorker;
+  broadcastWorker: BroadcastWorker;
   rateLimiter: RateLimiter;
   internalAuth: InternalAuth;
   /** Turns request headers into the signed-in user, or null. */
@@ -104,23 +119,31 @@ export function createApp(deps: AppDeps) {
 
   app.route('/', healthRoutes({ version: deps.version }));
   app.route('/', googleCallbackRoutes(deps.mailboxes));
+  app.route('/', authPublicRoutes(deps.endUserAuth));
+  app.route('/', unsubscribeRoutes(deps.suppressions, deps.unsubscribeLinks));
   app.route('/', accountRoutes(deps.orgs));
   app.route('/', orgRoutes(deps.orgs));
   app.route('/', apiKeyRoutes(deps.apiKeys));
   app.route('/', overviewRoutes(deps.overview));
+  app.route('/', authFlowRoutes(deps.endUserAuth));
   for (const base of [V1_BASE, APP_BASE]) {
+    app.route('/', authAdminRoutes(deps.endUserAuth, base));
     app.route('/', mailboxRoutes(deps.mailboxes, base));
     app.route('/', emailRoutes(deps.emails, base));
     app.route('/', templateRoutes(deps.templates, base));
     app.route('/', suppressionRoutes(deps.suppressions, base));
     app.route('/', webhookRoutes(deps.webhooks, base));
+    app.route('/', contactRoutes(deps.contacts, base));
+    app.route('/', broadcastRoutes(deps.broadcasts, base));
   }
   app.route(
     '/',
     internalRoutes({
       worker: deps.worker,
       webhookWorker: deps.webhookWorker,
+      broadcastWorker: deps.broadcastWorker,
       mailboxes: deps.mailboxes,
+      broadcasts: deps.broadcasts,
     }),
   );
 
@@ -141,7 +164,7 @@ export function createApp(deps: AppDeps) {
       title: 'Postrail API',
       version: deps.version,
       description:
-        'Send application email through your own Gmail or Outlook mailboxes. `/v1` takes API keys; `/app` is the dashboard and takes the session cookie. Errors always have the shape `{ error: { code, message } }`.',
+        'Send application email through your own Gmail or Outlook mailboxes, and sign your users in with Google, an emailed link or an emailed code. `/v1` takes API keys; `/app` is the dashboard and takes the session cookie. Errors always have the shape `{ error: { code, message } }`.',
     },
   });
   app.get('/docs', swaggerUI({ url: '/openapi.json' }));

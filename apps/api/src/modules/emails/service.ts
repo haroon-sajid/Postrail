@@ -25,11 +25,18 @@ export interface SendOutcome extends SendEmailResponse {
   replayed: boolean;
 }
 
+/** Not part of the public request: only other services set these. */
+export interface SendOptions {
+  /** The content is a credential (a sign-in link or code). See `NewMessageBody.sensitive`. */
+  sensitive?: boolean;
+}
+
 export interface EmailService {
   send: (
     auth: AuthContext,
     input: SendEmailRequest,
     idempotencyKey?: string,
+    options?: SendOptions,
   ) => Promise<SendOutcome>;
   sendBatch: (auth: AuthContext, items: BatchEmailItem[]) => Promise<BatchItemResult[]>;
   get: (auth: AuthContext, id: string) => Promise<Email>;
@@ -106,7 +113,7 @@ export function createEmailService(deps: EmailServiceDeps): EmailService {
   }
 
   const service: EmailService = {
-    async send(auth, input, idempotencyKey) {
+    async send(auth, input, idempotencyKey, options = {}) {
       const { orgId } = auth;
       if (idempotencyKey) {
         const seen = await messages.findByIdempotencyKey(orgId, idempotencyKey);
@@ -128,6 +135,7 @@ export function createEmailService(deps: EmailServiceDeps): EmailService {
           text: content.text ?? null,
           replyTo: input.reply_to ?? null,
           headers: input.headers ?? null,
+          ...(options.sensitive ? { sensitive: true } : {}),
         },
       });
     },
@@ -174,7 +182,10 @@ export function createEmailService(deps: EmailServiceDeps): EmailService {
       const original = await messages.get(orgId, id);
       if (!original) throw AppError.notFound('email');
       const body = await messages.getBody(orgId, id);
-      if (!body) throw AppError.validation('the original content is no longer stored');
+      // A sign-in email is never resent: its link or code is single use, and it is secret.
+      if (!body || body.sensitive) {
+        throw AppError.validation('the original content is no longer stored');
+      }
       if (await messages.isSuppressed(orgId, original.toEmail))
         throw AppError.suppressed(original.toEmail);
       // Prefer the same mailbox; fall back to any that can send if it is gone or paused.
@@ -196,7 +207,8 @@ export function createEmailService(deps: EmailServiceDeps): EmailService {
       const row = await messages.get(auth.orgId, id);
       if (!row) throw AppError.notFound('email');
       const body = await messages.getBody(auth.orgId, id);
-      return body ? { html: body.html, text: body.text } : null;
+      // Hidden even while it is still stored for the worker: it would sign the reader in.
+      return body && !body.sensitive ? { html: body.html, text: body.text } : null;
     },
   };
   return service;

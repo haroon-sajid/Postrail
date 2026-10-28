@@ -14,10 +14,12 @@ Decisions are recorded in `docs/adr`; start with `docs/adr/0001-architecture.md`
 ```
 apps/api            Hono HTTP API (Node 22). Bundled with tsup for Cloud Run.
   src/modules/*     feature modules (routes, service, repo, schemas, tests)
-  src/providers/*   EmailProvider interface + Google/Microsoft implementations (ADR 0003)
+  src/providers/*   EmailProvider interface + Google/Microsoft implementations (ADR 0003),
+                    IdentityProvider + Google/GitHub for end-user sign-in (ADR 0011)
+  src/queue/*       Queue interface, local and Cloud Tasks drivers, job-to-worker handler
   src/lib/*         cross-cutting: errors, error handler, logger, org context
   src/test/*        fakes and the createTestApp() helper used by api tests
-examples/           standalone scripts for integrators (webhook receiver)
+examples/           standalone scripts for integrators (webhook receiver, sign-in app)
 apps/web            React + Vite dashboard (Cloudflare Pages). Typed client generated from openapi.json.
   src/api/*         generated schema.d.ts, openapi-fetch client, auth client, query client
   src/app/*         router, shell (sidebar, top bar, org switcher, command palette)
@@ -56,7 +58,9 @@ docs/adr            Architecture decision records.
    Production secrets live in GCP Secret Manager, never in files.
 5. **Migrations.** Change the schema in `packages/db/src/schema`, then run
    `pnpm db:generate` to produce a migration in `packages/db/drizzle`. Never use
-   `drizzle-kit push`. Apply with `pnpm db:migrate`.
+   `drizzle-kit push`. Apply with `pnpm db:migrate`. The API refuses to start, naming
+   the missing migrations, when the database is behind the code (`pendingMigrations` in
+   `packages/db`), so apply them before running or deploying a build that needs them.
 6. **Tests and ADRs.** Every module ships with tests. Every new feature gets a short ADR
    in `docs/adr` (copy the template in `docs/adr/README.md`).
 7. **Style.** Keep functions small. Name things plainly. Comments explain why, not what.
@@ -78,6 +82,22 @@ docs/adr            Architecture decision records.
     time; see `docs/deploy.md`). In production the Worker in `apps/web/src/worker.ts`
     proxies `/api`, `/v1`, `/app`, `/openapi.json`, `/docs` and `/health` to the API so the
     dashboard is same-origin and cookies are first-party (ADR 0009).
+11. **Two kinds of user.** Dashboard users belong to Better Auth (`users`, `/api/auth/*`).
+    End users are the people who sign in to a tenant's app; they are tenant data in the
+    `auth_*` tables and `apps/api/src/modules/auth` (ADR 0011). Sign-in flows live under
+    `/v1/auth/*` only, so a dashboard cookie can never mint an end-user session. Session
+    tokens, sign-in codes and emailed codes are stored as hashes and returned once; OAuth
+    client secrets and the per-org JWT signing keys are encrypted and never returned.
+    Sign-in providers implement `IdentityProvider` in `src/providers/identity.ts`. Sign-in
+    emails go through `EmailService.send` with `sensitive: true`, which hides their body
+    from the preview API and deletes it once delivery ends.
+12. **Contacts and broadcasts.** A contact is someone a tenant sends to, not a login
+    (ADR 0012). A broadcast never sends in the request: `send` freezes the template and
+    the list, and the `dispatch-broadcast` worker hands recipients to `EmailService.send`
+    within each mailbox's room, which is 80% of its daily limit less what is sent and
+    queued (ADR 0013). The daily reset job resumes unfinished broadcasts. Every broadcast
+    email carries the unsubscribe link from `lib/unsubscribe.ts`; unsubscribing writes to
+    the suppression list, which stays the only place that decides who is sent to.
 
 ## Commands
 
@@ -94,6 +114,7 @@ pnpm --filter @postrail/web dev        dashboard at http://localhost:5173 (API o
 pnpm --filter @postrail/web test:e2e   Playwright smoke test (boots its own API on :8091, web on :5174)
 pnpm --filter @postrail/api openapi:export && pnpm --filter @postrail/web api:types   regenerate the typed client
 WEBHOOK_SECRET=whsec_... node examples/webhook-receiver.mjs   local receiver on :4000
+POSTRAIL_API_KEY=pr_live_... node examples/sign-in-app.mjs    sign-in demo on :4100 (ADR 0011)
 ```
 
 ## Environment

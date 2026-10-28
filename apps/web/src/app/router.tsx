@@ -12,6 +12,9 @@ import { AppShell } from './shell';
 import { FullPageSkeleton } from './shell-skeleton';
 import { ApiKeysPage } from '@/pages/api-keys/api-keys';
 import { InvitePage } from '@/pages/auth/invite';
+import { BroadcastDetailPage } from '@/pages/broadcasts/broadcast-detail';
+import { BroadcastsPage } from '@/pages/broadcasts/broadcasts';
+import { ContactsPage } from '@/pages/contacts/contacts';
 import { LoginPage } from '@/pages/auth/login';
 import { LogsPage } from '@/pages/logs/logs';
 import { MailboxesPage } from '@/pages/mailboxes/mailboxes';
@@ -22,11 +25,13 @@ import { BillingSettingsPage } from '@/pages/settings/billing';
 import { GeneralSettingsPage } from '@/pages/settings/general';
 import { MembersSettingsPage } from '@/pages/settings/members';
 import { ProfileSettingsPage } from '@/pages/settings/profile';
+import { SignInMethodsPage } from '@/pages/sign-in/sign-in';
 import { UPCOMING } from '@/pages/upcoming/upcoming';
 import { UpcomingPage } from '@/pages/upcoming/upcoming-page';
 import { SuppressionsPage } from '@/pages/suppressions/suppressions';
 import { TemplateEditorPage } from '@/pages/templates/editor';
 import { TemplatesPage } from '@/pages/templates/templates';
+import { UsersPage } from '@/pages/users/users';
 import { WebhookDetailPage } from '@/pages/webhooks/webhook-detail';
 import { WebhooksPage } from '@/pages/webhooks/webhooks';
 
@@ -77,6 +82,11 @@ export const router = createBrowserRouter([
           { path: 'webhooks', element: <WebhooksPage /> },
           { path: 'webhooks/:id', element: <WebhookDetailPage /> },
           { path: 'suppressions', element: <SuppressionsPage /> },
+          { path: 'contacts', element: <ContactsPage /> },
+          { path: 'broadcasts', element: <BroadcastsPage /> },
+          { path: 'broadcasts/:id', element: <BroadcastDetailPage /> },
+          { path: 'users', element: <UsersPage /> },
+          { path: 'sign-in', element: <SignInMethodsPage /> },
           { path: 'settings', element: <GeneralSettingsPage /> },
           { path: 'settings/members', element: <MembersSettingsPage /> },
           { path: 'settings/profile', element: <ProfileSettingsPage /> },

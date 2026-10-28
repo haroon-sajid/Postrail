@@ -74,6 +74,59 @@ export function createEmailWorker(deps: EmailWorkerDeps): EmailWorker {
     return 'retry-scheduled';
   }
 
+  /** One attempt for a claimed message whose body is in hand. */
+  async function attempt(row: MessageRow, body: MessageBodyRow): Promise<WorkerOutcome> {
+    const { orgId } = row;
+    if (!row.mailboxId) return fail(row, 'message has no mailbox');
+
+    const mailbox = await mailboxes.get(orgId, row.mailboxId);
+    if (!mailbox) return fail(row, 'mailbox no longer exists');
+    if (mailbox.status !== 'active') return fail(row, `mailbox is ${mailbox.status}`);
+
+    try {
+      const result = await providerFor(mailbox.provider).send(mailbox, toOutbound(row, body));
+      const sentAt = now();
+      await messages.markSent(orgId, row.id, result.providerMessageId, sentAt);
+      await mailboxes.incrementSentToday(orgId, mailbox.id);
+      logger.info({ messageId: row.id, orgId, attempts: row.attempts }, 'send succeeded');
+      await events.emit(
+        orgId,
+        'email.sent',
+        toEmail({
+          ...row,
+          status: 'sent',
+          providerMessageId: result.providerMessageId,
+          sentAt,
+          error: null,
+        }),
+      );
+      return 'sent';
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : 'send failed';
+      switch (classifySendError(error)) {
+        case 'disconnected': {
+          // The provider already flagged the mailbox; nothing will fix this message.
+          const outcome = await fail(row, 'mailbox disconnected; reconnect it');
+          await events.emit(orgId, 'mailbox.disconnected', {
+            id: mailbox.id,
+            email: mailbox.email,
+            provider: mailbox.provider,
+            status: 'disconnected',
+          });
+          return outcome;
+        }
+        case 'transient':
+          return retryLater(row, reason);
+        default:
+          if (looksLikeInvalidRecipient(error)) {
+            // A hard refusal of the address: stop future sends to it automatically.
+            await suppressions.upsert(orgId, normalize(row.toEmail), 'hard_bounce');
+          }
+          return fail(row, reason);
+      }
+    }
+  }
+
   return {
     async processSendJob({ orgId, messageId }) {
       // The claim is the idempotency guard: exactly one caller flips queued -> sending.
@@ -85,54 +138,13 @@ export function createEmailWorker(deps: EmailWorkerDeps): EmailWorker {
 
       const body = await messages.getBody(orgId, messageId);
       if (!body) return fail(row, 'message body missing');
-      if (!row.mailboxId) return fail(row, 'message has no mailbox');
 
-      const mailbox = await mailboxes.get(orgId, row.mailboxId);
-      if (!mailbox) return fail(row, 'mailbox no longer exists');
-      if (mailbox.status !== 'active') return fail(row, `mailbox is ${mailbox.status}`);
-
-      try {
-        const result = await providerFor(mailbox.provider).send(mailbox, toOutbound(row, body));
-        const sentAt = now();
-        await messages.markSent(orgId, row.id, result.providerMessageId, sentAt);
-        await mailboxes.incrementSentToday(orgId, mailbox.id);
-        logger.info({ messageId: row.id, orgId, attempts: row.attempts }, 'send succeeded');
-        await events.emit(
-          orgId,
-          'email.sent',
-          toEmail({
-            ...row,
-            status: 'sent',
-            providerMessageId: result.providerMessageId,
-            sentAt,
-            error: null,
-          }),
-        );
-        return 'sent';
-      } catch (error) {
-        const reason = error instanceof Error ? error.message : 'send failed';
-        switch (classifySendError(error)) {
-          case 'disconnected': {
-            // The provider already flagged the mailbox; nothing will fix this message.
-            const outcome = await fail(row, 'mailbox disconnected; reconnect it');
-            await events.emit(orgId, 'mailbox.disconnected', {
-              id: mailbox.id,
-              email: mailbox.email,
-              provider: mailbox.provider,
-              status: 'disconnected',
-            });
-            return outcome;
-          }
-          case 'transient':
-            return retryLater(row, reason);
-          default:
-            if (looksLikeInvalidRecipient(error)) {
-              // A hard refusal of the address: stop future sends to it automatically.
-              await suppressions.upsert(orgId, normalize(row.toEmail), 'hard_bounce');
-            }
-            return fail(row, reason);
-        }
+      const outcome = await attempt(row, body);
+      // A sign-in link or code has no reason to outlive its delivery (ADR 0011).
+      if (body.sensitive && outcome !== 'retry-scheduled') {
+        await messages.purgeBody(orgId, row.id);
       }
+      return outcome;
     },
   };
 }

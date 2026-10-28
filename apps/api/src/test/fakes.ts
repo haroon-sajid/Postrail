@@ -1,4 +1,5 @@
 import {
+  type AuthProvider,
   createTokenCipher,
   generateApiKey,
   type MailboxStatus,
@@ -9,6 +10,28 @@ import { type AuditStore } from '../modules/audit/repo';
 import { AppError } from '../lib/errors';
 import { type ApiKeyListRow, type ApiKeyRecord, type ApiKeyStore } from '../modules/api-keys/repo';
 import { type AuditInput } from '../modules/audit/service';
+import {
+  type AuthChallengeRow,
+  type AuthSessionRow,
+  type AuthSettingsRow,
+  type AuthSigningKeyRow,
+  type AuthStore,
+  type AuthUserRow,
+} from '../modules/auth/repo';
+import {
+  broadcastRoom,
+  type BroadcastRow,
+  type BroadcastStore,
+  type RecipientCounts,
+  type RecipientRow,
+  recipientStatus,
+} from '../modules/broadcasts/repo';
+import {
+  type ContactInput,
+  type ContactListRow,
+  type ContactRow,
+  type ContactStore,
+} from '../modules/contacts/repo';
 import {
   type EmailListFilters,
   type EmailStore,
@@ -34,6 +57,9 @@ import {
   type GoogleClient,
   type GoogleTokens,
 } from '../providers/google-client';
+import { createGithubIdentityProvider } from '../providers/github-identity';
+import { createGoogleIdentityProvider } from '../providers/google-identity';
+import { type IdentityProfile, type IdentityProvider } from '../providers/identity';
 import { type MailboxRow } from '../providers/types';
 
 // Test doubles shared across api tests. Not a *.test.ts file, so vitest does not run it.
@@ -42,6 +68,7 @@ export const TEST_KEY_HEX = 'ab'.repeat(32);
 export const testCipher = createTokenCipher(TEST_KEY_HEX);
 export const TEST_INTERNAL_SECRET = 'test-internal-secret-0123456789';
 export const TEST_DASHBOARD_ORIGIN = 'http://localhost:5173';
+export const TEST_API_ORIGIN = 'http://localhost:8080';
 
 export const testGoogleConfig = {
   clientId: 'test-client-id',
@@ -72,6 +99,38 @@ export function fakeGoogleClient(overrides: Partial<GoogleClient> = {}): GoogleC
     sendRaw: () => Promise.resolve({ id: 'gmail-1' }),
     ...overrides,
   };
+}
+
+export const testIdentityProfile: IdentityProfile = {
+  id: 'provider-id-1',
+  email: 'ada@example.com',
+  emailVerified: true,
+  name: 'Ada Lovelace',
+  picture: 'https://example.com/ada.png',
+};
+
+/** Real `authUrl`; the code exchange answers with a fixed profile and records its input. */
+export function fakeIdentityProvider(
+  provider: AuthProvider,
+  overrides: Partial<IdentityProvider> = {},
+) {
+  const noNetwork = () => {
+    throw new Error('network access in tests');
+  };
+  const real =
+    provider === 'google'
+      ? createGoogleIdentityProvider(noNetwork)
+      : createGithubIdentityProvider(noNetwork);
+  const exchanges: Array<Parameters<IdentityProvider['fetchProfile']>[0]> = [];
+  const client: IdentityProvider = {
+    authUrl: (params) => real.authUrl(params),
+    fetchProfile: (params) => {
+      exchanges.push(params);
+      return Promise.resolve(testIdentityProfile);
+    },
+    ...overrides,
+  };
+  return Object.assign(client, { exchanges });
 }
 
 // ---------- audit ----------
@@ -266,6 +325,646 @@ export function inMemoryApiKeyStore(): InMemoryApiKeyStore {
       record.revokedAt ??= at;
       return Promise.resolve(true);
     },
+  };
+  return store;
+}
+
+// ---------- end-user auth ----------
+
+export interface InMemoryAuthStore extends AuthStore {
+  settings: AuthSettingsRow[];
+  users: AuthUserRow[];
+  identities: Array<{ orgId: string; userId: string; provider: AuthProvider; sub: string }>;
+  sessions: AuthSessionRow[];
+  challenges: AuthChallengeRow[];
+  signingKeys: AuthSigningKeyRow[];
+}
+
+export function inMemoryAuthStore(): InMemoryAuthStore {
+  const findUser = (orgId: string, id: string) =>
+    store.users.find((u) => u.orgId === orgId && u.id === id);
+  const findChallenge = (orgId: string, id: string) =>
+    store.challenges.find((c) => c.orgId === orgId && c.id === id);
+  const withProviders = (user: AuthUserRow) => ({
+    ...user,
+    providers: store.identities.filter((i) => i.userId === user.id).map((i) => i.provider),
+  });
+  const byEmail = (orgId: string, email: string) =>
+    store.users.find((u) => u.orgId === orgId && u.email === email);
+  const insertUser = (orgId: string, email: string, patch: Partial<AuthUserRow>) => {
+    const user: AuthUserRow = {
+      id: nextId(),
+      orgId,
+      email,
+      emailVerified: false,
+      name: null,
+      image: null,
+      lastSignInAt: null,
+      // Strictly increasing so keyset pagination has a deterministic order.
+      createdAt: new Date(Date.now() + store.users.length),
+      updatedAt: new Date(),
+      ...patch,
+    };
+    store.users.push(user);
+    return user;
+  };
+  const resolveByEmail = (
+    orgId: string,
+    email: string,
+    patch: Partial<AuthUserRow>,
+    allowCreate: boolean,
+  ) => {
+    const existing = byEmail(orgId, email);
+    if (existing) {
+      Object.assign(existing, patch, { updatedAt: new Date() });
+      return { user: existing, created: false };
+    }
+    return allowCreate ? { user: insertUser(orgId, email, patch), created: true } : undefined;
+  };
+
+  const store: InMemoryAuthStore = {
+    settings: [],
+    users: [],
+    identities: [],
+    sessions: [],
+    challenges: [],
+    signingKeys: [],
+
+    getSettings: (orgId) => Promise.resolve(store.settings.find((s) => s.orgId === orgId)),
+    saveSettings: (orgId, patch) => {
+      let row = store.settings.find((s) => s.orgId === orgId);
+      if (!row) {
+        row = {
+          orgId,
+          appName: null,
+          redirectUrls: [],
+          googleEnabled: true,
+          magicLinkEnabled: true,
+          emailOtpEnabled: true,
+          googleClientId: null,
+          googleClientSecretEnc: null,
+          githubEnabled: false,
+          githubClientId: null,
+          githubClientSecretEnc: null,
+          signupsEnabled: true,
+          magicLinkTemplate: null,
+          otpTemplate: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        store.settings.push(row);
+      }
+      Object.assign(row, patch, { updatedAt: new Date() });
+      return Promise.resolve(row);
+    },
+
+    resolveUserByIdentity: (orgId, input, allowCreate) => {
+      const profile = {
+        emailVerified: true,
+        ...(input.name ? { name: input.name } : {}),
+        ...(input.image ? { image: input.image } : {}),
+      };
+      const linked = store.identities.find(
+        (i) => i.orgId === orgId && i.provider === input.provider && i.sub === input.providerUserId,
+      );
+      const existing = linked ? findUser(orgId, linked.userId) : undefined;
+      if (existing) {
+        Object.assign(existing, profile);
+        return Promise.resolve({ user: existing, created: false });
+      }
+      const resolved = resolveByEmail(orgId, input.email, profile, allowCreate);
+      if (resolved) {
+        store.identities.push({
+          orgId,
+          userId: resolved.user.id,
+          provider: input.provider,
+          sub: input.providerUserId,
+        });
+      }
+      return Promise.resolve(resolved);
+    },
+    resolveUserByEmail: (orgId, email, allowCreate) =>
+      Promise.resolve(resolveByEmail(orgId, email, { emailVerified: true }, allowCreate)),
+    findUserByEmail: (orgId, email) => Promise.resolve(byEmail(orgId, email)),
+    createUser: (orgId, input) =>
+      Promise.resolve(
+        byEmail(orgId, input.email) ? undefined : insertUser(orgId, input.email, input),
+      ),
+    getUser: (orgId, id) => {
+      const user = findUser(orgId, id);
+      return Promise.resolve(user ? withProviders(user) : undefined);
+    },
+    listUsers: (orgId, limit, cursor, q) => {
+      const needle = q?.toLowerCase();
+      const after = (u: AuthUserRow) =>
+        !cursor ||
+        u.createdAt < cursor.createdAt ||
+        (u.createdAt.getTime() === cursor.createdAt.getTime() && u.id < cursor.id);
+      const matches = (u: AuthUserRow) =>
+        !needle || u.email.includes(needle) || (u.name ?? '').toLowerCase().includes(needle);
+      const rows = store.users
+        .filter((u) => u.orgId === orgId && after(u) && matches(u))
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime() || (b.id < a.id ? -1 : 1))
+        .slice(0, limit);
+      return Promise.resolve(rows.map(withProviders));
+    },
+    deleteUser: (orgId, id) => {
+      if (!findUser(orgId, id)) return Promise.resolve(false);
+      // The foreign keys cascade in Postgres; do the same here.
+      store.users = store.users.filter((u) => u.id !== id);
+      store.identities = store.identities.filter((i) => i.userId !== id);
+      store.sessions = store.sessions.filter((s) => s.userId !== id);
+      store.challenges = store.challenges.filter((c) => c.userId !== id);
+      return Promise.resolve(true);
+    },
+    recordSignIn: (orgId, userId, at) => {
+      const user = findUser(orgId, userId);
+      if (!user) return Promise.resolve(undefined);
+      const firstSignIn = user.lastSignInAt === null;
+      user.lastSignInAt = at;
+      return Promise.resolve({ firstSignIn });
+    },
+
+    createChallenge: (orgId, input) => {
+      store.challenges.push({
+        provider: null,
+        ...input,
+        orgId,
+        attempts: 0,
+        consumedAt: null,
+        createdAt: new Date(Date.now() + store.challenges.length),
+      });
+      return Promise.resolve();
+    },
+    deleteChallenge: (orgId, id) => {
+      store.challenges = store.challenges.filter((c) => !(c.orgId === orgId && c.id === id));
+      return Promise.resolve();
+    },
+    countEmailedSince: (orgId, email, since) =>
+      Promise.resolve(
+        store.challenges.filter(
+          (c) =>
+            c.orgId === orgId &&
+            c.email === email &&
+            c.kind !== 'oauth_code' &&
+            c.createdAt >= since,
+        ).length,
+      ),
+    redeemCode: (orgId, tokenHash, now) => {
+      const row = store.challenges.find(
+        (c) =>
+          c.orgId === orgId &&
+          c.tokenHash === tokenHash &&
+          c.kind !== 'email_otp' &&
+          !c.consumedAt &&
+          c.expiresAt > now,
+      );
+      if (row) row.consumedAt = now;
+      return Promise.resolve(row ? { ...row } : undefined);
+    },
+    supersedeOtps: (orgId, email, now) => {
+      for (const c of store.challenges) {
+        if (c.orgId === orgId && c.email === email && c.kind === 'email_otp' && !c.consumedAt) {
+          c.consumedAt = now;
+        }
+      }
+      return Promise.resolve();
+    },
+    findActiveOtp: (orgId, email, now) =>
+      Promise.resolve(
+        store.challenges
+          .filter(
+            (c) =>
+              c.orgId === orgId &&
+              c.email === email &&
+              c.kind === 'email_otp' &&
+              !c.consumedAt &&
+              c.expiresAt > now,
+          )
+          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0],
+      ),
+    countOtpAttempt: (orgId, id) => {
+      const row = findChallenge(orgId, id);
+      if (row) row.attempts += 1;
+      return Promise.resolve(row?.attempts ?? 0);
+    },
+    consumeChallenge: (orgId, id, now) => {
+      const row = findChallenge(orgId, id);
+      if (!row || row.consumedAt) return Promise.resolve(false);
+      row.consumedAt = now;
+      return Promise.resolve(true);
+    },
+
+    createSession: (orgId, input) => {
+      const row: AuthSessionRow = {
+        id: nextId(),
+        orgId,
+        ...input,
+        revokedAt: null,
+        createdAt: new Date(),
+      };
+      store.sessions.push(row);
+      return Promise.resolve(row);
+    },
+    findSessionByHash: (orgId, tokenHash) =>
+      Promise.resolve(store.sessions.find((s) => s.orgId === orgId && s.tokenHash === tokenHash)),
+    revokeSession: (orgId, id, at) => {
+      const row = store.sessions.find((s) => s.orgId === orgId && s.id === id);
+      if (row) row.revokedAt ??= at;
+      return Promise.resolve();
+    },
+    revokeUserSessions: (orgId, userId, at) => {
+      const live = store.sessions.filter(
+        (s) => s.orgId === orgId && s.userId === userId && !s.revokedAt && s.expiresAt > at,
+      );
+      for (const s of live) s.revokedAt = at;
+      return Promise.resolve(live.length);
+    },
+
+    latestSigningKey: (orgId) =>
+      Promise.resolve(store.signingKeys.filter((k) => k.orgId === orgId).at(-1)),
+    createSigningKey: (orgId, input) => {
+      const row: AuthSigningKeyRow = { ...input, orgId, createdAt: new Date() };
+      store.signingKeys.push(row);
+      return Promise.resolve(row);
+    },
+    listSigningKeys: (orgId) =>
+      Promise.resolve(store.signingKeys.filter((k) => k.orgId === orgId).reverse()),
+  };
+  return store;
+}
+
+// ---------- contacts ----------
+
+export interface InMemoryContactStore extends ContactStore {
+  rows: ContactRow[];
+  lists: ContactListRow[];
+  members: Array<{ orgId: string; listId: string; contactId: string }>;
+}
+
+/** `suppressions` is the email store's array, so a contact shows as suppressed when it is. */
+export function inMemoryContactStore(suppressions: SuppressionRow[] = []): InMemoryContactStore {
+  const find = (orgId: string, id: string) =>
+    store.rows.find((r) => r.orgId === orgId && r.id === id);
+  const findList = (orgId: string, id: string) =>
+    store.lists.find((l) => l.orgId === orgId && l.id === id);
+  const view = (row: ContactRow) => ({
+    ...row,
+    listIds: store.members.filter((m) => m.contactId === row.id).map((m) => m.listId),
+    suppressed: suppressions.some((s) => s.orgId === row.orgId && s.email === row.email),
+  });
+  const listView = (list: ContactListRow) => ({
+    ...list,
+    contactCount: store.members.filter((m) => m.listId === list.id).length,
+  });
+  /** Like the real one: ids that are not this org's are ignored. */
+  const addMembers = (orgId: string, contactIds: string[], listIds: string[]) => {
+    let added = 0;
+    for (const listId of listIds.filter((id) => findList(orgId, id))) {
+      for (const contactId of contactIds.filter((id) => find(orgId, id))) {
+        if (store.members.some((m) => m.listId === listId && m.contactId === contactId)) continue;
+        store.members.push({ orgId, listId, contactId });
+        added += 1;
+      }
+    }
+    return added;
+  };
+  const upsertRow = (orgId: string, input: ContactInput) => {
+    const existing = store.rows.find((r) => r.orgId === orgId && r.email === input.email);
+    if (existing) {
+      existing.properties = { ...existing.properties, ...input.properties };
+      existing.updatedAt = new Date();
+      return { row: existing, created: false };
+    }
+    const row: ContactRow = {
+      id: nextId(),
+      orgId,
+      ...input,
+      // Strictly increasing so keyset pagination has a deterministic order.
+      createdAt: new Date(Date.now() + store.rows.length),
+      updatedAt: new Date(),
+    };
+    store.rows.push(row);
+    return { row, created: true };
+  };
+  /** The CONFLICT the real repo raises from the unique index, or undefined when free. */
+  const nameConflict = (orgId: string, name: string, exceptId?: string) =>
+    store.lists.some((l) => l.orgId === orgId && l.name === name && l.id !== exceptId)
+      ? AppError.conflict(`a list named "${name}" already exists`)
+      : undefined;
+
+  const store: InMemoryContactStore = {
+    rows: [],
+    lists: [],
+    members: [],
+
+    upsert: (orgId, input, listIds) => {
+      const { row, created } = upsertRow(orgId, input);
+      addMembers(orgId, [row.id], listIds);
+      return Promise.resolve({ contact: view(row), created });
+    },
+    get: (orgId, id) => {
+      const row = find(orgId, id);
+      return Promise.resolve(row ? view(row) : undefined);
+    },
+    list: (orgId, limit, cursor, filters = {}) => {
+      const q = filters.q?.toLowerCase();
+      const after = (r: ContactRow) =>
+        !cursor ||
+        r.createdAt < cursor.createdAt ||
+        (r.createdAt.getTime() === cursor.createdAt.getTime() && r.id < cursor.id);
+      const onList = (r: ContactRow) =>
+        !filters.listId ||
+        store.members.some((m) => m.listId === filters.listId && m.contactId === r.id);
+      const rows = store.rows
+        .filter((r) => r.orgId === orgId && after(r) && onList(r) && (!q || r.email.includes(q)))
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime() || (b.id < a.id ? -1 : 1))
+        .slice(0, limit);
+      return Promise.resolve(rows.map(view));
+    },
+    update: (orgId, id, patch) => {
+      const row = find(orgId, id);
+      if (!row) return Promise.resolve(undefined);
+      if (patch.properties) row.properties = patch.properties;
+      row.updatedAt = new Date();
+      if (patch.listIds) {
+        store.members = store.members.filter((m) => m.contactId !== id);
+        addMembers(orgId, [id], patch.listIds);
+      }
+      return Promise.resolve(view(row));
+    },
+    remove: (orgId, id) => {
+      if (!find(orgId, id)) return Promise.resolve(false);
+      store.rows = store.rows.filter((r) => r.id !== id);
+      store.members = store.members.filter((m) => m.contactId !== id);
+      return Promise.resolve(true);
+    },
+    importMany: (orgId, rows, listId) => {
+      const results = rows.map((row) => upsertRow(orgId, row));
+      if (listId) {
+        addMembers(
+          orgId,
+          results.map((r) => r.row.id),
+          [listId],
+        );
+      }
+      const created = results.filter((r) => r.created).length;
+      return Promise.resolve({ created, updated: results.length - created });
+    },
+
+    listLists: (orgId) =>
+      Promise.resolve(
+        store.lists
+          .filter((l) => l.orgId === orgId)
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map(listView),
+      ),
+    getList: (orgId, id) => {
+      const list = findList(orgId, id);
+      return Promise.resolve(list ? listView(list) : undefined);
+    },
+    createList: (orgId, name) => {
+      const taken = nameConflict(orgId, name);
+      if (taken) return Promise.reject(taken);
+      const list: ContactListRow = {
+        id: nextId(),
+        orgId,
+        name,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      store.lists.push(list);
+      return Promise.resolve(listView(list));
+    },
+    renameList: (orgId, id, name) => {
+      const list = findList(orgId, id);
+      if (!list) return Promise.resolve(undefined);
+      const taken = nameConflict(orgId, name, id);
+      if (taken) return Promise.reject(taken);
+      list.name = name;
+      return Promise.resolve(listView(list));
+    },
+    removeList: (orgId, id) => {
+      if (!findList(orgId, id)) return Promise.resolve(false);
+      store.lists = store.lists.filter((l) => l.id !== id);
+      store.members = store.members.filter((m) => m.listId !== id);
+      return Promise.resolve(true);
+    },
+    addToList: (orgId, listId, contactIds) =>
+      Promise.resolve(addMembers(orgId, contactIds, [listId])),
+    removeFromList: (orgId, listId, contactId) => {
+      const before = store.members.length;
+      store.members = store.members.filter(
+        (m) => !(m.orgId === orgId && m.listId === listId && m.contactId === contactId),
+      );
+      return Promise.resolve(store.members.length < before);
+    },
+  };
+  return store;
+}
+
+// ---------- broadcasts ----------
+
+export interface InMemoryBroadcastStore extends BroadcastStore {
+  rows: BroadcastRow[];
+  recipientRows: RecipientRow[];
+}
+
+/** Reads the other fakes it depends on, the way the real repo joins their tables. */
+export function inMemoryBroadcastStore(deps: {
+  contacts: InMemoryContactStore;
+  emails: InMemoryEmailStore;
+  mailboxes: InMemoryMailboxStore;
+}): InMemoryBroadcastStore {
+  const find = (orgId: string, id: string) =>
+    store.rows.find((r) => r.orgId === orgId && r.id === id);
+  const view = (row: BroadcastRow) => ({
+    ...row,
+    templateSlug: deps.emails.templates.find((t) => t.id === row.templateId)?.slug ?? null,
+    listName: deps.contacts.lists.find((l) => l.id === row.listId)?.name ?? null,
+  });
+  const messageStatus = (messageId: string | null) =>
+    deps.emails.rows.find((m) => m.id === messageId)?.status ?? null;
+  const waiting = (r: RecipientRow) => r.state === 'pending' || r.state === 'dispatching';
+
+  const store: InMemoryBroadcastStore = {
+    rows: [],
+    recipientRows: [],
+
+    create: (orgId, input) => {
+      const row: BroadcastRow = {
+        id: nextId(),
+        orgId,
+        ...input,
+        status: 'draft',
+        subject: null,
+        html: null,
+        startedAt: null,
+        completedAt: null,
+        createdAt: new Date(Date.now() + store.rows.length),
+        updatedAt: new Date(),
+      };
+      store.rows.push(row);
+      return Promise.resolve(view(row));
+    },
+    list: (orgId) =>
+      Promise.resolve(
+        store.rows
+          .filter((r) => r.orgId === orgId)
+          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+          .map(view),
+      ),
+    get: (orgId, id) => {
+      const row = find(orgId, id);
+      return Promise.resolve(row ? view(row) : undefined);
+    },
+    updateDraft: (orgId, id, patch) => {
+      const row = find(orgId, id);
+      if (row?.status !== 'draft') return Promise.resolve(undefined);
+      Object.assign(row, patch, { updatedAt: new Date() });
+      return Promise.resolve(view(row));
+    },
+    remove: (orgId, id) => {
+      const row = find(orgId, id);
+      if (!row || row.status === 'sending') return Promise.resolve(false);
+      store.rows = store.rows.filter((r) => r.id !== id);
+      store.recipientRows = store.recipientRows.filter((r) => r.broadcastId !== id);
+      return Promise.resolve(true);
+    },
+    start: (orgId, id, content, now) => {
+      const row = find(orgId, id);
+      if (row?.status !== 'draft') return Promise.resolve(undefined);
+      Object.assign(row, content, { status: 'sending', startedAt: now, updatedAt: now });
+      const members = deps.contacts.members.filter(
+        (m) => m.orgId === orgId && m.listId === row.listId,
+      );
+      for (const member of members) {
+        const contact = deps.contacts.rows.find((c) => c.id === member.contactId);
+        if (!contact) continue;
+        store.recipientRows.push({
+          id: nextId(),
+          orgId,
+          broadcastId: id,
+          contactId: contact.id,
+          email: contact.email,
+          properties: { ...contact.properties },
+          state: 'pending',
+          messageId: null,
+          error: null,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
+      return Promise.resolve(members.length);
+    },
+    cancel: (orgId, id, now) => {
+      const row = find(orgId, id);
+      if (row?.status !== 'sending') return Promise.resolve(false);
+      Object.assign(row, { status: 'canceled', completedAt: now, updatedAt: now });
+      for (const r of store.recipientRows.filter((r) => r.broadcastId === id && waiting(r))) {
+        Object.assign(r, { state: 'skipped', error: 'broadcast canceled', updatedAt: now });
+      }
+      return Promise.resolve(true);
+    },
+    complete: (orgId, id, now) => {
+      const row = find(orgId, id);
+      if (row?.status === 'sending') {
+        Object.assign(row, { status: 'sent', completedAt: now, updatedAt: now });
+      }
+      return Promise.resolve();
+    },
+    counts: (orgId, ids) => {
+      const byId = new Map<string, RecipientCounts>();
+      for (const id of ids) {
+        const rows = store.recipientRows.filter((r) => r.orgId === orgId && r.broadcastId === id);
+        if (rows.length === 0) continue;
+        const tally = (status: string) =>
+          rows.filter((r) => recipientStatus(r.state, messageStatus(r.messageId)) === status)
+            .length;
+        byId.set(id, {
+          total: rows.length,
+          pending: tally('pending'),
+          queued: tally('queued'),
+          sent: tally('sent'),
+          failed: tally('failed'),
+          skipped: tally('skipped'),
+        });
+      }
+      return Promise.resolve(byId);
+    },
+
+    claimRecipients: (orgId, broadcastId, limit, leaseMs, now) => {
+      const stale = (r: RecipientRow) =>
+        r.state === 'dispatching' && r.updatedAt.getTime() < now.getTime() - leaseMs;
+      const claimed = store.recipientRows
+        .filter((r) => r.orgId === orgId && r.broadcastId === broadcastId)
+        .filter((r) => r.state === 'pending' || stale(r))
+        .sort((a, b) => a.email.localeCompare(b.email))
+        .slice(0, limit);
+      for (const r of claimed) Object.assign(r, { state: 'dispatching', updatedAt: now });
+      return Promise.resolve(claimed.map((r) => ({ ...r })));
+    },
+    settleRecipient: (orgId, id, outcome) => {
+      const row = store.recipientRows.find((r) => r.orgId === orgId && r.id === id);
+      if (row) {
+        Object.assign(
+          row,
+          outcome.state === 'queued'
+            ? { state: 'queued', messageId: outcome.messageId, error: null }
+            : { state: outcome.state, error: outcome.error },
+        );
+      }
+      return Promise.resolve();
+    },
+    releaseRecipients: (orgId, ids) => {
+      for (const r of store.recipientRows) {
+        if (r.orgId === orgId && ids.includes(r.id) && r.state === 'dispatching') {
+          r.state = 'pending';
+        }
+      }
+      return Promise.resolve();
+    },
+    countWaiting: (orgId, broadcastId) =>
+      Promise.resolve(
+        store.recipientRows.filter(
+          (r) => r.orgId === orgId && r.broadcastId === broadcastId && waiting(r),
+        ).length,
+      ),
+    mailboxRoom: (orgId) =>
+      Promise.resolve(
+        deps.mailboxes.rows
+          .filter((m) => m.orgId === orgId && m.status === 'active')
+          .map((m) => ({
+            email: m.email,
+            remaining: broadcastRoom(
+              m.dailyLimit,
+              m.sentToday,
+              deps.emails.rows.filter(
+                (e) => e.mailboxId === m.id && (e.status === 'queued' || e.status === 'sending'),
+              ).length,
+            ),
+          }))
+          .filter((m) => m.remaining > 0),
+      ),
+    recipients: (orgId, broadcastId, limit, afterEmail) =>
+      Promise.resolve(
+        store.recipientRows
+          .filter((r) => r.orgId === orgId && r.broadcastId === broadcastId)
+          .filter((r) => !afterEmail || r.email > afterEmail)
+          .sort((a, b) => (a.email < b.email ? -1 : 1))
+          .slice(0, limit)
+          .map((r) => ({
+            id: r.id,
+            email: r.email,
+            status: recipientStatus(r.state, messageStatus(r.messageId)),
+            messageId: r.messageId,
+            error: r.error ?? deps.emails.rows.find((m) => m.id === r.messageId)?.error ?? null,
+          })),
+      ),
+    listSending: () =>
+      Promise.resolve(
+        store.rows.filter((r) => r.status === 'sending').map((r) => ({ orgId: r.orgId, id: r.id })),
+      ),
   };
   return store;
 }
@@ -555,7 +1254,13 @@ export function inMemoryEmailStore(): InMemoryEmailStore {
         updatedAt: new Date(),
       };
       store.rows.push(row);
-      store.bodies.set(row.id, { messageId: row.id, orgId, ...body, createdAt: new Date() });
+      store.bodies.set(row.id, {
+        messageId: row.id,
+        orgId,
+        sensitive: false,
+        ...body,
+        createdAt: new Date(),
+      });
       return Promise.resolve({ row, created: true });
     },
 
@@ -570,6 +1275,11 @@ export function inMemoryEmailStore(): InMemoryEmailStore {
     getBody: (orgId, id) => {
       const body = store.bodies.get(id);
       return Promise.resolve(body?.orgId === orgId ? body : undefined);
+    },
+
+    purgeBody: (orgId, id) => {
+      if (store.bodies.get(id)?.orgId === orgId) store.bodies.delete(id);
+      return Promise.resolve();
     },
 
     markSent: (orgId, id, providerMessageId, sentAt) => {

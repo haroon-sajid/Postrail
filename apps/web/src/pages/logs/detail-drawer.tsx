@@ -142,7 +142,8 @@ function DetailBody({ email }: { email: Email }) {
             </Tabs>
           ) : (
             <p className="text-sm text-fg-muted">
-              The content of this message is no longer stored.
+              The content of this message is not available. Sign-in emails are never shown, and
+              their content is deleted once they are sent.
             </p>
           )}
         </section>

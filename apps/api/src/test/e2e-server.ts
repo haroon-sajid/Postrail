@@ -49,6 +49,33 @@ void t.emailStore
     body: { html: '<p>Hello</p>', text: 'Hello', replyTo: null, headers: null },
   })
   .then(({ row }) => t.emailStore.markSent(E2E_ORG_ID, row.id, 'gmail-1', new Date()));
+// One end user who signed in with Google, so the Users page is not empty.
+void t.authStore.resolveUserByIdentity(
+  E2E_ORG_ID,
+  {
+    provider: 'google',
+    providerUserId: 'e2e-google-sub',
+    email: 'ada@example.com',
+    name: 'Ada Lovelace',
+    image: null,
+  },
+  true,
+);
+// A template, a list and two contacts, so a broadcast can be drafted and sent.
+t.emailStore.addTemplate(E2E_ORG_ID, {
+  slug: 'announcement',
+  subject: 'News for {{first_name}}',
+  html: '<p>Hi {{first_name}}, we shipped something.</p>',
+  variables: ['first_name'],
+});
+void t.contactStore.createList(E2E_ORG_ID, 'Newsletter').then(async (list) => {
+  for (const [email, first_name] of [
+    ['grace@example.com', 'Grace'],
+    ['linus@example.com', 'Linus'],
+  ] as const) {
+    await t.contactStore.upsert(E2E_ORG_ID, { email, properties: { first_name } }, [list.id]);
+  }
+});
 
 serve({ fetch: t.app.fetch, port }, () => {
   // Playwright waits for this line's URL before starting the browser.

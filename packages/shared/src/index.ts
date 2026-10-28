@@ -3,4 +3,5 @@ export * from './browser';
 export * from './api-keys';
 export * from './crypto';
 export * from './env';
+export * from './jwt';
 export * from './webhooks';

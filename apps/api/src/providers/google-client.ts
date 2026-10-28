@@ -5,9 +5,9 @@ import {
   googleUserInfoSchema,
 } from '@postrail/shared';
 
-const AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
+export const AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
-const USERINFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo';
+export const USERINFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo';
 const GMAIL_SEND_URL = 'https://gmail.googleapis.com/gmail/v1/users/me/messages/send';
 
 export const GOOGLE_SCOPES = [
@@ -73,34 +73,42 @@ export function googleErrorDetail(bodyText: string): string | undefined {
   }
 }
 
+/** One POST to Google's token endpoint. Shared with end-user sign-in (google-identity.ts). */
+export async function googleTokenRequest(
+  fetchImpl: typeof fetch,
+  credentials: Pick<GoogleClientConfig, 'clientId' | 'clientSecret'>,
+  form: Record<string, string>,
+): Promise<GoogleTokens> {
+  const res = await fetchImpl(TOKEN_URL, {
+    method: 'POST',
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      client_id: credentials.clientId,
+      client_secret: credentials.clientSecret,
+      ...form,
+    }),
+  });
+  const body: unknown = await res.json();
+  if (!res.ok) {
+    const parsed = googleErrorResponseSchema.safeParse(body);
+    if (parsed.success)
+      throw new GoogleOAuthError(parsed.data.error, parsed.data.error_description);
+    throw new GoogleApiError(res.status, 'token');
+  }
+  const tokens = googleTokenResponseSchema.parse(body);
+  return {
+    accessToken: tokens.access_token,
+    expiresIn: tokens.expires_in,
+    ...(tokens.refresh_token ? { refreshToken: tokens.refresh_token } : {}),
+  };
+}
+
 export function createGoogleClient(
   config: GoogleClientConfig,
   fetchImpl: typeof fetch = fetch,
 ): GoogleClient {
-  async function tokenRequest(form: Record<string, string>): Promise<GoogleTokens> {
-    const res = await fetchImpl(TOKEN_URL, {
-      method: 'POST',
-      headers: { 'content-type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        client_id: config.clientId,
-        client_secret: config.clientSecret,
-        ...form,
-      }),
-    });
-    const body: unknown = await res.json();
-    if (!res.ok) {
-      const parsed = googleErrorResponseSchema.safeParse(body);
-      if (parsed.success)
-        throw new GoogleOAuthError(parsed.data.error, parsed.data.error_description);
-      throw new GoogleApiError(res.status, 'token');
-    }
-    const tokens = googleTokenResponseSchema.parse(body);
-    return {
-      accessToken: tokens.access_token,
-      expiresIn: tokens.expires_in,
-      ...(tokens.refresh_token ? { refreshToken: tokens.refresh_token } : {}),
-    };
-  }
+  const tokenRequest = (form: Record<string, string>) =>
+    googleTokenRequest(fetchImpl, config, form);
 
   return {
     authUrl({ state }) {

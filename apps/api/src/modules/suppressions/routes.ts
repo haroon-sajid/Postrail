@@ -13,6 +13,64 @@ import {
   suppressionSchema,
 } from './schemas';
 import { type SuppressionService } from './service';
+import { type UnsubscribeLinks, UNSUBSCRIBE_PATH } from '../../lib/unsubscribe';
+
+/**
+ * Where the unsubscribe link in a broadcast leads. Public: the signed token says which
+ * address and which org. GET only asks, because mail scanners follow links; the POST is
+ * what suppresses, and it is also what a mail client's one-click unsubscribe sends.
+ */
+export function unsubscribeRoutes(service: SuppressionService, links: UnsubscribeLinks) {
+  const router = createRouter();
+
+  router.get(UNSUBSCRIBE_PATH, (c) => {
+    const token = c.req.query('token') ?? '';
+    const target = links.verify(token);
+    if (!target) return c.html(page('This link is not valid', 'Nothing was changed.'), 400);
+    return c.html(
+      page(
+        'Unsubscribe?',
+        `Stop emails to <strong>${escapeHtml(target.email)}</strong> from this sender.`,
+        `<form method="post" action="${UNSUBSCRIBE_PATH}?token=${encodeURIComponent(token)}"><button type="submit">Unsubscribe</button></form>`,
+      ),
+    );
+  });
+
+  router.post(UNSUBSCRIBE_PATH, async (c) => {
+    const target = links.verify(c.req.query('token') ?? '');
+    if (!target) return c.html(page('This link is not valid', 'Nothing was changed.'), 400);
+    await service.add(
+      { orgId: target.orgId, actor: 'unsubscribe-link' },
+      { email: target.email, reason: 'unsubscribe' },
+    );
+    return c.html(
+      page(
+        'You are unsubscribed',
+        `<strong>${escapeHtml(target.email)}</strong> will not get these emails again.`,
+      ),
+    );
+  });
+
+  return router;
+}
+
+function page(title: string, body: string, extra = ''): string {
+  return `<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title>
+<style>body{font-family:system-ui,sans-serif;max-width:32rem;margin:4rem auto;padding:0 1rem;color:#222}button{font:inherit;padding:.5rem 1rem;cursor:pointer}</style>
+</head>
+<body>
+<h1>${title}</h1>
+<p>${body}</p>
+${extra}
+</body>
+</html>`;
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (ch) => `&#${ch.charCodeAt(0)};`);
+}
 
 export function suppressionRoutes(service: SuppressionService, base: RouteBase) {
   const tags = [`Suppressions${base.tagSuffix}`];

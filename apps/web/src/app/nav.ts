@@ -10,10 +10,12 @@ import {
   Inbox,
   KeyRound,
   ListFilter,
+  LogIn,
   Plug,
   Send,
   Settings,
   ShieldBan,
+  Users,
   Webhook,
   type LucideIcon,
 } from 'lucide-react';
@@ -57,8 +59,16 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: 'Mailboxes', to: '/mailboxes', icon: Inbox },
       { label: 'Templates', to: '/templates', icon: FileText },
-      { label: 'Broadcasts', to: '/broadcasts', icon: Send, badge: 'soon' },
-      { label: 'Contacts', to: '/contacts', icon: Contact, badge: 'soon' },
+      { label: 'Broadcasts', to: '/broadcasts', icon: Send },
+      { label: 'Contacts', to: '/contacts', icon: Contact },
+    ],
+  },
+  {
+    // The tenant's own users: who signed in to their app, and how they may (ADR 0011).
+    title: 'Authenticate',
+    items: [
+      { label: 'Users', to: '/users', icon: Users },
+      { label: 'Sign-in methods', to: '/sign-in', icon: LogIn },
     ],
   },
   {

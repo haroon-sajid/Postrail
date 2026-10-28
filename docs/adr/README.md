@@ -15,6 +15,9 @@ write a new one that supersedes it.
 | [0008](./0008-deployment-origins.md)                | Deployment origins and API URL    | Accepted |
 | [0009](./0009-same-origin-proxy.md)                 | Same-origin proxy via the Worker  | Accepted |
 | [0010](./0010-dashboard-urls-without-org-id.md)     | Dashboard URLs without the org id | Accepted |
+| [0011](./0011-end-user-authentication.md)           | End-user authentication           | Accepted |
+| [0012](./0012-contacts-and-lists.md)                | Contacts and lists                | Accepted |
+| [0013](./0013-broadcasts.md)                        | Broadcasts                        | Accepted |
 
 ## Template
 

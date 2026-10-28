@@ -74,13 +74,33 @@ The remaining variables (database, `BETTER_AUTH_SECRET`, `TOKEN_ENCRYPTION_KEY`,
 client id and secret, `SYSTEM_MAILBOX_EMAIL`, queue settings) are unchanged and listed in
 `.env.production.example`.
 
+## Database migrations
+
+Migrations are not run by a deploy. Apply them to the production database before the
+code that needs them goes live:
+
+```
+DATABASE_URL=<production url> pnpm db:migrate
+```
+
+The API checks this at startup. If the database has not had every migration the build
+expects, it prints which ones are missing and exits instead of serving, because code on
+an older schema fails one query at a time with nothing but "Internal server error".
+Render only switches traffic to a deploy that became healthy, so the previous version
+keeps serving until the database is migrated; then redeploy. Migrations here only add
+(tables, columns with defaults, enum values), so migrating first is safe for the version
+still running.
+
 ## Google Cloud Console
 
-Both OAuth flows now go through the dashboard host. On the OAuth client:
+All three OAuth flows go through the dashboard host. On the OAuth client:
 
 - Authorised redirect URIs:
-  `https://postrail.haroonsajid-ai.workers.dev/api/auth/callback/google` (sign-in) and
-  `https://postrail.haroonsajid-ai.workers.dev/api/google/callback` (mailbox connect).
+  `https://postrail.haroonsajid-ai.workers.dev/api/auth/callback/google` (dashboard
+  sign-in), `https://postrail.haroonsajid-ai.workers.dev/api/google/callback` (mailbox
+  connect) and `https://postrail.haroonsajid-ai.workers.dev/api/sign-in/google/callback`
+  (end-user sign-in for workspaces on the shared client, ADR 0011). Without the third,
+  Google answers `redirect_uri_mismatch` to every tenant that has not added its own client.
 - Authorised JavaScript origin: `https://postrail.haroonsajid-ai.workers.dev`.
 
 ## Checking a deployment
