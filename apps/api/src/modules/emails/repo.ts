@@ -1,5 +1,13 @@
-import { type Db, messageBodies, messages, suppressions, templates, withOrg } from '@postrail/db';
-import { and, desc, eq, gte, ilike, lt, or, sql } from 'drizzle-orm';
+import {
+  type Db,
+  messageBodies,
+  messages,
+  suppressions,
+  templates,
+  withOrg,
+  withSystem,
+} from '@postrail/db';
+import { and, asc, desc, eq, gte, ilike, inArray, lt, or, sql } from 'drizzle-orm';
 
 /** Users search literal text; `%` and `_` in it must not become wildcards. */
 export function escapeLike(value: string): string {
@@ -63,8 +71,26 @@ export interface EmailStore {
   markSent: (orgId: string, id: string, providerMessageId: string, sentAt: Date) => Promise<void>;
   /** Terminal: records the reason. */
   markFailed: (orgId: string, id: string, error: string) => Promise<void>;
-  /** Back to queued with the last error kept for visibility. */
-  scheduleRetry: (orgId: string, id: string, error: string, now: Date) => Promise<void>;
+  /** Back to queued, due at `nextAttemptAt`, with the last error kept for visibility. */
+  scheduleRetry: (
+    orgId: string,
+    id: string,
+    error: string,
+    now: Date,
+    nextAttemptAt: Date,
+  ) => Promise<void>;
+  /**
+   * Cross-tenant, for the scheduler's sweep: queued messages long past due, and messages
+   * whose sending lease has lapsed. Either way the task that should move them was lost.
+   */
+  findStalled: (
+    now: Date,
+    graceMs: number,
+    leaseMs: number,
+    limit: number,
+  ) => Promise<Array<{ orgId: string; id: string }>>;
+  /** Cross-tenant, for retention: deletes the content of finished messages created before `before`. */
+  purgeBodiesBefore: (before: Date, limit: number) => Promise<number>;
   get: (orgId: string, id: string) => Promise<MessageRow | undefined>;
   /** Newest first. Returns up to `limit` rows strictly after `cursor`, matching `filters`. */
   list: (
@@ -166,12 +192,50 @@ export function createEmailStore(db: Db): EmailStore {
         await tx.update(messages).set({ status: 'failed', error }).where(scoped(orgId, id));
       }),
 
-    scheduleRetry: (orgId, id, error, now) =>
+    scheduleRetry: (orgId, id, error, now, nextAttemptAt) =>
       withOrg(db, orgId, async (tx) => {
         await tx
           .update(messages)
-          .set({ status: 'queued', error, updatedAt: now })
+          .set({ status: 'queued', error, updatedAt: now, nextAttemptAt })
           .where(scoped(orgId, id));
+      }),
+
+    // withSystem: the scheduler looks for lost work across every tenant at once.
+    findStalled: (now, graceMs, leaseMs, limit) =>
+      withSystem(db, (tx) =>
+        tx
+          .select({ orgId: messages.orgId, id: messages.id })
+          .from(messages)
+          .where(
+            or(
+              and(
+                eq(messages.status, 'queued'),
+                lt(messages.nextAttemptAt, new Date(now.getTime() - graceMs)),
+              ),
+              and(
+                eq(messages.status, 'sending'),
+                lt(messages.updatedAt, new Date(now.getTime() - leaseMs)),
+              ),
+            ),
+          )
+          .orderBy(asc(messages.nextAttemptAt))
+          .limit(limit),
+      ),
+
+    // withSystem: retention spans every tenant. Only content goes; the message row stays.
+    purgeBodiesBefore: (before, limit) =>
+      withSystem(db, async (tx) => {
+        const old = tx
+          .select({ id: messageBodies.messageId })
+          .from(messageBodies)
+          .innerJoin(messages, eq(messages.id, messageBodies.messageId))
+          .where(and(inArray(messages.status, ['sent', 'failed']), lt(messages.createdAt, before)))
+          .limit(limit);
+        const deleted = await tx
+          .delete(messageBodies)
+          .where(inArray(messageBodies.messageId, old))
+          .returning({ id: messageBodies.messageId });
+        return deleted.length;
       }),
 
     get: (orgId, id) =>

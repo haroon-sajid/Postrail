@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Navigate, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 import { authClient } from '@/api/auth';
 import { useMe } from '@/api/me';
@@ -141,8 +141,16 @@ export function LoginPage() {
           )}
         </CardContent>
       </Card>
-      <p className="relative mt-6 text-center text-xs text-fg-muted">
-        Email API for apps that send through their own Gmail.
+      <p className="relative mt-6 max-w-[400px] text-center text-xs leading-5 text-fg-muted">
+        By continuing you agree to the{' '}
+        <Link to="/terms" className="underline underline-offset-2 hover:text-fg">
+          terms of service
+        </Link>{' '}
+        and the{' '}
+        <Link to="/privacy" className="underline underline-offset-2 hover:text-fg">
+          privacy policy
+        </Link>
+        .
       </p>
     </div>
   );

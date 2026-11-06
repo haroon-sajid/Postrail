@@ -10,6 +10,8 @@ export * from './members';
 export * from './message-bodies';
 export * from './messages';
 export * from './orgs';
+export * from './rate-limits';
+export * from './scheduled-runs';
 export * from './suppressions';
 export * from './templates';
 export * from './tenancy';

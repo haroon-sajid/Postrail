@@ -71,8 +71,9 @@ GOOGLE_REDIRECT_URI=https://postrail.haroonsajid-ai.workers.dev/api/google/callb
   (`apps/api/src/lib/auth-server.ts`). Same-origin means lax is enough.
 
 The remaining variables (database, `BETTER_AUTH_SECRET`, `TOKEN_ENCRYPTION_KEY`, Google
-client id and secret, `SYSTEM_MAILBOX_EMAIL`, queue settings) are unchanged and listed in
-`.env.production.example`.
+client id and secret, `SYSTEM_MAILBOX_EMAIL`, queue settings, `CRON_SECRET`) are listed in
+`.env.production.example`. In production, new webhook endpoints must use https and may not
+point at private or internal addresses (ADR 0017).
 
 ## Database migrations
 
@@ -91,6 +92,34 @@ keeps serving until the database is migrated; then redeploy. Migrations here onl
 (tables, columns with defaults, enum values), so migrating first is safe for the version
 still running.
 
+## Scheduler (Cron Triggers)
+
+The API needs a clock (ADR 0014): something must reset each mailbox's daily count, restart
+paced broadcasts, re-queue work a restart lost and delete expired data. The dashboard
+Worker provides it with two Cron Triggers in `wrangler.jsonc`:
+
+- every 10 minutes, `GET <API_UPSTREAM>/health`, which keeps the free Render instance awake
+  and touches no database;
+- every 30 minutes, `POST <API_UPSTREAM>/internal/cron/tick` with `Authorization: Bearer
+<CRON_SECRET>`.
+
+One secret, set in two places to the same value (`openssl rand -hex 32`):
+
+1. **Render:** add `CRON_SECRET` to the API's environment variables.
+2. **Cloudflare:** from `apps/web`, run `npx wrangler secret put CRON_SECRET` and paste it,
+   or add it under the Worker's Settings → Variables and Secrets as a Secret.
+
+The triggers deploy with the Worker. To check one tick by hand (PowerShell):
+
+```
+curl.exe -s -X POST https://postrail-api.onrender.com/internal/cron/tick -H "Authorization: Bearer <CRON_SECRET>"
+```
+
+It answers a JSON report: `daily` (null once today's reset ran), `requeued`, `deleted`
+and `failed`. A 500 names the part that failed; the other parts still ran. Cloudflare's
+Worker page lists each cron run and its result under Cron Events. If the tick says
+`UNAUTHORIZED`, the two `CRON_SECRET` values differ.
+
 ## Google Cloud Console
 
 All three OAuth flows go through the dashboard host. On the OAuth client:
@@ -102,6 +131,21 @@ All three OAuth flows go through the dashboard host. On the OAuth client:
   (end-user sign-in for workspaces on the shared client, ADR 0011). Without the third,
   Google answers `redirect_uri_mismatch` to every tenant that has not added its own client.
 - Authorised JavaScript origin: `https://postrail.haroonsajid-ai.workers.dev`.
+
+The consent screen (Google Auth Platform → Branding and Audience) decides who can connect a
+mailbox. `gmail.send` is a sensitive scope (ADR 0016):
+
+- While the publishing status is **Testing**, only the test users listed under Audience can
+  authorise, and every Gmail refresh token expires after 7 days, so every mailbox
+  disconnects weekly. Fine for trying it; not for launch.
+- To launch, set the status to **In production** and submit for verification. Google
+  checks: the app home page `https://<your-domain>/`, the privacy policy
+  `https://<your-domain>/privacy` and terms `https://<your-domain>/terms` (all three are
+  in the dashboard and public), a domain you own and have verified in Google Search Console
+  (`workers.dev` cannot be, so put the Worker on a custom domain first and update the
+  origins above to it), the scopes `gmail.send` and `userinfo.email` with a written reason
+  for each, and a short video showing a mailbox being connected and an email being sent.
+- Sign-in alone (`openid email profile`) is not sensitive and needs no verification.
 
 ## Checking a deployment
 

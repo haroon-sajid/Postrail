@@ -20,6 +20,12 @@ export const messages = pgTable(
     providerMessageId: text('provider_message_id'),
     error: text('error'),
     attempts: integer('attempts').notNull().default(0),
+    /**
+     * When a queued message is due: now for a new one, later for a scheduled retry. The
+     * scheduler's sweep re-queues a message still waiting well past this, because the task
+     * that should have sent it was lost (ADR 0014).
+     */
+    nextAttemptAt: timestamp('next_attempt_at', { withTimezone: true }).notNull().defaultNow(),
     sentAt: timestamp('sent_at', { withTimezone: true }),
     ...timestamps,
     // Millisecond precision on purpose: the list cursor is (created_at, id) and JS Dates

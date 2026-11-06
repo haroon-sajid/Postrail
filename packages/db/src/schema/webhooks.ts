@@ -46,6 +46,8 @@ export const webhookDeliveries = pgTable(
     index('webhook_deliveries_endpoint_created_idx').on(t.endpointId, t.createdAt.desc()),
     // The retry worker polls by status and due time across all tenants.
     index('webhook_deliveries_status_retry_idx').on(t.status, t.nextRetryAt),
+    // Retention deletes old deliveries across all tenants (ADR 0014).
+    index('webhook_deliveries_created_idx').on(t.createdAt),
     tenantPolicy('webhook_deliveries'),
   ],
 ).enableRLS();

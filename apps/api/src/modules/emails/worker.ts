@@ -61,7 +61,14 @@ export function createEmailWorker(deps: EmailWorkerDeps): EmailWorker {
       return fail(row, `${reason} (gave up after ${row.attempts} attempts)`);
     }
     const delaySeconds = RETRY_DELAYS_SECONDS[row.attempts - 1] ?? RETRY_DELAYS_SECONDS.at(-1) ?? 0;
-    await messages.scheduleRetry(row.orgId, row.id, reason.slice(0, MAX_STORED_ERROR_CHARS), now());
+    const at = now();
+    await messages.scheduleRetry(
+      row.orgId,
+      row.id,
+      reason.slice(0, MAX_STORED_ERROR_CHARS),
+      at,
+      new Date(at.getTime() + delaySeconds * 1000),
+    );
     // A fresh task id per attempt: the original name is taken, and Cloud Tasks would drop it.
     await queue.enqueue(
       { kind: 'send-email', orgId: row.orgId, messageId: row.id },

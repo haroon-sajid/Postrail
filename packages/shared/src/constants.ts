@@ -139,6 +139,33 @@ export const BROADCAST_CAPACITY_SHARE = 0.8;
 /** Recipients handed to delivery per worker round. */
 export const BROADCAST_BATCH_SIZE = 50;
 
+// Scheduled jobs (ADR 0014).
+/**
+ * A queued email, webhook or broadcast round counts as lost only once it is this late, so
+ * a busy queue is not mistaken for a lost task and doubled.
+ */
+export const SWEEP_GRACE_MINUTES = 10;
+/** Most items of each kind the sweep puts back on the queue per tick. */
+export const SWEEP_BATCH_SIZE = 200;
+/**
+ * How long data is kept once it has done its job. The privacy page quotes these, so the
+ * policy and the code cannot disagree.
+ */
+export const RETENTION_DAYS = {
+  /** Stored email content (preview and resend), counted from when the email was created. */
+  messageBodies: 30,
+  /** Webhook delivery attempts and their payloads. */
+  webhookDeliveries: 30,
+  /** End-user sessions, counted from when they expired. */
+  authSessions: 30,
+  /** Sign-in links and codes, counted from when they expired. */
+  authChallenges: 1,
+  /** Rate-limit state of keys and users that stopped calling. */
+  rateLimits: 1,
+} as const;
+/** Most rows of each kind one tick deletes, so a tick stays short however far behind it is. */
+export const RETENTION_BATCH_SIZE = 5000;
+
 /** Public API limits. Documented in ADR 0004 and enforced by the shared schemas. */
 export const MAX_BATCH_SIZE = 100;
 export const DEFAULT_PAGE_SIZE = 20;

@@ -19,13 +19,21 @@ const MAX_DELIVERIES = 3;
 const REDELIVERY_DELAY_MS = 5_000;
 
 /**
+ * Like Cloud Tasks, a task name is refused for about an hour after it was used. Remembering
+ * names forever would grow without bound in a long-running process.
+ */
+const NAME_MEMORY_MS = 60 * 60_000;
+const NAME_PRUNE_AT = 10_000;
+
+/**
  * In-process queue for development and tests. Same contract as Cloud Tasks: named
  * tasks deduplicate, delays are honoured, at-least-once delivery, handler errors redeliver.
  */
 export class LocalQueue implements Queue {
   private handler: JobHandler | undefined;
   private readonly pending: Entry[] = [];
-  private readonly seen = new Set<string>();
+  /** Task name -> when it was used. */
+  private readonly seen = new Map<string, number>();
   private readonly timers = new Set<NodeJS.Timeout>();
 
   constructor(private readonly options: LocalQueueOptions = {}) {}
@@ -44,8 +52,10 @@ export class LocalQueue implements Queue {
   }
 
   enqueue = (job: Job, { taskId, delaySeconds = 0 }: EnqueueOptions): Promise<void> => {
+    const now = Date.now();
+    if (this.seen.size >= NAME_PRUNE_AT) this.forgetNamesBefore(now - NAME_MEMORY_MS);
     if (this.seen.has(taskId)) return Promise.resolve();
-    this.seen.add(taskId);
+    this.seen.set(taskId, now);
     const entry: Entry = { job, taskId, delaySeconds, deliveries: 0 };
     this.pending.push(entry);
     if (this.options.autoRun !== false) this.schedule(entry, delaySeconds * 1000);
@@ -67,9 +77,20 @@ export class LocalQueue implements Queue {
     return true;
   }
 
+  /** Tests: drop the next pending job without running it, as a restart would lose it. */
+  discard(): boolean {
+    return this.pending.shift() !== undefined;
+  }
+
   close(): void {
     for (const timer of this.timers) clearTimeout(timer);
     this.timers.clear();
+  }
+
+  private forgetNamesBefore(cutoff: number): void {
+    for (const [name, usedAt] of this.seen) {
+      if (usedAt < cutoff) this.seen.delete(name);
+    }
   }
 
   private schedule(entry: Entry, delayMs: number): void {

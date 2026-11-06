@@ -1,8 +1,4 @@
-import {
-  errorResponseSchema,
-  resetCountersResponseSchema,
-  workerResultSchema,
-} from '@postrail/shared';
+import { errorResponseSchema, workerResultSchema } from '@postrail/shared';
 import { describe, expect, it } from 'vitest';
 import { createTestApp } from '../../test/app';
 
@@ -68,20 +64,20 @@ describe('POST /internal/tasks/send-email', () => {
   });
 });
 
-describe('POST /internal/cron/reset-daily-counters', () => {
-  it('zeroes sent_today across every org', async () => {
+describe('the cron secret', () => {
+  it('opens /internal/cron/* and nothing else under /internal', async () => {
     const t = createTestApp();
-    t.store.add(ORG, { sentToday: 12 });
-    t.store.add('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', { sentToday: 3 });
-    t.store.add(ORG, { sentToday: 0 });
-
-    const res = await t.app.request('/internal/cron/reset-daily-counters', {
+    const tick = await t.app.request('/internal/cron/tick', {
       method: 'POST',
-      headers: t.internalHeaders,
+      headers: t.cronHeaders,
     });
-    expect(res.status).toBe(200);
-    const body: unknown = await res.json();
-    expect(resetCountersResponseSchema.parse(body)).toEqual({ reset: 2, resumed: 0 });
-    expect(t.store.rows.map((r) => r.sentToday)).toEqual([0, 0, 0]);
+    expect(tick.status).toBe(200);
+
+    const task = await t.app.request('/internal/tasks/send-email', {
+      method: 'POST',
+      headers: { ...t.cronHeaders, 'content-type': 'application/json' },
+      body: JSON.stringify({ kind: 'send-email', orgId: ORG, messageId: ORG }),
+    });
+    expect(task.status).toBe(401);
   });
 });

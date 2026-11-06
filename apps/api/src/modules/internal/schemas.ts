@@ -2,7 +2,6 @@ export {
   broadcastWorkerResultSchema,
   deliverWebhookJobSchema,
   dispatchBroadcastJobSchema,
-  resetCountersResponseSchema,
   sendEmailJobSchema,
   webhookWorkerResultSchema,
   workerResultSchema,

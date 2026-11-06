@@ -36,7 +36,68 @@ export interface AssetsBinding {
 export interface WorkerEnv {
   /** Origin of the API, e.g. https://postrail-api.onrender.com. A var in wrangler.jsonc. */
   API_UPSTREAM?: string;
+  /**
+   * The API's CRON_SECRET, so the Cron Trigger can call /internal/cron/tick. A Worker
+   * secret (`wrangler secret put CRON_SECRET`), never a var.
+   */
+  CRON_SECRET?: string;
   ASSETS: AssetsBinding;
+}
+
+/**
+ * Every 10 minutes: a request to /health, which touches no database. On a free host that
+ * sleeps after 15 idle minutes this keeps the API awake, so the first call of the morning
+ * is not a 50-second cold start and in-process timers are not lost. Keep in sync with
+ * `triggers.crons` in wrangler.jsonc.
+ */
+export const KEEP_WARM_CRON = '*/10 * * * *';
+/** Every 30 minutes: the API's scheduler tick (daily reset, lost-work sweep, retention). */
+export const TICK_CRON = '*/30 * * * *';
+
+const CRON_USER_AGENT = 'Postrail-Cron/1';
+
+/**
+ * Runs one Cron Trigger. Throws when the API did not answer 2xx, which is what makes
+ * Cloudflare record the invocation as failed in the Worker's cron log.
+ */
+export async function runScheduled(
+  cron: string,
+  env: Pick<WorkerEnv, 'API_UPSTREAM' | 'CRON_SECRET'>,
+  fetchImpl: (request: Request) => Promise<Response>,
+): Promise<void> {
+  const upstream = env.API_UPSTREAM?.trim().replace(/\/+$/, '');
+  if (!upstream) throw new Error('API_UPSTREAM is not configured in wrangler.jsonc vars');
+
+  if (cron === TICK_CRON) {
+    if (!env.CRON_SECRET) {
+      throw new Error('CRON_SECRET is not set on the Worker, so the scheduler cannot tick');
+    }
+    // Straight to the API: /internal is deliberately not proxied for browsers.
+    const res = await fetchImpl(
+      new Request(`${upstream}/internal/cron/tick`, {
+        method: 'POST',
+        headers: { authorization: `Bearer ${env.CRON_SECRET}`, 'user-agent': CRON_USER_AGENT },
+      }),
+    );
+    // Cloudflare records each successful run; only a failure needs the report.
+    if (!res.ok) {
+      throw new Error(`tick answered ${res.status}: ${(await res.text()).slice(0, 500)}`);
+    }
+    return;
+  }
+
+  const res = await fetchImpl(
+    new Request(`${upstream}/health`, { headers: { 'user-agent': CRON_USER_AGENT } }),
+  );
+  if (!res.ok) throw new Error(`health answered ${res.status}`);
+}
+
+/** The parts of Cloudflare's scheduled-event types this Worker uses. */
+interface ScheduledEvent {
+  cron: string;
+}
+interface ExecutionContext {
+  waitUntil: (promise: Promise<unknown>) => void;
 }
 
 export interface ProxyDeps {
@@ -108,5 +169,9 @@ export default {
       );
     }
     return createHandler({ upstream, assets: env.ASSETS, fetch: (r) => fetch(r) })(request);
+  },
+
+  scheduled(event: ScheduledEvent, env: WorkerEnv, ctx: ExecutionContext): void {
+    ctx.waitUntil(runScheduled(event.cron, env, (r) => fetch(r)));
   },
 };

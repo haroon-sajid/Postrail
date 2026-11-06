@@ -8,6 +8,7 @@ import {
   type WebhookOutcome,
   webhookSignatureHeader,
 } from '@postrail/shared';
+import { BlockedDestinationError } from '../../lib/destinations';
 import { type Logger } from '../../lib/logger';
 import { type Queue } from '../../queue/types';
 import { type DeliveryRow, type WebhookStore } from './repo';
@@ -24,6 +25,7 @@ export interface WebhookWorkerDeps {
   cipher: TokenCipher;
   queue: Queue;
   logger: Logger;
+  /** Production passes the destination guard's fetch, which refuses private addresses. */
   fetchImpl?: typeof fetch;
   now?: () => Date;
 }
@@ -119,6 +121,8 @@ export function createWebhookWorker(deps: WebhookWorkerDeps): WebhookWorker {
         });
         status = res.status;
       } catch (error) {
+        // The host now resolves somewhere we refuse to call. Retrying would not change that.
+        if (error instanceof BlockedDestinationError) return fail(row, error.message, null);
         return retryOrFail(row, error instanceof Error ? error.message : 'request failed', null);
       }
 

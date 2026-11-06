@@ -29,6 +29,7 @@ import {
   inArray,
   lt,
   ne,
+  notExists,
   or,
   sql,
 } from 'drizzle-orm';
@@ -150,6 +151,11 @@ export interface BroadcastStore {
   ) => Promise<RecipientView[]>;
   /** Cross-tenant by design: the daily job sets every unfinished broadcast going again. */
   listSending: () => Promise<Array<{ orgId: string; id: string }>>;
+  /**
+   * Cross-tenant, for the scheduler's sweep: broadcasts still sending with no round at
+   * work, which is what a lost dispatch task leaves behind.
+   */
+  listStalled: (now: Date, leaseMs: number) => Promise<Array<{ orgId: string; id: string }>>;
 }
 
 const viewColumns = {
@@ -256,7 +262,7 @@ export function createBroadcastStore(db: Db): BroadcastStore {
         if (rows.length === 0) return false;
         await tx
           .update(broadcastRecipients)
-          .set({ state: 'skipped', error: 'broadcast canceled', updatedAt: now })
+          .set({ state: 'skipped', error: 'broadcast canceled', properties: {}, updatedAt: now })
           .where(and(recipientsOf(orgId, id), waiting));
         return true;
       }),
@@ -330,12 +336,14 @@ export function createBroadcastStore(db: Db): BroadcastStore {
 
     settleRecipient: (orgId, id, outcome) =>
       withOrg(db, orgId, async (tx) => {
+        // The copied properties were only for rendering; a settled recipient never renders
+        // again, so the personal data goes now rather than waiting for a retention job.
         await tx
           .update(broadcastRecipients)
           .set(
             outcome.state === 'queued'
-              ? { state: 'queued', messageId: outcome.messageId, error: null }
-              : { state: outcome.state, error: outcome.error },
+              ? { state: 'queued', messageId: outcome.messageId, error: null, properties: {} }
+              : { state: outcome.state, error: outcome.error, properties: {} },
           )
           .where(recipient(orgId, id));
       }),
@@ -433,5 +441,25 @@ export function createBroadcastStore(db: Db): BroadcastStore {
           .from(broadcasts)
           .where(eq(broadcasts.status, 'sending')),
       ),
+
+    // withSystem: the scheduler looks for stalled broadcasts across every tenant at once.
+    listStalled: (now, leaseMs) =>
+      withSystem(db, (tx) => {
+        // A live round holds recipients in `dispatching` with a fresh claim.
+        const busy = tx
+          .select({ one: sql`1` })
+          .from(broadcastRecipients)
+          .where(
+            and(
+              eq(broadcastRecipients.broadcastId, broadcasts.id),
+              eq(state, 'dispatching'),
+              gt(broadcastRecipients.updatedAt, new Date(now.getTime() - leaseMs)),
+            ),
+          );
+        return tx
+          .select({ orgId: broadcasts.orgId, id: broadcasts.id })
+          .from(broadcasts)
+          .where(and(eq(broadcasts.status, 'sending'), notExists(busy)));
+      }),
   };
 }

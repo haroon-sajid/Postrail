@@ -1,6 +1,6 @@
-import { type Db, webhookDeliveries, webhookEndpoints, withOrg } from '@postrail/db';
+import { type Db, webhookDeliveries, webhookEndpoints, withOrg, withSystem } from '@postrail/db';
 import { type WebhookEvent } from '@postrail/shared';
-import { and, arrayContains, desc, eq, lt, or, sql } from 'drizzle-orm';
+import { and, arrayContains, asc, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
 
 export type EndpointRow = typeof webhookEndpoints.$inferSelect;
 export type DeliveryRow = typeof webhookDeliveries.$inferSelect;
@@ -64,6 +64,18 @@ export interface WebhookStore {
   /** Manual retry: back to pending regardless of the current state. */
   requeueDelivery: (orgId: string, id: string) => Promise<void>;
   updateSecret: (orgId: string, id: string, secretEnc: string) => Promise<boolean>;
+  /**
+   * Cross-tenant, for the scheduler's sweep: deliveries long past their retry time, and
+   * deliveries whose sending lease has lapsed. The task that should move them was lost.
+   */
+  findStalledDeliveries: (
+    now: Date,
+    graceMs: number,
+    leaseMs: number,
+    limit: number,
+  ) => Promise<Array<{ orgId: string; id: string }>>;
+  /** Cross-tenant, for retention: deletes finished deliveries created before `before`. */
+  deleteDeliveriesBefore: (before: Date, limit: number) => Promise<number>;
 }
 
 export function createWebhookStore(db: Db): WebhookStore {
@@ -230,5 +242,50 @@ export function createWebhookStore(db: Db): WebhookStore {
           .orderBy(desc(webhookDeliveries.createdAt), desc(webhookDeliveries.id))
           .limit(limit),
       ),
+
+    // withSystem: the scheduler looks for lost work across every tenant at once.
+    findStalledDeliveries: (now, graceMs, leaseMs, limit) =>
+      withSystem(db, (tx) => {
+        // A new or manually retried delivery has no retry time; it was due when last touched.
+        const due = sql`coalesce(${webhookDeliveries.nextRetryAt}, ${webhookDeliveries.updatedAt})`;
+        return tx
+          .select({ orgId: webhookDeliveries.orgId, id: webhookDeliveries.id })
+          .from(webhookDeliveries)
+          .where(
+            or(
+              and(
+                eq(webhookDeliveries.status, 'pending'),
+                // A raw expression has no column type to map a Date through; send ISO text.
+                lt(due, new Date(now.getTime() - graceMs).toISOString()),
+              ),
+              and(
+                eq(webhookDeliveries.status, 'sending'),
+                lt(webhookDeliveries.updatedAt, new Date(now.getTime() - leaseMs)),
+              ),
+            ),
+          )
+          .orderBy(asc(due))
+          .limit(limit);
+      }),
+
+    // withSystem: retention spans every tenant. Deliveries still in flight are kept.
+    deleteDeliveriesBefore: (before, limit) =>
+      withSystem(db, async (tx) => {
+        const old = tx
+          .select({ id: webhookDeliveries.id })
+          .from(webhookDeliveries)
+          .where(
+            and(
+              lt(webhookDeliveries.createdAt, before),
+              inArray(webhookDeliveries.status, ['delivered', 'failed']),
+            ),
+          )
+          .limit(limit);
+        const deleted = await tx
+          .delete(webhookDeliveries)
+          .where(inArray(webhookDeliveries.id, old))
+          .returning({ id: webhookDeliveries.id });
+        return deleted.length;
+      }),
   };
 }

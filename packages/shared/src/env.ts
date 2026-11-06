@@ -31,6 +31,12 @@ export const envSchema = z.object({
   TASKS_SERVICE_ACCOUNT_EMAIL: z.email().optional(),
   /** Bearer secret for /internal/* when QUEUE_DRIVER=local. */
   INTERNAL_SECRET: z.string().min(16, 'must be at least 16 characters').optional(),
+  /**
+   * Bearer secret the cron clock (the dashboard Worker's Cron Trigger) sends to
+   * /internal/cron/*, whatever the queue driver. Unset: only the queue credential works
+   * there. `openssl rand -hex 32`.
+   */
+  CRON_SECRET: z.string().min(32, 'must be at least 32 characters').optional(),
 
   /** Signs session cookies and magic links. `openssl rand -hex 32`. */
   BETTER_AUTH_SECRET: z.string().min(32, 'must be at least 32 characters'),

@@ -13,18 +13,33 @@ function bearerToken(authorization: string | undefined): string | undefined {
   return /^Bearer\s+(\S+)$/i.exec(authorization ?? '')?.[1];
 }
 
+function matchesSecret(authorization: string | undefined, expected: Buffer): boolean {
+  const token = bearerToken(authorization);
+  if (!token) return false;
+  const actual = Buffer.from(token);
+  return actual.length === expected.length && timingSafeEqual(actual, expected);
+}
+
 /** Local development: a long random secret shared between the API and whoever calls it. */
 export function sharedSecretAuth(secret: string): InternalAuth {
   const expected = Buffer.from(secret);
+  return { verify: (authorization) => Promise.resolve(matchesSecret(authorization, expected)) };
+}
+
+export const CRON_PATH_PREFIX = '/internal/cron/';
+
+/**
+ * Lets an outside clock (the dashboard Worker's Cron Trigger) call /internal/cron/* with
+ * CRON_SECRET, whichever queue driver is in use. Only the cron paths: a leaked cron secret
+ * can make the scheduler tick early, never inject a job into /internal/tasks/*.
+ */
+export function withCronSecret(base: InternalAuth, cronSecret: string | undefined): InternalAuth {
+  if (!cronSecret) return base;
+  const expected = Buffer.from(cronSecret);
   return {
-    verify: (authorization) => {
-      const token = bearerToken(authorization);
-      if (!token) return Promise.resolve(false);
-      const actual = Buffer.from(token);
-      return Promise.resolve(
-        actual.length === expected.length && timingSafeEqual(actual, expected),
-      );
-    },
+    verify: async (authorization, requestPath) =>
+      (requestPath.startsWith(CRON_PATH_PREFIX) && matchesSecret(authorization, expected)) ||
+      base.verify(authorization, requestPath),
   };
 }
 

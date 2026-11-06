@@ -3,8 +3,19 @@ import { getTableConfig, PgTable, pgTable, uuid } from 'drizzle-orm/pg-core';
 import { describe, expect, it } from 'vitest';
 import * as schema from './schema';
 
-/** Tables that are not tenant-owned and therefore carry no org_id or policy. */
-const NON_TENANT_TABLES = new Set(['orgs', 'users', 'sessions', 'accounts', 'verifications']);
+/**
+ * Tables that are not tenant-owned and therefore carry no org_id or policy: the tenant
+ * itself, Better Auth's dashboard users, and system bookkeeping (ADR 0014, ADR 0015).
+ */
+const NON_TENANT_TABLES = new Set([
+  'orgs',
+  'users',
+  'sessions',
+  'accounts',
+  'verifications',
+  'rate_limits',
+  'scheduled_runs',
+]);
 
 const exported: unknown[] = Object.values(schema);
 const tables = exported.filter((value): value is PgTable => is(value, PgTable));
@@ -56,6 +67,8 @@ describe('schema tenancy guard', () => {
       'message_bodies',
       'messages',
       'orgs',
+      'rate_limits',
+      'scheduled_runs',
       'sessions',
       'suppressions',
       'templates',

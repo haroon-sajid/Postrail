@@ -26,6 +26,9 @@ import { GeneralSettingsPage } from '@/pages/settings/general';
 import { MembersSettingsPage } from '@/pages/settings/members';
 import { ProfileSettingsPage } from '@/pages/settings/profile';
 import { SignInMethodsPage } from '@/pages/sign-in/sign-in';
+import { HomePage } from '@/pages/site/home';
+import { PrivacyPage } from '@/pages/site/privacy';
+import { TermsPage } from '@/pages/site/terms';
 import { UPCOMING } from '@/pages/upcoming/upcoming';
 import { UpcomingPage } from '@/pages/upcoming/upcoming-page';
 import { SuppressionsPage } from '@/pages/suppressions/suppressions';
@@ -35,12 +38,17 @@ import { UsersPage } from '@/pages/users/users';
 import { WebhookDetailPage } from '@/pages/webhooks/webhook-detail';
 import { WebhooksPage } from '@/pages/webhooks/webhooks';
 
-/** Sends signed-out visitors to /login, remembering where they were going. */
+/**
+ * Sends signed-out visitors to /login, remembering where they were going. The bare root is
+ * the exception: there they get the public home page, which Google's OAuth verification
+ * requires to be reachable without signing in (ADR 0016).
+ */
 function RequireAuth() {
   const me = useMe();
   const location = useLocation();
   if (me.isPending) return <FullPageSkeleton />;
   if (!me.data) {
+    if (location.pathname === '/' && !location.search) return <HomePage />;
     const next = encodeURIComponent(location.pathname + location.search);
     return <Navigate to={`/login?next=${next}`} replace />;
   }
@@ -62,6 +70,9 @@ function billingRedirect({ request }: LoaderFunctionArgs) {
 
 export const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
+  // Public, signed in or not: Google's consent screen links to both.
+  { path: '/privacy', element: <PrivacyPage /> },
+  { path: '/terms', element: <TermsPage /> },
   { path: '/o/:orgId/*', loader: legacyOrgRedirect },
   {
     element: <RequireAuth />,

@@ -1,5 +1,28 @@
 import { describe, expect, it, vi } from 'vitest';
-import { oidcAuth, sharedSecretAuth } from './internal-auth';
+import { oidcAuth, sharedSecretAuth, withCronSecret } from './internal-auth';
+
+describe('withCronSecret', () => {
+  const base = sharedSecretAuth('internal-secret-0123456789');
+  const auth = withCronSecret(base, 'cron-secret-0123456789abcdef0123456789');
+
+  it('accepts the cron secret on cron paths only', async () => {
+    const cron = 'Bearer cron-secret-0123456789abcdef0123456789';
+    expect(await auth.verify(cron, '/internal/cron/tick')).toBe(true);
+    expect(await auth.verify(cron, '/internal/cron/reset-daily-counters')).toBe(true);
+    expect(await auth.verify(cron, '/internal/tasks/send-email')).toBe(false);
+    expect(await auth.verify('Bearer nope', '/internal/cron/tick')).toBe(false);
+  });
+
+  it('still accepts the queue credential everywhere', async () => {
+    const internal = 'Bearer internal-secret-0123456789';
+    expect(await auth.verify(internal, '/internal/cron/tick')).toBe(true);
+    expect(await auth.verify(internal, '/internal/tasks/send-email')).toBe(true);
+  });
+
+  it('adds nothing when no cron secret is configured', () => {
+    expect(withCronSecret(base, undefined)).toBe(base);
+  });
+});
 
 describe('sharedSecretAuth', () => {
   const auth = sharedSecretAuth('correct-horse-battery-staple');

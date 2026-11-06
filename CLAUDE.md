@@ -98,6 +98,17 @@ docs/adr            Architecture decision records.
     queued (ADR 0013). The daily reset job resumes unfinished broadcasts. Every broadcast
     email carries the unsubscribe link from `lib/unsubscribe.ts`; unsubscribing writes to
     the suppression list, which stays the only place that decides who is sent to.
+13. **Scheduled work and launch guards.** Nothing runs on a timer inside the API. The
+    dashboard Worker's Cron Triggers call `POST /internal/cron/tick` with `CRON_SECRET`,
+    which opens `/internal/cron/*` only. The tick runs the once-a-day reset (claimed per UTC
+    day in `scheduled_runs`), re-queues tasks a restart lost, and deletes data past
+    `RETENTION_DAYS` (ADR 0014); new deferred work goes there and must be idempotent.
+    Rate limits live in Postgres and fail open (ADR 0015). `rate_limits` and
+    `scheduled_runs` are system tables: no `org_id`, listed in the schema test's
+    `NON_TENANT_TABLES`. Webhook URLs pass `lib/destinations.ts` when saved and at every
+    delivery (ADR 0017). The public `/`, `/privacy` and `/terms` pages quote
+    `pages/site/site.ts` and `RETENTION_DAYS`: change them when a Google scope or a
+    retention period changes (ADR 0016).
 
 ## Commands
 

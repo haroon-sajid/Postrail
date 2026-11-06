@@ -1,6 +1,7 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 import { type TokenCipher, WEBHOOK_EVENTS, type WebhookEvent } from '@postrail/shared';
 import { type AuthContext, requireRole } from '../../lib/context';
+import { BlockedDestinationError, type DestinationGuard } from '../../lib/destinations';
 import { AppError } from '../../lib/errors';
 import { type EventBus } from '../../lib/events';
 import { type Queue } from '../../queue/types';
@@ -19,6 +20,8 @@ export interface WebhookServiceDeps {
   store: WebhookStore;
   cipher: TokenCipher;
   queue: Queue;
+  /** Refuses URLs that point at private networks or cloud metadata (ADR 0017). */
+  destinations: Pick<DestinationGuard, 'check'>;
   audit?: AuditStore;
   now?: () => Date;
 }
@@ -43,11 +46,21 @@ export interface WebhookService extends EventBus {
 }
 
 export function createWebhookService(deps: WebhookServiceDeps): WebhookService {
-  const { store, cipher, queue, audit } = deps;
+  const { store, cipher, queue, destinations, audit } = deps;
   const now = deps.now ?? (() => new Date());
 
   // 192 bits, shown once. Stored encrypted because we need it back to sign deliveries.
   const newSecret = () => `whsec_${randomBytes(24).toString('base64url')}`;
+
+  /** Otherwise our worker would POST wherever a tenant asks, including our own network. */
+  async function assertDestination(url: string): Promise<void> {
+    try {
+      await destinations.check(url);
+    } catch (error) {
+      if (error instanceof BlockedDestinationError) throw AppError.validation(error.message);
+      throw error;
+    }
+  }
 
   async function endpointOr404(orgId: string, id: string): Promise<EndpointRow> {
     const row = await store.getEndpoint(orgId, id);
@@ -72,6 +85,7 @@ export function createWebhookService(deps: WebhookServiceDeps): WebhookService {
   return {
     async create(auth, input) {
       requireRole(auth, 'admin');
+      await assertDestination(input.url);
       const secret = newSecret();
       const row = await store.createEndpoint(auth.orgId, {
         url: input.url,
@@ -97,6 +111,7 @@ export function createWebhookService(deps: WebhookServiceDeps): WebhookService {
 
     async update(auth, id, patch) {
       requireRole(auth, 'admin');
+      if (patch.url !== undefined) await assertDestination(patch.url);
       const row = await store.updateEndpoint(auth.orgId, id, {
         ...(patch.url !== undefined ? { url: patch.url } : {}),
         ...(patch.events !== undefined ? { events: patch.events } : {}),

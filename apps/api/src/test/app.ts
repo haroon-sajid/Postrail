@@ -1,7 +1,8 @@
 import { type AuthProvider } from '@postrail/shared';
 import { createApp } from '../app';
 import { type SessionUser } from '../lib/context';
-import { sharedSecretAuth } from '../lib/internal-auth';
+import { createDestinationGuard, type Resolve } from '../lib/destinations';
+import { sharedSecretAuth, withCronSecret } from '../lib/internal-auth';
 import { silentLogger } from '../lib/logger';
 import { createOriginMatcher } from '../lib/origins';
 import { InMemoryTokenBucket, type RateLimiter } from '../lib/rate-limit';
@@ -16,6 +17,7 @@ import { createEmailWorker } from '../modules/emails/worker';
 import { createMailboxService, type MailboxServiceDeps } from '../modules/mailboxes/service';
 import { createOrgService } from '../modules/orgs/service';
 import { createOverviewService } from '../modules/overview/service';
+import { createSchedulerService } from '../modules/scheduler/service';
 import { createSuppressionService } from '../modules/suppressions/service';
 import { createTemplateService } from '../modules/templates/service';
 import { createWebhookService } from '../modules/webhooks/service';
@@ -43,13 +45,17 @@ import {
   inMemoryMailboxStore,
   inMemoryOrgStore,
   inMemoryOverviewStore,
+  inMemoryRateLimitStore,
+  inMemorySchedulerStore,
   inMemorySuppressionStore,
   inMemoryTemplateStore,
   inMemoryWebhookStore,
+  publicResolve,
   TEST_API_ORIGIN,
   TEST_DASHBOARD_ORIGIN,
   testCipher,
   testGoogleConfig,
+  TEST_CRON_SECRET,
   TEST_INTERNAL_SECRET,
   TEST_KEY_HEX,
 } from './fakes';
@@ -67,6 +73,8 @@ export interface TestAppOverrides {
   now?: MailboxServiceDeps['now'];
   /** HTTP status the fake webhook receiver answers with. */
   webhookStatus?: number;
+  /** DNS for webhook URLs. Defaults to every name resolving to one public address. */
+  resolve?: Resolve;
   /** Replaces the header-based test session (the e2e server reads a cookie instead). */
   sessionResolver?: (headers: Headers) => Promise<SessionUser | null>;
   dashboardOrigin?: string;
@@ -108,10 +116,17 @@ export function createTestApp(overrides: TestAppOverrides = {}) {
     now,
   });
   const queue = new LocalQueue({ autoRun: false });
+  // Production rules (no private addresses) with DNS answered from memory.
+  const destinations = createDestinationGuard({
+    allowPrivate: false,
+    requireHttps: false,
+    resolve: overrides.resolve ?? publicResolve,
+  });
   const webhooks = createWebhookService({
     store: webhookStore,
     cipher: testCipher,
     queue,
+    destinations,
     audit,
     now,
   });
@@ -165,6 +180,21 @@ export function createTestApp(overrides: TestAppOverrides = {}) {
 
   const apiKeys = createApiKeyService({ store: apiKeyStore, audit, now });
   const authStore = inMemoryAuthStore();
+  const schedulerStore = inMemorySchedulerStore();
+  const rateLimitStore = inMemoryRateLimitStore();
+  const scheduler = createSchedulerService({
+    store: schedulerStore,
+    mailboxes,
+    broadcasts,
+    emailStore,
+    webhookStore,
+    broadcastStore,
+    authStore,
+    rateLimitStore,
+    queue,
+    logger,
+    now,
+  });
   const identityProviders = {
     google: fakeIdentityProvider('google'),
     github: fakeIdentityProvider('github'),
@@ -211,9 +241,10 @@ export function createTestApp(overrides: TestAppOverrides = {}) {
     worker,
     webhookWorker,
     broadcastWorker,
+    scheduler,
     rateLimiter:
       overrides.rateLimiter ?? new InMemoryTokenBucket({ capacity: 10_000, refillPerSecond: 1000 }),
-    internalAuth: sharedSecretAuth(TEST_INTERNAL_SECRET),
+    internalAuth: withCronSecret(sharedSecretAuth(TEST_INTERNAL_SECRET), TEST_CRON_SECRET),
     sessionResolver:
       overrides.sessionResolver ??
       ((headers) => {
@@ -270,6 +301,8 @@ export function createTestApp(overrides: TestAppOverrides = {}) {
     authorization: `Bearer ${TEST_INTERNAL_SECRET}`,
     'content-type': 'application/json',
   };
+  /** What the dashboard Worker's Cron Trigger sends. */
+  const cronHeaders: Record<string, string> = { authorization: `Bearer ${TEST_CRON_SECRET}` };
 
   return {
     app,
@@ -301,5 +334,9 @@ export function createTestApp(overrides: TestAppOverrides = {}) {
     sessionHeaders,
     member,
     internalHeaders,
+    cronHeaders,
+    scheduler,
+    schedulerStore,
+    rateLimitStore,
   };
 }

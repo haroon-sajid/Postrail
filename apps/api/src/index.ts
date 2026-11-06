@@ -11,11 +11,12 @@ import {
 } from '@postrail/shared';
 import { createApp } from './app';
 import { createAuthServer, sessionResolverFor } from './lib/auth-server';
-import { type InternalAuth, oidcAuth, sharedSecretAuth } from './lib/internal-auth';
+import { createDestinationGuard } from './lib/destinations';
+import { type InternalAuth, oidcAuth, sharedSecretAuth, withCronSecret } from './lib/internal-auth';
 import { createLogger, type Logger } from './lib/logger';
 import { createOriginMatcher } from './lib/origins';
 import { describePendingMigrations } from './lib/schema-check';
-import { InMemoryTokenBucket } from './lib/rate-limit';
+import { DEFAULT_RATE_LIMIT, SharedRateLimiter } from './lib/rate-limit';
 import { createSystemMailer } from './lib/system-mailer';
 import { createUnsubscribeLinks } from './lib/unsubscribe';
 import { resolveVersion } from './lib/version';
@@ -38,6 +39,9 @@ import { createOrgStore } from './modules/orgs/repo';
 import { createOrgService } from './modules/orgs/service';
 import { createOverviewStore } from './modules/overview/repo';
 import { createOverviewService } from './modules/overview/service';
+import { createRateLimitStore } from './modules/rate-limits/repo';
+import { createSchedulerStore } from './modules/scheduler/repo';
+import { createSchedulerService } from './modules/scheduler/service';
 import { createSuppressionStore } from './modules/suppressions/repo';
 import { createSuppressionService } from './modules/suppressions/service';
 import { createTemplateStore } from './modules/templates/repo';
@@ -124,7 +128,14 @@ async function main(): Promise<void> {
   const webhookStore = createWebhookStore(db);
   const orgStore = createOrgStore(db);
 
-  const { queue, internalAuth, local } = buildQueue(queueConfig, logger);
+  const { queue, internalAuth: queueAuth, local } = buildQueue(queueConfig, logger);
+  const internalAuth = withCronSecret(queueAuth, env.CRON_SECRET);
+  const rateLimitStore = createRateLimitStore(db);
+  // Local receivers (examples/webhook-receiver.mjs) are fine on a laptop, never in production.
+  const destinations = createDestinationGuard({
+    allowPrivate: env.NODE_ENV !== 'production',
+    requireHttps: env.NODE_ENV === 'production',
+  });
 
   const mailboxes = createMailboxService({
     store: mailboxStore,
@@ -138,8 +149,20 @@ async function main(): Promise<void> {
     audit,
   });
   const emails = createEmailService({ messages: emailStore, mailboxes: mailboxStore, queue });
-  const webhooks = createWebhookService({ store: webhookStore, cipher, queue, audit });
-  const webhookWorker = createWebhookWorker({ store: webhookStore, cipher, queue, logger });
+  const webhooks = createWebhookService({
+    store: webhookStore,
+    cipher,
+    queue,
+    destinations,
+    audit,
+  });
+  const webhookWorker = createWebhookWorker({
+    store: webhookStore,
+    cipher,
+    queue,
+    logger,
+    fetchImpl: destinations.fetch,
+  });
   const worker = createEmailWorker({
     messages: emailStore,
     mailboxes: mailboxStore,
@@ -185,8 +208,9 @@ async function main(): Promise<void> {
     dashboardOrigin: env.DASHBOARD_ORIGIN,
   });
 
+  const authStore = createAuthStore(db);
   const endUserAuth = createAuthService({
-    store: createAuthStore(db),
+    store: authStore,
     providers: {
       google: createGoogleIdentityProvider(),
       github: createGithubIdentityProvider(),
@@ -216,6 +240,19 @@ async function main(): Promise<void> {
     onUserCreated: (user) => orgs.ensureDefaultOrg(user),
   });
 
+  const scheduler = createSchedulerService({
+    store: createSchedulerStore(db),
+    mailboxes,
+    broadcasts,
+    emailStore,
+    webhookStore,
+    broadcastStore,
+    authStore,
+    rateLimitStore,
+    queue,
+    logger,
+  });
+
   const app = createApp({
     version,
     logger,
@@ -235,7 +272,9 @@ async function main(): Promise<void> {
     worker,
     webhookWorker,
     broadcastWorker,
-    rateLimiter: new InMemoryTokenBucket(),
+    scheduler,
+    // Shared through Postgres so the budget holds across instances and deploys (ADR 0015).
+    rateLimiter: new SharedRateLimiter({ ...DEFAULT_RATE_LIMIT, store: rateLimitStore, logger }),
     internalAuth,
     sessionResolver: sessionResolverFor(auth),
     authHandler: (request) => auth.handler(request),

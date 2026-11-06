@@ -23,4 +23,10 @@
     // Cloudflare dashboard if the API moves.
     "API_UPSTREAM": "https://postrail-api.onrender.com",
   },
+  // The API's clock (ADR 0014), handled by `scheduled` in src/worker.ts. Keep in sync with
+  // KEEP_WARM_CRON and TICK_CRON there. The tick needs the Worker secret CRON_SECRET, set
+  // with `wrangler secret put CRON_SECRET` to the same value as CRON_SECRET on the API.
+  "triggers": {
+    "crons": ["*/10 * * * *", "*/30 * * * *"],
+  },
 }

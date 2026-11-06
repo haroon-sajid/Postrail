@@ -21,10 +21,22 @@ async function signIn(context: BrowserContext) {
   ]);
 }
 
-test('signed-out visitors land on the login page', async ({ page }) => {
+test('signed-out visitors see the home page, and deep links go to sign-in', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveURL(/\/login/);
+  await expect(page.getByRole('heading', { name: /through your own Gmail/ })).toBeVisible();
+  await expect(page.getByText('https://www.googleapis.com/auth/gmail.send').first()).toBeVisible();
+
+  await page
+    .getByRole('navigation', { name: 'Legal' })
+    .getByRole('link', { name: 'Privacy policy' })
+    .click();
+  await expect(page).toHaveURL(/\/privacy$/);
+  await expect(page.getByText(/including the Limited Use requirements/)).toBeVisible();
+
+  await page.goto('/logs');
+  await expect(page).toHaveURL(/\/login\?next=%2Flogs/);
   await expect(page.getByRole('heading', { name: 'Sign in', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'terms of service' })).toBeVisible();
 });
 
 test('login with a test session, create a key, view logs', async ({ page, context }) => {

@@ -51,8 +51,33 @@ export type BroadcastOutcome = (typeof BROADCAST_OUTCOMES)[number];
 
 export const broadcastWorkerResultSchema = z.object({ outcome: z.enum(BROADCAST_OUTCOMES) });
 
-/** `resumed` is how many broadcasts were set going again with the day's fresh capacity. */
+/**
+ * `resumed` is how many broadcasts were set going again with the day's fresh capacity.
+ * `skipped` means today's reset already ran, so nothing was touched.
+ */
 export const resetCountersResponseSchema = z.object({
   reset: z.number().int(),
   resumed: z.number().int(),
+  skipped: z.boolean(),
 });
+export type ResetCountersResponse = z.infer<typeof resetCountersResponseSchema>;
+
+/** What one scheduler tick did (ADR 0014). `daily` is null when today's reset already ran. */
+export const tickResponseSchema = z.object({
+  daily: z.object({ reset: z.number().int(), resumed: z.number().int() }).nullable(),
+  requeued: z.object({
+    emails: z.number().int(),
+    webhooks: z.number().int(),
+    broadcasts: z.number().int(),
+  }),
+  deleted: z.object({
+    message_bodies: z.number().int(),
+    webhook_deliveries: z.number().int(),
+    auth_sessions: z.number().int(),
+    auth_challenges: z.number().int(),
+    rate_limits: z.number().int(),
+  }),
+  /** Parts that threw. The others still ran; the response is a 500 when this is not empty. */
+  failed: z.array(z.enum(['daily', 'sweep', 'retention'])),
+});
+export type TickResponse = z.infer<typeof tickResponseSchema>;

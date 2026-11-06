@@ -1,4 +1,5 @@
 import {
+  errorResponseSchema,
   MAX_WEBHOOK_ATTEMPTS,
   sendEmailResponseSchema,
   verifyWebhookSignature,
@@ -9,9 +10,10 @@ import {
   webhookSchema,
 } from '@postrail/shared';
 import { describe, expect, it, vi } from 'vitest';
+import { BlockedDestinationError } from '../../lib/destinations';
 import { GoogleApiError, GoogleOAuthError } from '../../providers/google-client';
 import { createTestApp } from '../../test/app';
-import { fakeGoogleClient } from '../../test/fakes';
+import { fakeGoogleClient, publicResolve } from '../../test/fakes';
 import { WEBHOOK_RETRY_DELAYS_SECONDS } from './worker';
 
 const ORG = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -77,6 +79,34 @@ describe('/v1/webhooks CRUD', () => {
     expect((await t.call('POST', '/v1/webhooks', { url: RECEIVER, events: ['nope'] })).status).toBe(
       400,
     );
+  });
+
+  it('refuses urls that point at private networks or cloud metadata', async () => {
+    const t = setup({
+      resolve: (host) =>
+        publicResolve(host, { 'intranet.example.com': '10.0.0.7', 'v6.example.com': 'fd00::1' }),
+    });
+    for (const url of [
+      'http://127.0.0.1:4000/hook',
+      'http://169.254.169.254/latest/meta-data',
+      'http://[::1]/hook',
+      'http://localhost/hook',
+      'https://intranet.example.com/hook',
+      'https://v6.example.com/hook',
+    ]) {
+      const res = await t.call('POST', '/v1/webhooks', { url, events: ['email.sent'] });
+      expect(res.status, url).toBe(400);
+      const body: unknown = await res.json();
+      expect(errorResponseSchema.parse(body).error.message).toMatch(/private or internal/);
+    }
+    expect(t.webhookStore.endpoints).toHaveLength(0);
+
+    const created = await t.createWebhook();
+    const moved = await t.call('PATCH', `/v1/webhooks/${created.id}`, {
+      url: 'https://intranet.example.com/hook',
+    });
+    expect(moved.status).toBe(400);
+    expect(t.webhookStore.endpoints[0]?.url).toBe(RECEIVER);
   });
 
   it('updates, deletes and scopes to the org', async () => {
@@ -234,6 +264,22 @@ describe('webhook delivery', () => {
       attempts: 2,
       error: null,
     });
+  });
+
+  it('fails at once, without retrying, when the host turns private after it was saved', async () => {
+    const t = setup();
+    await t.createWebhook(['email.sent']);
+    t.receiver.state.rejectNext = new BlockedDestinationError(
+      'url must not resolve to a private or internal address',
+    );
+    await t.queueEmail();
+    await t.queue.drain();
+    expect(t.webhookStore.deliveries[0]).toMatchObject({
+      status: 'failed',
+      attempts: 1,
+      error: 'url must not resolve to a private or internal address',
+    });
+    expect(t.receiver.calls).toHaveLength(0);
   });
 
   it('never delivers twice for a duplicated task and fails cleanly when the endpoint is gone', async () => {

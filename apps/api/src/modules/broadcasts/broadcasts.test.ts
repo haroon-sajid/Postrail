@@ -77,8 +77,10 @@ async function setup(options: { contacts?: number; dailyLimit?: number } = {}) {
     await t.queue.drain();
     return get(created.id);
   };
-  /** What the daily Cloud Scheduler job does at midnight UTC. */
+  /** Moves to the next day and does what the daily job does at midnight UTC. */
   const nextDay = async () => {
+    // The reset runs once per UTC day (ADR 0014), so it has to really be tomorrow.
+    clock.at += 24 * 60 * 60 * 1000;
     const res = await call(
       'POST',
       '/internal/cron/reset-daily-counters',
@@ -86,7 +88,7 @@ async function setup(options: { contacts?: number; dailyLimit?: number } = {}) {
       t.internalHeaders,
     );
     await t.queue.drain();
-    return json<{ reset: number; resumed: number }>(res);
+    return json<{ reset: number; resumed: number; skipped: boolean }>(res);
   };
   const recipients = async (id: string, query = '') =>
     broadcastRecipientsResponseSchema.parse(
@@ -252,7 +254,7 @@ describe('sending a broadcast', () => {
     await t.queue.drain();
     expect(t.mailbox.sentToday).toBe(9);
 
-    expect(await t.nextDay()).toEqual({ reset: 1, resumed: 1 });
+    expect(await t.nextDay()).toEqual({ reset: 1, resumed: 1, skipped: false });
     const day2 = await t.get(day1.id);
     expect(day2.status).toBe('sent');
     expect(day2.stats).toMatchObject({ sent: 12, pending: 0 });

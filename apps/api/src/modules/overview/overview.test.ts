@@ -40,6 +40,7 @@ describe('GET /app/orgs/:orgId/overview', () => {
         providerMessageId: null,
         error: status === 'failed' ? 'boom' : null,
         attempts: 1,
+        nextAttemptAt: createdAt,
         sentAt: status === 'sent' ? createdAt : null,
         createdAt,
         updatedAt: createdAt,

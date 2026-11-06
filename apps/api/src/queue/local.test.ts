@@ -33,6 +33,25 @@ describe('LocalQueue (drain mode)', () => {
     expect(handler).toHaveBeenCalledTimes(1);
   });
 
+  it('forgets task names after about an hour instead of growing forever', async () => {
+    vi.useFakeTimers({ now: new Date('2026-11-06T00:00:00Z') });
+    try {
+      const queue = new LocalQueue({ autoRun: false });
+      const handler = vi.fn(() => Promise.resolve());
+      queue.setHandler(handler);
+      await queue.enqueue(job(1), { taskId: 'old' });
+      vi.setSystemTime(new Date('2026-11-06T02:00:00Z'));
+      // Enough fresh names to make the queue tidy up before the next one.
+      for (let i = 0; i < 10_000; i++) await queue.enqueue(job(2), { taskId: `n-${i}` });
+      await queue.enqueue(job(1), { taskId: 'old' });
+      await queue.enqueue(job(2), { taskId: 'n-0' });
+      expect(queue.taskIds.filter((id) => id === 'old')).toHaveLength(2);
+      expect(queue.taskIds.filter((id) => id === 'n-0')).toHaveLength(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('surfaces handler errors to the test', async () => {
     const queue = new LocalQueue({ autoRun: false });
     queue.setHandler(() => Promise.reject(new Error('boom')));

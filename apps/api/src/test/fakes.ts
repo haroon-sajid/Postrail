@@ -49,6 +49,8 @@ import {
 import { type InviteRow, type OrgRow, type OrgStore } from '../modules/orgs/repo';
 import { type SystemMailer } from '../modules/orgs/service';
 import { type OverviewStore } from '../modules/overview/repo';
+import { type RateLimitStore } from '../modules/rate-limits/repo';
+import { type SchedulerStore } from '../modules/scheduler/repo';
 import { type SuppressionRow, type SuppressionStore } from '../modules/suppressions/repo';
 import { type TemplateStore } from '../modules/templates/repo';
 import { type DeliveryRow, type EndpointRow, type WebhookStore } from '../modules/webhooks/repo';
@@ -67,6 +69,7 @@ import { type MailboxRow } from '../providers/types';
 export const TEST_KEY_HEX = 'ab'.repeat(32);
 export const testCipher = createTokenCipher(TEST_KEY_HEX);
 export const TEST_INTERNAL_SECRET = 'test-internal-secret-0123456789';
+export const TEST_CRON_SECRET = 'test-cron-secret-0123456789abcdef0123';
 export const TEST_DASHBOARD_ORIGIN = 'http://localhost:5173';
 export const TEST_API_ORIGIN = 'http://localhost:8080';
 
@@ -590,6 +593,75 @@ export function inMemoryAuthStore(): InMemoryAuthStore {
     },
     listSigningKeys: (orgId) =>
       Promise.resolve(store.signingKeys.filter((k) => k.orgId === orgId).reverse()),
+    deleteExpired: (challengesBefore, sessionsBefore, limit) => {
+      const challenges = store.challenges.filter((c) => c.expiresAt < challengesBefore);
+      const sessions = store.sessions.filter((s) => s.expiresAt < sessionsBefore);
+      const doomedChallenges = new Set(challenges.slice(0, limit));
+      const doomedSessions = new Set(sessions.slice(0, limit));
+      store.challenges = store.challenges.filter((c) => !doomedChallenges.has(c));
+      store.sessions = store.sessions.filter((s) => !doomedSessions.has(s));
+      return Promise.resolve({ challenges: doomedChallenges.size, sessions: doomedSessions.size });
+    },
+  };
+  return store;
+}
+
+// ---------- scheduler ----------
+
+export interface InMemorySchedulerStore extends SchedulerStore {
+  runs: Map<string, { period: string; claimedAt: Date; completedAt: Date | null }>;
+}
+
+/** The claim rules of modules/scheduler/repo.ts over a Map. */
+export function inMemorySchedulerStore(): InMemorySchedulerStore {
+  const store: InMemorySchedulerStore = {
+    runs: new Map(),
+    claim: (name, period, now, leaseMs) => {
+      const run = store.runs.get(name);
+      const free =
+        !run ||
+        run.period < period ||
+        (run.period === period &&
+          run.completedAt === null &&
+          run.claimedAt.getTime() < now.getTime() - leaseMs);
+      if (free) store.runs.set(name, { period, claimedAt: now, completedAt: null });
+      return Promise.resolve(free);
+    },
+    complete: (name, period, now) => {
+      const run = store.runs.get(name);
+      if (run?.period === period) run.completedAt = now;
+      return Promise.resolve();
+    },
+    release: (name, period) => {
+      const run = store.runs.get(name);
+      if (run?.period === period && run.completedAt === null) run.claimedAt = new Date(0);
+      return Promise.resolve();
+    },
+  };
+  return store;
+}
+
+export interface InMemoryRateLimitStore extends RateLimitStore {
+  /** Theoretical arrival time per key, in ms since the epoch. */
+  tats: Map<string, number>;
+}
+
+/** GCRA over a Map, against the real clock. */
+export function inMemoryRateLimitStore(): InMemoryRateLimitStore {
+  const store: InMemoryRateLimitStore = {
+    tats: new Map(),
+    take: (key, emissionMs, toleranceMs) => {
+      const now = Date.now();
+      const tat = Math.max(store.tats.get(key) ?? now, now);
+      if (tat - now > toleranceMs) return Promise.resolve({ allowed: false, aheadMs: tat - now });
+      store.tats.set(key, tat + emissionMs);
+      return Promise.resolve({ allowed: true, aheadMs: tat + emissionMs - now });
+    },
+    deleteIdle: (before, limit) => {
+      const idle = [...store.tats].filter(([, tat]) => tat < before.getTime()).slice(0, limit);
+      for (const [key] of idle) store.tats.delete(key);
+      return Promise.resolve(idle.length);
+    },
   };
   return store;
 }
@@ -862,7 +934,12 @@ export function inMemoryBroadcastStore(deps: {
       if (row?.status !== 'sending') return Promise.resolve(false);
       Object.assign(row, { status: 'canceled', completedAt: now, updatedAt: now });
       for (const r of store.recipientRows.filter((r) => r.broadcastId === id && waiting(r))) {
-        Object.assign(r, { state: 'skipped', error: 'broadcast canceled', updatedAt: now });
+        Object.assign(r, {
+          state: 'skipped',
+          error: 'broadcast canceled',
+          properties: {},
+          updatedAt: now,
+        });
       }
       return Promise.resolve(true);
     },
@@ -910,8 +987,8 @@ export function inMemoryBroadcastStore(deps: {
         Object.assign(
           row,
           outcome.state === 'queued'
-            ? { state: 'queued', messageId: outcome.messageId, error: null }
-            : { state: outcome.state, error: outcome.error },
+            ? { state: 'queued', messageId: outcome.messageId, error: null, properties: {} }
+            : { state: outcome.state, error: outcome.error, properties: {} },
         );
       }
       return Promise.resolve();
@@ -964,6 +1041,21 @@ export function inMemoryBroadcastStore(deps: {
     listSending: () =>
       Promise.resolve(
         store.rows.filter((r) => r.status === 'sending').map((r) => ({ orgId: r.orgId, id: r.id })),
+      ),
+    listStalled: (now, leaseMs) =>
+      Promise.resolve(
+        store.rows
+          .filter(
+            (b) =>
+              b.status === 'sending' &&
+              !store.recipientRows.some(
+                (r) =>
+                  r.broadcastId === b.id &&
+                  r.state === 'dispatching' &&
+                  r.updatedAt.getTime() > now.getTime() - leaseMs,
+              ),
+          )
+          .map((b) => ({ orgId: b.orgId, id: b.id })),
       ),
   };
   return store;
@@ -1248,6 +1340,7 @@ export function inMemoryEmailStore(): InMemoryEmailStore {
         providerMessageId: null,
         error: null,
         attempts: 0,
+        nextAttemptAt: new Date(),
         sentAt: null,
         // Strictly increasing so keyset pagination has a deterministic order.
         createdAt: new Date(Date.now() + store.rows.length),
@@ -1294,10 +1387,35 @@ export function inMemoryEmailStore(): InMemoryEmailStore {
       return Promise.resolve();
     },
 
-    scheduleRetry: (orgId, id, error, now) => {
+    scheduleRetry: (orgId, id, error, now, nextAttemptAt) => {
       const row = find(orgId, id);
-      if (row) Object.assign(row, { status: 'queued', error, updatedAt: now });
+      if (row) Object.assign(row, { status: 'queued', error, updatedAt: now, nextAttemptAt });
       return Promise.resolve();
+    },
+
+    findStalled: (now, graceMs, leaseMs, limit) =>
+      Promise.resolve(
+        store.rows
+          .filter(
+            (r) =>
+              (r.status === 'queued' && r.nextAttemptAt.getTime() < now.getTime() - graceMs) ||
+              (r.status === 'sending' && r.updatedAt.getTime() < now.getTime() - leaseMs),
+          )
+          .slice(0, limit)
+          .map((r) => ({ orgId: r.orgId, id: r.id })),
+      ),
+
+    purgeBodiesBefore: (before, limit) => {
+      const old = store.rows
+        .filter(
+          (r) =>
+            (r.status === 'sent' || r.status === 'failed') &&
+            r.createdAt < before &&
+            store.bodies.has(r.id),
+        )
+        .slice(0, limit);
+      for (const r of old) store.bodies.delete(r.id);
+      return Promise.resolve(old.length);
     },
 
     get: (orgId, id) => Promise.resolve(find(orgId, id)),
@@ -1480,18 +1598,51 @@ export function inMemoryWebhookStore(): InMemoryWebhookStore {
           .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
           .slice(0, limit),
       ),
+    findStalledDeliveries: (now, graceMs, leaseMs, limit) =>
+      Promise.resolve(
+        store.deliveries
+          .filter(
+            (d) =>
+              (d.status === 'pending' &&
+                (d.nextRetryAt ?? d.updatedAt).getTime() < now.getTime() - graceMs) ||
+              (d.status === 'sending' && d.updatedAt.getTime() < now.getTime() - leaseMs),
+          )
+          .slice(0, limit)
+          .map((d) => ({ orgId: d.orgId, id: d.id })),
+      ),
+    deleteDeliveriesBefore: (before, limit) => {
+      const old = store.deliveries
+        .filter((d) => (d.status === 'delivered' || d.status === 'failed') && d.createdAt < before)
+        .slice(0, limit);
+      store.deliveries = store.deliveries.filter((d) => !old.includes(d));
+      return Promise.resolve(old.length);
+    },
   };
   return store;
+}
+
+/** Webhook DNS for tests: every name is a public address unless `names` says otherwise. */
+export function publicResolve(hostname: string, names: Record<string, string> = {}) {
+  const address = names[hostname] ?? '93.184.215.14';
+  return Promise.resolve([{ address, family: address.includes(':') ? 6 : 4 }]);
 }
 
 /** Records every webhook POST and answers with a configurable status. */
 export function fakeWebhookReceiver(status = 200) {
   const calls: Array<{ url: string; headers: Record<string, string>; body: string }> = [];
-  const state = { status, throwNext: false };
+  const state: { status: number; throwNext: boolean; rejectNext?: Error } = {
+    status,
+    throwNext: false,
+  };
   const fetchImpl = ((url: string | URL | Request, init?: RequestInit) => {
     if (state.throwNext) {
       state.throwNext = false;
       return Promise.reject(new TypeError('fetch failed'));
+    }
+    if (state.rejectNext) {
+      const error = state.rejectNext;
+      delete state.rejectNext;
+      return Promise.reject(error);
     }
     calls.push({
       url: typeof url === 'string' ? url : url instanceof URL ? url.toString() : url.url,

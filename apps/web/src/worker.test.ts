@@ -1,6 +1,14 @@
 // @vitest-environment node
 import { describe, expect, it, vi } from 'vitest';
-import { buildUpstreamRequest, createHandler, isProxiedPath, proxy } from './worker';
+import {
+  buildUpstreamRequest,
+  createHandler,
+  isProxiedPath,
+  KEEP_WARM_CRON,
+  proxy,
+  runScheduled,
+  TICK_CRON,
+} from './worker';
 
 const UPSTREAM = 'https://postrail-api.onrender.com';
 const SITE = 'https://postrail.haroonsajid-ai.workers.dev';
@@ -122,6 +130,37 @@ describe('proxy', () => {
       'https://accounts.google.com/o/oauth2/v2/auth?state=xyz',
     );
     expect(upstreamFetch.mock.calls[0]?.[0]?.redirect).toBe('manual');
+  });
+});
+
+describe('runScheduled', () => {
+  const env = { API_UPSTREAM: `${UPSTREAM}/`, CRON_SECRET: 'c'.repeat(64) };
+
+  it('ticks the scheduler straight on the API with the cron secret', async () => {
+    const upstreamFetch = vi.fn((_r: Request) => Promise.resolve(new Response('{"failed":[]}')));
+    await runScheduled(TICK_CRON, env, upstreamFetch);
+    const request = upstreamFetch.mock.calls[0]?.[0];
+    expect(request?.url).toBe(`${UPSTREAM}/internal/cron/tick`);
+    expect(request?.method).toBe('POST');
+    expect(request?.headers.get('authorization')).toBe(`Bearer ${'c'.repeat(64)}`);
+  });
+
+  it('keeps the API warm through /health without any secret', async () => {
+    const upstreamFetch = vi.fn((_r: Request) => Promise.resolve(new Response('{"ok":true}')));
+    await runScheduled(KEEP_WARM_CRON, { API_UPSTREAM: UPSTREAM }, upstreamFetch);
+    const request = upstreamFetch.mock.calls[0]?.[0];
+    expect(request?.url).toBe(`${UPSTREAM}/health`);
+    expect(request?.method).toBe('GET');
+    expect(request?.headers.has('authorization')).toBe(false);
+  });
+
+  it('fails loudly so the cron log shows it', async () => {
+    const failing = () => Promise.resolve(new Response('{"failed":["sweep"]}', { status: 500 }));
+    await expect(runScheduled(TICK_CRON, env, failing)).rejects.toThrow('tick answered 500');
+    await expect(runScheduled(TICK_CRON, { API_UPSTREAM: UPSTREAM }, failing)).rejects.toThrow(
+      'CRON_SECRET',
+    );
+    await expect(runScheduled(KEEP_WARM_CRON, {}, failing)).rejects.toThrow('API_UPSTREAM');
   });
 });
 

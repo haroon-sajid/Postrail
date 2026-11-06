@@ -33,6 +33,8 @@ import { accountRoutes, orgRoutes } from './modules/orgs/routes';
 import { type OrgService } from './modules/orgs/service';
 import { overviewRoutes } from './modules/overview/routes';
 import { type OverviewService } from './modules/overview/service';
+import { schedulerRoutes } from './modules/scheduler/routes';
+import { type SchedulerService } from './modules/scheduler/service';
 import { type UnsubscribeLinks } from './lib/unsubscribe';
 import { suppressionRoutes, unsubscribeRoutes } from './modules/suppressions/routes';
 import { type SuppressionService } from './modules/suppressions/service';
@@ -63,7 +65,10 @@ export interface AppDeps {
   worker: EmailWorker;
   webhookWorker: WebhookWorker;
   broadcastWorker: BroadcastWorker;
+  /** Daily reset, lost-work sweep and retention, driven by /internal/cron/tick (ADR 0014). */
+  scheduler: SchedulerService;
   rateLimiter: RateLimiter;
+  /** Guards /internal/*. For /internal/cron/* it may also accept CRON_SECRET (withCronSecret). */
   internalAuth: InternalAuth;
   /** Turns request headers into the signed-in user, or null. */
   sessionResolver: SessionResolver;
@@ -114,7 +119,7 @@ export function createApp(deps: AppDeps) {
   app.use('/app/orgs/:orgId', requireOrgMember(deps.orgStore));
   app.use('/app/orgs/:orgId/*', requireOrgMember(deps.orgStore));
 
-  // Everything under /internal is for Cloud Tasks and Cloud Scheduler only.
+  // Everything under /internal is for our own infrastructure: Cloud Tasks and the cron clock.
   app.use('/internal/*', requireInternalAuth(deps.internalAuth));
 
   app.route('/', healthRoutes({ version: deps.version }));
@@ -142,10 +147,9 @@ export function createApp(deps: AppDeps) {
       worker: deps.worker,
       webhookWorker: deps.webhookWorker,
       broadcastWorker: deps.broadcastWorker,
-      mailboxes: deps.mailboxes,
-      broadcasts: deps.broadcasts,
     }),
   );
+  app.route('/', schedulerRoutes(deps.scheduler));
 
   app.openAPIRegistry.registerComponent('securitySchemes', 'bearerAuth', {
     type: 'http',

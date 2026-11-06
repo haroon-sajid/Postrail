@@ -8,6 +8,7 @@ import {
   type Db,
   type OrgDb,
   withOrg,
+  withSystem,
 } from '@postrail/db';
 import { type AuthChallengeKind, type AuthProvider, type PublicJwk } from '@postrail/shared';
 import {
@@ -174,6 +175,17 @@ export interface AuthStore {
   createSigningKey: (orgId: string, input: NewSigningKey) => Promise<AuthSigningKeyRow>;
   /** Every key the org has ever signed with, for the JWKS document. */
   listSigningKeys: (orgId: string) => Promise<AuthSigningKeyRow[]>;
+
+  /**
+   * Cross-tenant, for retention: sign-in codes and links that expired before
+   * `challengesBefore`, and sessions that expired before `sessionsBefore`. A deleted
+   * session verifies as inactive, exactly like an expired one.
+   */
+  deleteExpired: (
+    challengesBefore: Date,
+    sessionsBefore: Date,
+    limit: number,
+  ) => Promise<{ challenges: number; sessions: number }>;
 }
 
 /** Provider lists for a page of users, in one query. */
@@ -565,5 +577,37 @@ export function createAuthStore(db: Db): AuthStore {
           .where(eq(authSigningKeys.orgId, orgId))
           .orderBy(desc(authSigningKeys.createdAt)),
       ),
+
+    // withSystem: retention spans every tenant, and only touches rows that are already dead.
+    deleteExpired: (challengesBefore, sessionsBefore, limit) =>
+      withSystem(db, async (tx) => {
+        const challenges = await tx
+          .delete(authChallenges)
+          .where(
+            inArray(
+              authChallenges.id,
+              tx
+                .select({ id: authChallenges.id })
+                .from(authChallenges)
+                .where(lt(authChallenges.expiresAt, challengesBefore))
+                .limit(limit),
+            ),
+          )
+          .returning({ id: authChallenges.id });
+        const sessions = await tx
+          .delete(authSessions)
+          .where(
+            inArray(
+              authSessions.id,
+              tx
+                .select({ id: authSessions.id })
+                .from(authSessions)
+                .where(lt(authSessions.expiresAt, sessionsBefore))
+                .limit(limit),
+            ),
+          )
+          .returning({ id: authSessions.id });
+        return { challenges: challenges.length, sessions: sessions.length };
+      }),
   };
 }

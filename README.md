@@ -29,7 +29,7 @@ Most apps only need to send a few hundred emails a day. Signing up with an email
                                    +---------------+
 ```
 
-Postrail stores the message, queues it and returns at once. A worker sends it through the Gmail API with the OAuth token you granted. Postrail never stores your Gmail password. Message bodies are kept so you can preview and resend a message from Logs. Sign-in emails are the exception: their content is never shown and is deleted once sent.
+Postrail stores the message, queues it and returns at once. A worker sends it through the Gmail API with the OAuth token you granted. Postrail never stores your Gmail password. Message bodies are kept for 30 days so you can preview and resend a message from Logs. Sign-in emails are the exception: their content is never shown and is deleted once sent.
 
 ## Quickstart
 
@@ -339,8 +339,11 @@ A complete app with no dependencies is in [examples/sign-in-app.mjs](examples/si
 | Contact import            | 1,000 contacts per call. The dashboard sends as many calls as a CSV needs |
 | Contact properties        | 50 per contact, 1,000 characters each                                     |
 | Broadcast share           | 80% of each mailbox's daily limit                                         |
+| Email content             | Kept 30 days for preview and resend, then deleted. The log row stays      |
+| Webhook delivery history  | 30 days                                                                   |
+| Webhook URLs              | https, and never a private or internal address                            |
 
-Gmail itself caps a free account at about 500 messages a day. The default of 400 leaves room for your own mail. The daily counter resets at 00:00 UTC.
+Gmail itself caps a free account at about 500 messages a day. The default of 400 leaves room for your own mail. The daily counter resets on the first scheduler tick after 00:00 UTC, within half an hour.
 
 Google has not yet completed verification of the Postrail OAuth app. Until it does, Google shows a warning screen when you connect a mailbox.
 
@@ -369,12 +372,13 @@ Environment variables for the API. The API refuses to start if a required one is
 | `SYSTEM_MAILBOX_EMAIL`                                                                          | No                | A connected mailbox that sends magic links and invites. Unset disables both.                      |
 | `QUEUE_DRIVER`                                                                                  | No                | `local` (default) or `cloudtasks`.                                                                |
 | `INTERNAL_SECRET`                                                                               | With `local`      | Bearer secret for the worker and cron routes under `/internal`.                                   |
+| `CRON_SECRET`                                                                                   | In practice       | Bearer secret the Worker's Cron Trigger sends to `/internal/cron/tick`. Opens nothing else.       |
 | `GCP_PROJECT_ID`, `GCP_REGION`, `TASKS_QUEUE_NAME`, `WORKER_URL`, `TASKS_SERVICE_ACCOUNT_EMAIL` | With `cloudtasks` | Cloud Tasks queue and the service account it signs tokens as.                                     |
 | `NODE_ENV`                                                                                      | No                | `development` (default), `test` or `production`.                                                  |
 | `PORT`                                                                                          | No                | Default 8080.                                                                                     |
 | `LOG_LEVEL`                                                                                     | No                | `debug`, `info` (default), `warn` or `error`.                                                     |
 
-The dashboard needs no build variable. The Worker reads `API_UPSTREAM` from `apps/web/wrangler.jsonc`. Hosting details, including the Render and Cloudflare values, are in [docs/deploy.md](docs/deploy.md).
+The dashboard needs no build variable. The Worker reads `API_UPSTREAM` from `apps/web/wrangler.jsonc`, and its Cron Triggers are the API's clock: every 30 minutes they run the scheduler tick, which resets daily counts, re-queues work a restart lost and deletes expired data. Set `CRON_SECRET` on the API and as a Worker secret. Hosting details, including the Render and Cloudflare values, are in [docs/deploy.md](docs/deploy.md).
 
 Run it locally. You need Node 22 and pnpm.
 
@@ -414,7 +418,7 @@ pnpm test
 
 Report a vulnerability by email to haroonsajid016@gmail.com. Do not open a public issue for it.
 
-Mailbox OAuth tokens, webhook secrets, OAuth client secrets and the private keys that sign access tokens are encrypted at rest with AES-256-GCM. API keys, session tokens and sign-in codes are stored as a SHA-256 hash and the raw value is shown once. Message bodies are kept for preview and resend; the body of a sign-in email is never shown and is deleted once the send reaches `sent` or `failed`. Every tenant table carries `org_id` and Postgres row level security enforces the boundary.
+Mailbox OAuth tokens, webhook secrets, OAuth client secrets and the private keys that sign access tokens are encrypted at rest with AES-256-GCM. API keys, session tokens and sign-in codes are stored as a SHA-256 hash and the raw value is shown once. Message bodies are kept for 30 days for preview and resend; the body of a sign-in email is never shown and is deleted once the send reaches `sent` or `failed`. Every tenant table carries `org_id` and Postgres row level security enforces the boundary. Webhook URLs are checked when saved and again at the moment of each delivery, so they cannot reach private networks or cloud metadata. The privacy policy and terms are public at `/privacy` and `/terms`.
 
 ## License
 

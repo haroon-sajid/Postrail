@@ -107,7 +107,12 @@ export const authSessions = pgTable(
     revokedAt: timestamp('revoked_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [index('auth_sessions_org_user_idx').on(t.orgId, t.userId), tenantPolicy('auth_sessions')],
+  (t) => [
+    index('auth_sessions_org_user_idx').on(t.orgId, t.userId),
+    // Retention deletes long-expired sessions across all tenants (ADR 0014).
+    index('auth_sessions_expires_idx').on(t.expiresAt),
+    tenantPolicy('auth_sessions'),
+  ],
 ).enableRLS();
 
 /**
@@ -155,6 +160,7 @@ export const authChallenges = pgTable(
   (t) => [
     index('auth_challenges_org_token_idx').on(t.orgId, t.tokenHash),
     index('auth_challenges_org_email_created_idx').on(t.orgId, t.email, t.createdAt.desc()),
+    index('auth_challenges_expires_idx').on(t.expiresAt),
     tenantPolicy('auth_challenges'),
   ],
 ).enableRLS();
